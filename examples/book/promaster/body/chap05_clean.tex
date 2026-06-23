@@ -1,0 +1,118 @@
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap05.tex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{软硬件系统设计及测试}[System Design and Test]
+\label{chap05}
+
+\section{系统总体方案}[Overall Architecture]
+
+本文设计的声学释放器系统由甲板单元、水下机、换能器组件和机械释放机构组成。甲板单元负责指令生成、发射控制、应答接收、测距计算与人机交互；水下机负责信号接收与解调、身份识别、应答发射、状态管理及释放执行；机械释放机构完成最终的物理解锁动作。系统总体设计原则如下：
+
+\begin{enumerate}
+  \item 以可靠执行为首要目标，通信、控制与执行分层实现；
+  \item 以低功耗为重要约束，水下机采用休眠唤醒与事件驱动机制；
+  \item 以可维护性为工程目标，软硬件接口清晰、模块边界明确；
+  \item 以测试可验证性为导向，关键链路均支持时序观测与参数标定。
+\end{enumerate}
+
+\section{水下机硬件设计}[Underwater Unit Hardware]
+
+水下机硬件可划分为电源管理模块、主控处理模块、接收前端、发射驱动模块、传感与状态检测模块以及机械释放执行模块。主控处理器负责运行同步解调、命令判决和测距应答程序；接收前端完成信号调理、放大与模数转换；发射驱动模块根据数字基带控制换能器输出指定频点信号；机械释放执行模块通过电机、电磁或其他执行机构完成最终动作\cite{XiaDongShengXueShiFangQiShuZiDianLuSheJiYuShiXian2011,XieShuangWenXinXingShengXueShiFangQiKongZhiDianLuDeSheJiYuZhiZuo2018,ChenKaiYunShengXueShiFangQiJiJieShiFangDanYuanDuoYuWuLiJianMoYuShiYanYanJiu2024}。
+
+考虑到系统长期水下部署需求，电源管理设计应支持低静态功耗、欠压保护和关键动作期间的瞬态大电流供给；结构设计应兼顾密封、耐压和电磁兼容要求。
+
+\section{甲板单元硬件设计}[Deck Unit Hardware]
+
+甲板单元主要由主控板、发射功放、接收通道、电源模块、显示与按键接口及外部通信接口构成。其功能包括：
+
+\begin{enumerate}
+  \item 生成人机界面下发的通信与测距指令；
+  \item 完成发射波形组织、功放控制与换能器切换；
+  \item 对水下应答信号进行采样、解调和结果显示；
+  \item 向上位机输出设备编号、距离和状态信息。
+\end{enumerate}
+
+已有便携式甲板单元研究表明，采用 MCU 或 MCU+FPGA 结构可较好兼顾运算能力、接口扩展性和整机功耗\cite{zhangDesignImplementationPortable2018,CaoMingChengJiYuSTM32H7DeDuoGongNengBianXiShiJiaBanDanYuanYanJiuSheJi2021}。对于本文场景，若频点数量和实时性需求较高，可将波形生成和高速采样处理交由专用外设或协处理单元完成。
+
+\section{嵌入式软件设计}[Embedded Software]
+
+系统软件采用分层架构，包括驱动层、服务层和应用层。驱动层完成 ADC、DAC、定时器、串口、GPIO 等外设操作；服务层实现帧组装、缓存管理、测距时戳记录、故障检测与日志输出；应用层负责通信流程控制、命令解释、测距任务调度和释放逻辑管理。水下机侧核心任务流程为：休眠等待、信号唤醒、同步捕获、地址识别、命令执行、应答发射和低功耗回退。
+
+为保证释放动作安全，软件需设置多级防护：
+
+\begin{enumerate}
+  \item 非本机地址或校验失败命令直接丢弃；
+  \item 关键控制命令需满足重复确认条件；
+  \item 释放动作执行前检查电压、执行机构状态和互锁标志；
+  \item 动作完成后回传状态并记录故障码。
+\end{enumerate}
+
+\section{系统联调与测试方案}[Integration and Test Scheme]
+
+系统测试应覆盖实验室功能验证、水池试验和外场试验三个层次。实验室阶段主要验证收发链路、频点切换、同步与延时标定功能；水池试验侧重验证近距离测距、指令识别与功耗控制；外场试验则重点考察复杂环境下的通信成功率和测距稳定性\cite{HuangDongYiZhongQianHaiXingShengXueYingDaShiFangQiShuiXiaDanYuanDeSheJiYuShiXian2022}。
+
+建议测试指标包括：
+
+\begin{enumerate}
+  \item 指令识别成功率；
+  \item 测距均方误差与最大绝对误差；
+  \item 水下机固定处理延时稳定度；
+  \item 平均功耗与待机时长；
+  \item 释放动作成功率与重复动作一致性。
+\end{enumerate}
+
+\section{测试记录表设计}[Test Record Templates]
+
+为便于后续将真实实验结果直接回填到论文中，本文给出建议测试记录表，如表~\ref{tab:test_item} 和表~\ref{tab:ranging_result} 所示。表中数值请根据实际试验结果填写。
+
+\begin{table}[htbp]
+  \bicaption[tab:test_item]{}{系统测试项目设计}{Tab.}{Test items of the system}
+  \vspace{0.5em}\centering\wuhao
+  \begin{tabular}{ccc}
+    \toprule[1.5pt]
+    测试类别 & 关键指标 & 说明 \\
+    \midrule[1pt]
+    通信测试 & 识别成功率 & 不同距离、不同信噪比条件 \\
+    测距测试 & 绝对误差/相对误差 & 多次重复测量统计 \\
+    时序测试 & 固定处理延时抖动 & 基于示波器或逻辑分析仪 \\
+    功耗测试 & 待机/接收/发射功耗 & 不同工作模式下测量 \\
+    释放测试 & 执行动作成功率 & 连续多次重复验证 \\
+    \bottomrule[1.5pt]
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \bicaption[tab:ranging_result]{}{测距结果记录示例}{Tab.}{Template of ranging results}
+  \vspace{0.5em}\centering\wuhao
+  \begin{tabular}{cccc}
+    \toprule[1.5pt]
+    真实距离/m & 测量均值/m & 最大误差/m & 备注 \\
+    \midrule[1pt]
+    待填写 & 待填写 & 待填写 & 水池试验 \\
+    待填写 & 待填写 & 待填写 & 近海试验 \\
+    待填写 & 待填写 & 待填写 & 复杂海况 \\
+    \bottomrule[1.5pt]
+  \end{tabular}
+\end{table}
+
+\section{测试结果分析写作建议}[Writing Guidance for Results]
+
+在后续补充真实测试结果时，建议围绕以下逻辑展开分析：
+
+\begin{enumerate}
+  \item 先给出测试条件，包括海况、水深、换能器布设、采样参数和设备编号；
+  \item 再对通信成功率、同步稳定性和测距误差进行定量统计；
+  \item 分析误差与距离、海况、多径强度及声速估计偏差之间的关系；
+  \item 最后总结系统的适用范围、性能边界与仍需优化的问题。
+\end{enumerate}
+
+\section*{本章小结}[Summary]
+
+本章完成了 FH-MFSK 声学释放器的总体方案、关键硬件模块和嵌入式软件流程设计，并给出了联调测试方案与结果记录模板。该部分为将算法研究转化为工程系统实现提供了清晰路径，也为后续补充真实实验数据和形成定量性能结论预留了接口.

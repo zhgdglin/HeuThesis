@@ -11,29 +11,29 @@
   % 秘级编号
   %=========
   statesecrets={公开},          %密级
-  cnumber={no9527},             %编号
-  natclassifiedindex={TM301.2}, %分类号
-  intclassifiedindex={62-5},    %UDC编号
+  cnumber={待填写},             %编号
+  natclassifiedindex={TB565},   %分类号
+  intclassifiedindex={621.396}, %UDC编号
   %
   %=========
   % 中文信息
   %=========
-  ctitlecover={基于~\LaTeX~的哈尔滨工程大学本硕博\\论文模板使用说明}, %放在封面中使用，在需要换行的地方插入\\
-  ctitle={基于~\LaTeX~的哈尔滨工程大学本硕博论文模板使用说明},        %页眉使用论文标题，不换行
+  ctitlecover={基于 FH-MFSK 的声学释放器及测距技术研究与实现}, %放在封面中使用，在需要换行的地方插入\\
+  ctitle={基于 FH-MFSK 的声学释放器及测距技术研究与实现},        %页眉使用论文标题，不换行
   cxueke={专业学位},                %学位类型：工学/专业学位/工商管理/……
-  csubject={动力工程},              %专业
-  caffil={动力与能源工程学院},       %所在单位/学院
-  cauthor={马冬梅},                 %论文作者
-  csupervisor={孔夫子\ 教授},       %指导老师
+  csubject={水声工程},              %专业
+  caffil={待填写学院},              %所在单位/学院
+  cauthor={待填写},                 %论文作者
+  csupervisor={待填写\ 教授},       %指导老师
   %cassosupervisor{孔乙己\ 副教授},  %副导师，不需要可注释掉
-  ccosupervisor={丹丘生\ 研究员}, % 专业学位企业导师/联合导师，不需要可注释掉
-  creviewer={岑夫子\ 教授},         %论文主审人，硕士学位封面，不需要可注释掉
+  ccosupervisor={待填写\ 高级工程师}, % 专业学位企业导师/联合导师，不需要可注释掉
+  creviewer={待填写\ 教授},         %论文主审人，硕士学位封面，不需要可注释掉
   % 日期自动使用当前时间，若需指定按如下方式修改：
   %cdate={超新星纪元}, %封面日期，不指定使用当前日期
-  csubmitdate={20XX年XX月}, %提交日期
-  coralexdate={20XX年XX月}, %答辩日期
-  cstudentid={202103123},   %学号
-  cstudenttype={工程硕士},  %专业学位类型
+  csubmitdate={2026年06月}, %提交日期
+  coralexdate={2026年06月}, %答辩日期
+  cstudentid={待填写},      %学号
+  cstudenttype={电子信息硕士},  %专业学位类型
   %（同等学力人员）、（工程硕士）、（工商管理硕士）、
   %（高级管理人员工商管理硕士）、（公共管理硕士）、（中职教师）、（高校教师）等
   %
@@ -41,52 +41,38 @@
   %=========
   % 英文信息
   %=========
-  etitle={Manual of~ \LaTeX ~Thesis Template of\\ Harbin Engineering University}, %论文题目（英文），在需要换行的地方插入\\
-  exueke={Engineering}, %学科名称（英文）
-  esubject={Power Engineering}, %专业名称（英文）
-  eaffil={School of Power and Energy Engineering}, %学院名称（英文）
-  eauthor={Ma Dongmei},    %作者名称（英文）
-  esupervisor={Professor KONG Fuzi}, %导师名称（英文）
+  etitle={Research and Implementation of Acoustic Releaser and Ranging Technology Based on FH-MFSK}, %论文题目（英文），在需要换行的地方插入\\
+  exueke={Professional Degree}, %学科名称（英文）
+  esubject={Underwater Acoustic Engineering}, %专业名称（英文）
+  eaffil={School to Be Filled}, %学院名称（英文）
+  eauthor={To Be Filled},    %作者名称（英文）
+  esupervisor={Professor To Be Filled}, %导师名称（英文）
   %eassosupervisor={Professor KONG Yiji}, %副导师（如果有）
-  ecosupervisor={Professor DAN Qingsheng}, %企业导师名称（英文）
+  ecosupervisor={Senior Engineer To Be Filled}, %企业导师名称（英文）
   % 日期自动生成，若需指定按如下方式修改：
   % edate={December, 2017},
-  esubmitdate={August, 20XX},  %提交日期（英文）
-  eoralexdate={December, 20XX}, %答辩日期（英文）
-  estudenttype={Master of Engineering}, %专业学位类型（英文）
+  esubmitdate={June, 2026},  %提交日期（英文）
+  eoralexdate={June, 2026}, %答辩日期（英文）
+  estudenttype={Master of Electronic Information}, %专业学位类型（英文）
   %
   % 中英文关键词，用“英文逗号（,）”分割
-  ckeywords={\TeX, \LaTeX, 论文, 模板},
-  ekeywords={\TeX, \LaTeX, template, thesis},
+  ckeywords={声学释放器,FH-MFSK,水声通信,测距技术,浅海信道},
+  ekeywords={acoustic releaser,FH-MFSK,underwater acoustic communication,ranging technology,shallow-water channel},
 }
 
 \begin{cabstract}
+  声学释放器是深海潜标、海底观测节点和水下布放回收系统中的关键装备，其通信可靠性和测距精度直接影响海上作业安全、设备回收成功率以及任务组织效率。针对浅海环境中多径扩展显著、混响复杂、环境噪声强和多普勒扰动明显等问题，本文围绕基于频率跳变多进制频移键控（Frequency Hopping Multi-Frequency Shift Keying, FH-MFSK）的声学释放器开展通信与测距一体化研究。
 
-  摘要的字数（以汉字计），本科、硕士学位论文一般为500 $\sim$ 1000字，博士学位论文为1000 $\sim$ 2000字，
-  均以能将规定内容阐述清楚为原则，文字要精练，段落衔接要流畅。摘要页不需写出论文题目。
-  英文摘要与中文摘要的内容应一致，在语法、用词上应准确无误，语言简练通顺。
+  首先，结合浅海水声传播机理，对多径、噪声、时变和频率选择性衰落特性进行分析，建立面向 FH-MFSK 信号设计的浅海信道描述框架，明确跳频间隔、符号时长、带宽配置以及同步门限等关键参数之间的约束关系。其次，设计了适用于低信噪比和窄带干扰环境的 FH-MFSK 通信算法，给出了跳频序列组织、导频与帧结构设计、同步捕获、非相干能量检测及判决流程，并从抗部分频带干扰、抗多径和工程实现复杂度三个方面分析了算法特点。随后，针对声学释放器近中距离作业需求，研究了基于应答时延估计的测距方法，构建了包含传播时延、固定处理时延和声速修正项的测距模型，提出利用匹配滤波峰值搜索与多径甄别相结合的首达径估计流程，以提高复杂浅海环境下的测距稳定性。
 
-  关键词是为了文献标引工作、用以表示全文主要内容信息的单词或术语。关键词不超过 5
-  个，每个关键词中间用分号分隔。（关键词分隔符不用考虑，模板会自动处理。英文关键词同理。）
+  在系统实现方面，完成了由水下机与甲板单元构成的声学释放器总体方案设计，给出了硬件模块划分、嵌入式软件流程、指令交互机制以及联调测试方案，并对通信性能、时延稳定性和测距误差评估方法进行了说明。本文工作为 FH-MFSK 声学释放器的工程实现提供了可复用的算法与系统设计思路，也为后续开展海试验证、参数优化和产品化研制奠定了基础。
 \end{cabstract}
 
 \begin{eabstract}
-  An abstract of a dissertation is a summary and extraction of research work
-  and contributions. Included in an abstract should be description of research
-  topic and research objective, brief introduction to methodology and research
-  process, and summarization of conclusion and contributions of the
-  research. An abstract should be characterized by independence and clarity and
-  carry identical information with the dissertation. It should be such that the
-  general idea and major contributions of the dissertation are conveyed without
-  reading the dissertation.
+  Acoustic releasers are key devices in deep-sea moorings, seabed observation nodes, and underwater deployment-recovery systems. Their communication reliability and ranging accuracy directly affect operational safety, recovery success rate, and mission efficiency. To address the problems of severe multipath spread, strong reverberation, ambient noise, and Doppler disturbance in shallow-water environments, this thesis studies an integrated communication and ranging scheme for an acoustic releaser based on Frequency Hopping Multi-Frequency Shift Keying (FH-MFSK).
 
-  An abstract should be concise and to the point. It is a misunderstanding to
-  make an abstract an outline of the dissertation and words ``the first
-  chapter'', ``the second chapter'' and the like should be avoided in the
-  abstract.
+  First, the propagation characteristics of shallow-water acoustic channels are analyzed, and a channel description framework oriented to FH-MFSK signal design is established. The relationships among hopping interval, symbol duration, bandwidth allocation, and synchronization threshold are clarified. Then, an FH-MFSK communication algorithm suitable for low signal-to-noise ratio and narrowband interference environments is designed, including hopping sequence organization, pilot and frame structure, synchronization acquisition, noncoherent energy detection, and decision rules. Its anti-interference capability, multipath robustness, and implementation complexity are discussed from an engineering perspective. After that, a ranging method based on reply delay estimation is investigated for short- and medium-range operation of acoustic releasers. A ranging model containing propagation delay, fixed processing delay, and sound-speed correction is constructed, and a first-arrival estimation procedure combining matched filtering peak search with multipath discrimination is presented to improve ranging stability in complex shallow-water environments.
 
-  Key words are terms used in a dissertation for indexing, reflecting core
-  information of the dissertation. An abstract may contain a maximum of 5 key
-  words, with semi-colons used in between to separate one another.
+  Finally, the overall system architecture consisting of an underwater unit and a deck unit is developed. The hardware partition, embedded software flow, command interaction mechanism, and joint testing scheme are described, together with the evaluation methods for communication performance, delay stability, and ranging error. The work in this thesis provides a reusable algorithmic and system-level design route for FH-MFSK acoustic releasers and lays a foundation for subsequent sea trials, parameter optimization, and product-oriented development.
 \end{eabstract}
 

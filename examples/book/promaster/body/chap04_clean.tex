@@ -1,0 +1,102 @@
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap04.tex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{测距算法}[Ranging Algorithm]
+\label{chap04}
+
+\section{测距任务与技术路线}[Task and Technical Route]
+
+在声学释放器作业过程中，测距功能主要服务于两类需求：一是辅助作业人员判断目标方位与距离变化，提升回收作业效率；二是为后续水下定位、设备状态评估或释放后目标搜索提供基础观测量。结合声学释放器通信链路，本文采用“主动询问 + 被动应答”的双向时延测距模式，即甲板单元发送测距请求信号，水下机在识别后经过固定处理延时发回应答信号，甲板单元再根据往返时延估计目标距离\cite{LiangBoZhongChengShuiXiaCeJuJiYaoKongXiTongZhuKongJiSheJi2009,ZhangMeiKaiJiYuSTM32ChuLiQiDeShuiXiaXinBiaoDeZhuDongCeJuSheJi2016}。
+
+\section{往返时延测距模型}[Round-Trip Delay Model]
+
+设甲板单元发送询问信号时刻为 $t_1$，水下机接收到该信号的时刻为 $t_2$，完成固定处理后在时刻 $t_3$ 发出应答，甲板单元在时刻 $t_4$ 接收到应答，则往返传播关系为
+
+\begin{equation}
+  t_4 - t_1 = \tau_{\mathrm{up}} + \tau_{\mathrm{proc}} + \tau_{\mathrm{down}},
+  \label{eq:rtt_model}
+\end{equation}
+
+其中 $\tau_{\mathrm{up}}$ 为下行传播时延，$\tau_{\mathrm{down}}$ 为上行传播时延，$\tau_{\mathrm{proc}} = t_3 - t_2$ 为固定处理时延。若上下行传播路径近似对称，则有
+
+\begin{equation}
+  \hat{R} = \frac{c_e}{2}\left(t_4 - t_1 - \tau_{\mathrm{proc}}\right),
+  \label{eq:range_estimation}
+\end{equation}
+
+其中 $c_e$ 为等效声速。式\eqref{eq:range_estimation}表明，测距精度主要受三个因素影响：传播时延估计误差、固定处理延时标定误差以及声速估计误差。
+
+\section{首达径检测与时延估计}[First-Arrival Detection]
+
+浅海多径条件下，最大相关峰值并不一定对应首达径，因此不能简单地把最大峰值位置作为测距时延。本文采用匹配滤波与门限判决相结合的方法进行首达径估计。设发送参考信号为 $s(t)$，接收信号为 $r(t)$，则匹配滤波输出为
+
+\begin{equation}
+  y(\tau) = \int r(t)s(t-\tau)\mathrm{d}t,
+  \label{eq:mf_output}
+\end{equation}
+
+在离散实现中，通过滑动相关计算序列 $y[n]$，并结合噪声统计特性设置门限 $\gamma$。当某一候选峰值同时满足
+
+\begin{equation}
+  |y[n]| > \gamma
+\end{equation}
+
+且其前方保护区间内不存在更早的高可信峰值时，将其判定为首达径位置。该方法兼顾了对低信噪比条件下弱直达径的敏感性，以及对后续强反射峰值的抑制能力\cite{HaoMengHuaJiYuQianHaiDuoJingShiYanDeFuHeMaShuiShengCeJuYanJiu2020}。
+
+\section{多径抑制与异常值剔除}[Multipath Suppression and Outlier Rejection]
+
+在连续多次测距过程中，受海面起伏和瞬时干扰影响，个别测距结果可能出现跳变。为提高结果稳定性，可对多次测距结果采用中值滤波或限差判决。若第 $i$ 次测距结果为 $R_i$，窗口长度为 $K$，则平滑结果可表示为
+
+\begin{equation}
+  \tilde{R}_i = \operatorname{median}\left\{R_{i-K+1}, \ldots, R_i\right\}.
+\end{equation}
+
+若 $|R_i - \tilde{R}_i|$ 超过异常门限，则可将该次结果标记为异常值，并触发重测。该策略适用于舰船或小型作业平台缓慢运动条件下的近实时距离显示。
+
+\section{声速修正方法}[Sound-Speed Correction]
+
+声速变化是测距误差的重要来源。若声速存在偏差 $\Delta c$，传播时延估计为 $\hat{\tau}$，则距离误差近似满足
+
+\begin{equation}
+  \Delta R \approx \hat{\tau} \Delta c,
+  \label{eq:sound_speed_error}
+\end{equation}
+
+当作业海域可提供温盐深数据或经验声速剖面时，可采用平均声速修正或分层积分近似方法提高测距精度\cite{ChenHongXiaLuLianGangHuaFengFanBinLiuNuoFangJunWeiSanZhongChangYongShengSuSuanFaDeBiJiao2005,ZhaoDiNengShengSuPouMianJingJianYunSuanDeGaiJinDPSuanFaJiQiPingGu2014}。若缺少完整剖面信息，可根据历史海区数据、实时温度测量值和作业深度估计得到简化等效声速，用于工程场景下的一阶补偿。
+
+\section{测距流程设计}[Ranging Procedure]
+
+综合上述分析，本文测距流程可概括为：
+
+\begin{enumerate}
+  \item 甲板单元发射测距请求信号并记录发送时刻；
+  \item 水下机识别请求并在固定延时后发射应答信号；
+  \item 甲板单元对接收信号进行匹配滤波和首达径检测；
+  \item 扣除固定处理延时并根据等效声速换算斜距；
+  \item 对连续测距结果进行平滑处理和异常值剔除；
+  \item 将测距结果提供给上位界面或控制逻辑使用。
+\end{enumerate}
+
+\section{算法误差来源分析}[Error Analysis]
+
+测距误差主要来源包括：
+
+\begin{enumerate}
+  \item 时延估计误差：由低信噪比、相关峰扩展和多径混叠引起；
+  \item 固定延时误差：由处理器中断抖动、任务调度和串口缓存造成；
+  \item 声速模型误差：由环境参数不准确或声速剖面简化带来；
+  \item 几何误差：当收发换能器位置不一致时，显示距离与目标参考点距离存在偏差。
+\end{enumerate}
+
+因此，系统设计中不仅要优化算法本身，还需对硬件时钟、任务优先级和延时标定机制进行协同设计。
+
+\section*{本章小结}[Summary]
+
+本章建立了声学释放器往返时延测距模型，研究了首达径检测、多径抑制、声速修正和异常值剔除方法，并给出了完整测距流程。相关分析说明了测距算法与通信体制、硬件延时和环境参数之间的耦合关系。

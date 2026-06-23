@@ -20,10 +20,53 @@
 %%   \BiSection{中文节名称}{Section Name In English}
 %%   \BiSubSection{中文小节名称}{SubSection Name In English}
 
-\chapter{绪论}[Induction]
+\chapter{绪论}[Introduction]
 \label{chap01}
 
-\section{引言}[Induction]
+% 以下内容为可继续完善的论文写作草稿，请结合实际试验记录与个人研究过程补充细节。
+
+\section{课题背景与研究意义}[Background and Significance]
+
+声学释放器广泛应用于潜标回收、海底仪器布放、海洋环境长期观测与海洋工程作业之中，其基本任务是在预定时刻或接收到合法声学指令后完成机械解锁、浮体脱离或目标释放。随着海洋观测任务向长周期、深远海和无人值守方向发展，释放器已由单一的机械执行部件演化为集通信、身份识别、测距、状态管理和功耗控制于一体的综合水下装备\cite{ohDevelopmentReliableDeep2000,QiuJianJunShengXueShiFangQiYanZhi2006,liuUnderwaterAcousticRelease2026}。
+
+浅海环境是声学释放器应用中的重要场景之一。相较于深海环境，浅海水深有限、海面和海底边界作用强，多径结构复杂，且风浪、船噪、生物噪声以及岸基活动均会导致接收端信噪比较低。传统单频或固定频组体制在该环境下容易受到窄带干扰与频率选择性衰落影响，导致指令误检、失步甚至释放失败。与此同时，海上布放回收作业还要求设备具备一定的测距能力，用于判断目标距离、辅助操作者完成靠近与回收决策\cite{joDevelopmentAcousticRelease2016,zhangDesignImplementationPortable2018,YiQinFengShengXueShiFangQiYingJianSheJiYuCeJuJiShuYanJiu2024}。
+
+FH-MFSK 体制综合了跳频与多进制频移键控两类技术的优点。跳频机制能够将传输能量在时频域分散，从而减弱部分频带干扰与持续窄带噪声的影响；MFSK 调制在非相干检测条件下具有结构简单、对幅度起伏不敏感等工程优势，因此适合处理器资源受限、功耗严格受控的水下终端设备\cite{LiangZhaoZhengJiYuLiuErHaiMFSKTiaoPinTongXinDeKangBuFenPinDaiGanRaoXingNengYuShiXian1995,NiXiaoYuanJiYuFHMFSKDeShuiShengTongXinYanJiu2015,LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018}。围绕 FH-MFSK 体制开展声学释放器及测距技术研究，既具有明确的工程需求，也具有较强的学术研究价值。
+
+\section{国内外研究现状}[Related Work]
+
+在声学释放器系统研究方面，国外较早开展了深海高可靠释放装置的设计与工程应用研究，重点关注系统可靠性、指令识别机制与海试可用性\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017}。近年来，面向渔业与低成本海洋装备的新型声学释放系统进一步强调低成本、低功耗与大规模测试能力\cite{halonenDevelopmentLargeScaleTesting2024}。国内在声学释放器的研制、通信算法和软硬件平台方面积累了较多成果，研究内容覆盖高可靠应答释放器、水下机数字平台、便携式甲板单元以及通信模块设计等方向\cite{QiuJianJunShengXueShiFangQiYanZhi2006,WangQiShengXueShiFangXiTongShuZiPingTaiSheJiJiZaiTongBuDingWeiXiTongZhongYingYong2009,QiFuQiangShengXueShiFangQiTongXinMoKuaiDeYanJiuYuSheJi2014,DengChaoDuoGongNengShengXueShiFangQiRuanYingJianPingTaiSheJiYuShiXian2016}。
+
+在水声通信体制方面，跳频、扩频、FH/MFSK 与 FH-FSK 方案因其抗干扰能力与较低实现复杂度而持续受到关注。已有研究从信道特性、同步方法、序列设计、非相干检测和系统实现等角度对相关体制进行了分析\cite{freitagAnalysisChannelEffects2001,LiuChuanQingJiZhongTiaoPinTongXinJiShuXingNengFenXi2006,ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。针对声学释放器应用场景，也已有学者将 FH-FSK 用于远距离水声指令传输，并验证了其在低信噪比条件下的实用性\cite{ShiYangShenHaiShengXueShiFangQiYuanJuChiTongXinJiShu2018,shiLongDistanceCommucation2019,liuFHFSKRemoteControl2021}。
+
+在测距与定位方面，研究热点主要包括传播时延建模、声速剖面修正、多径首达径检测以及单信标定位方法等\cite{XingZhiGangFengJinXingLiuBoShengShuiShengCeJuShuXueMoXingYanJiu2000,WangYanLiangGuoLongYiZhongGuaYongYuChangJiXianShuiShengDingWeiXiTongDeShengXianXiuZhengFangFa2002,HuAnPingShuiShengCeJuJiShuYanJiu2014,YuYanTingDanXinBiaoShuiShengDingWeiJiShuYanJiuXianZhuangJiYingYongZhanWang2022}。针对复杂声速剖面与未知目标深度条件，也已有学者提出了迭代声线修正、快速射线追踪和无实测声速剖面辅助的定位方法\cite{WuDeMingYiZhongYongYuShengXianXiuZhengDeDieDaiFa1992,bergerStratificationEffectCompensation2008,zhaoSelfconstraintUnderwaterPositioning2023,huangFastRaytracingbasedPrecise2024}。然而，将通信与测距功能在同一声学释放器平台上进行协同设计，仍存在体制耦合关系尚不清晰、测距误差来源复杂、系统测试流程不统一等问题。
+
+\section{论文主要研究内容}[Main Work]
+
+针对上述问题，本文围绕“基于 FH-MFSK 的声学释放器及测距技术研究与实现”开展研究，主要工作如下：
+
+\begin{enumerate}
+  \item 分析浅海水声信道的多径、噪声、时变和频率选择性衰落特征，构建面向 FH-MFSK 参数设计的信道认识框架。
+  \item 设计声学释放器 FH-MFSK 通信算法，包括帧结构、跳频序列组织、同步捕获、非相干检测与指令判决流程。
+  \item 建立基于应答时延的测距模型，研究首达径估计、多径抑制和声速修正方法，形成适用于浅海条件的测距流程。
+  \item 完成声学释放器水下机和甲板单元的软硬件系统方案设计，给出模块划分、接口关系、控制流程与测试方案。
+\end{enumerate}
+
+\section{论文结构安排}[Organization of the Thesis]
+
+全文共分为五章，结构安排如下：
+
+\begin{enumerate}
+  \item 第一章为绪论，介绍课题背景、国内外研究现状、研究意义及本文主要内容。
+  \item 第二章分析浅海水声信道特性，并讨论其对 FH-MFSK 声学释放器设计的约束。
+  \item 第三章研究 FH-MFSK 通信算法，给出信号模型、同步与检测方法以及抗干扰设计。
+  \item 第四章研究测距算法，建立测距数学模型并分析多径、声速误差对结果的影响。
+  \item 第五章给出软硬件系统设计及测试方案，说明实现路径与工程化验证流程。
+\end{enumerate}
+
+\section*{本章小结}[Summary]
+
+本章从工程需求与学术研究两个层面说明了开展 FH-MFSK 声学释放器及测距技术研究的必要性，梳理了通信、测距和系统实现三个方面的相关工作，并给出了本文的研究内容与结构安排。
 
 学位论文是典型的科技文献，其具有规范的科技文献排版要求，特别是理工类学位论文需要大量的公式和文档排版。因此研究如何提高学位论文编辑排版工作的效率有非常重要的现实意义。本文结合 Xe\LaTeX{} \footnote{读音：拉泰赫}文档编辑的特点，将 Xe\LaTeX{} 用在学位论文编辑排版，使用这种方法可以提高论文编辑的效率与排版质量，最大程度地降低论文排版的繁琐性。
 
