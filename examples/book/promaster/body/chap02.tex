@@ -2,106 +2,61 @@
 %! TEX root = ../main.tex
 %! TEX encoding = utf-8
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap02.tex
-%
-%  版本：1.0.0
-%  最后更新：
-%  修改者：Leo LiWenhui lwh@hrbeu.edu.cn
-%  修订者：
-%  编译环境1：Ubuntu 12.04 + TeXLive 2013/2014
-%  编译环境2：Windows 7/8  + TeXLive 2013/2014
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{浅海水声信道}[Shallow-Water Acoustic Channel]
+\chapter{深海水声信道}[Deep-Sea Acoustic Channel]
 \label{chap02}
 
-\section{浅海水声传播特点}[Propagation Characteristics]
+\section{深海水声传播特点}[Propagation Characteristics]
 
-浅海环境通常指水深远小于传播距离且上下边界对传播过程具有显著约束作用的海洋区域。在该环境中，声波传播受到海面起伏、海底反射、温盐深结构以及平台运动等因素共同影响，传播路径通常由直达径、海面反射径、海底反射径及多次反射径组成，接收端易形成明显的时延扩展和相位起伏\cite{hovemRayTraceModeling2013,nosalMeasuredModeledHighfrequency2010}。
+深海环境下，声传播路径长、垂向声速剖面变化显著，且海面与海底边界相对远离有效传播主通道。与浅海相比，深海信道通常表现为多径结构相对稀疏但时延跨度更大，传播损耗与频率关系更敏感，低频段在远距离链路中更具优势\cite{hovemRayTraceModeling2013,nosalMeasuredModeledHighfrequency2010}。
 
-对声学释放器而言，浅海信道的突出特征是多径密集和环境时变。若符号持续时间短于主要多径时延扩展，接收端将出现严重码间干扰；若多个反射径与直达径能量接近，则首达径检测和同步捕获都会变得困难。与此同时，海浪、船体漂移和目标缓慢运动还会引入不可忽略的多普勒频偏，进而影响跳频同步与频点判决。
+对声学释放器而言，深海应用的关键问题在于：在较长传播时延与有限带宽条件下，保证指令链路可用性与应答可检测性，并在任务窗口内稳定输出可用测距结果。
 
 \section{噪声与干扰特性}[Noise and Interference]
 
-浅海背景噪声一般由风浪噪声、航运噪声、生物噪声及设备自噪声叠加而成，其功率谱密度随频率、海况和作业海域变化而变化。声学释放器工作频段多处于中低频至中频范围，既要避免低频强噪声区，又要兼顾换能器效率和传播损耗。除背景噪声外，邻频设备辐射、主动声纳脉冲和局部机电系统谐波还可能表现为持续窄带干扰或突发干扰，这类干扰对单载频通信体制影响尤为明显\cite{freitagAnalysisChannelEffects2001,SuMengTiaoPinKuoPinTongXinXiTongDeFangZhenYanJiu2024}。
+深海背景噪声主要由海况噪声、航运噪声和平台自噪声叠加而成，且频谱分布随作业海域和季节变化。对于释放器常用的中低频工作带，系统既要规避窄带持续干扰，也要应对突发脉冲干扰。若通信体制对单一频点依赖较强，则在局部频带受扰时易出现漏检或误判\cite{freitagAnalysisChannelEffects2001}。
 
-FH-MFSK 通过在时频域分散能量，可显著降低部分频带干扰造成的链路失效风险。当局部频带受到压制时，仅部分跳频单元受损，因此系统仍有机会通过多跳综合判决恢复正确指令。这也是选择 FH-MFSK 作为声学释放器通信体制的重要原因之一。
+FH-MFSK 可通过多跳频率分集降低局部干扰风险，在深海长时延链路中具有较好的抗窄带干扰能力和工程鲁棒性。
 
-\section{信道时变性及多普勒效应}[Time Variability and Doppler]
+\section{时变特性与多普勒影响}[Time Variability and Doppler]
 
-若发射端与接收端存在相对径向速度 $v$，中心频率为 $f_c$，介质平均声速为 $c$，则一阶近似下的多普勒频移可写为
+当发射端与接收端存在相对径向速度 $v$，载频为 $f_c$，等效声速为 $c$ 时，多普勒频移近似为
 
 \begin{equation}
-  \Delta f \approx \frac{v}{c} f_c.
+  \Delta f \approx \frac{v}{c}f_c.
   \label{eq:doppler}
 \end{equation}
 
-虽然平台速度通常远小于声速，但当载频较高、频点间隔较小时，多普勒频移依然可能导致接收能量偏离理想滤波器带宽中心，进而降低非相干检测输出。若存在海面动态反射与多径差异运动，还会形成不同路径的频移不一致现象，使同步与判决问题进一步复杂化\cite{TongFengYiZhongQianHaiXinDaoTiaoPinShuiShengDiaoZhiJieDiaoXiTong2007}。
+尽管深海作业平台相对运动通常较慢，但在长距离传播和高载频条件下，频偏仍会影响跳频频点判决与同步稳定性。因此需在参数设计中为多普勒偏移预留频点间隔与检测带宽裕量。
 
-因此，在工程设计中应综合考虑以下因素：其一，频点间隔需大于最大频偏与接收滤波器主瓣宽度之和；其二，单跳持续时间不宜过长，以降低时变信道对同一符号能量积累的破坏；其三，帧结构中需要设置可用于粗同步和频偏估计的前导段。
+\section{深海信道对 FH-MFSK 参数设计的约束}[Design Constraints]
 
-\section{浅海信道对 FH-MFSK 参数设计的约束}[Design Constraints]
-
-设系统总可用带宽为 $B$，每跳可选频点数为 $M$，单个子频点有效占用带宽为 $B_s$，保护带宽为 $B_g$，则近似有
+设系统可用带宽为 $B$，每跳候选频点数为 $M$，单频点有效带宽为 $B_s$，保护带宽为 $B_g$，则有
 
 \begin{equation}
   B \geq M(B_s + B_g).
   \label{eq:bandwidth_constraint}
 \end{equation}
 
-符号持续时间 $T_s$ 与频率分辨率互相制约。若 $T_s$ 过短，则接收积分增益不足；若 $T_s$ 过长，则更易受到多径扩展和时变衰落影响。结合浅海信道特点，FH-MFSK 参数设计通常需在以下目标之间取得平衡：
+此外，单跳时长 $T_h$ 与检测增益、链路实时性之间存在折中：
 
 \begin{enumerate}
-  \item 足够的频点间隔，以保证频率正交性和抗频偏能力；
-  \item 适中的跳速，以兼顾抗干扰能力与同步复杂度；
-  \item 有限的帧长，以缩短一次完整指令传输时间并降低误码积累；
-  \item 合理的保护间隔或相关门限，以提高多径环境下的判决稳定性。
+  \item $T_h$ 过短会导致能量积累不足，降低低信噪比下检测概率；
+  \item $T_h$ 过长会增加时变失配风险并拉长单帧时延；
+  \item 频点间隔需覆盖最大预期频偏及滤波主瓣宽度；
+  \item 前导段长度需满足深海条件下的稳健同步需求。
 \end{enumerate}
 
 \section{面向测距的传播时延建模}[Propagation Delay Model for Ranging]
 
-测距算法的基础是传播时延建模。若忽略复杂折射效应并采用等效平均声速 $c_0$，目标斜距 $R$ 与传播时延 $\tau$ 满足
+测距算法建立在传播时延估计基础上。若采用等效声速 $c_e$，传播时延为 $\tau$，则一阶近似距离模型为
 
 \begin{equation}
-  R = c_0 \tau.
+  R = c_e\tau.
   \label{eq:simple_range}
 \end{equation}
 
-然而在真实浅海环境中，声速会随温度、盐度和压力变化，声线也可能发生弯折，导致式\eqref{eq:simple_range}仅适合作为一阶近似。若测距精度要求提高，则需进一步引入声速剖面修正项、应答机固定延时项和首达径估计误差项\cite{sunRelationshipPropagationTime2019,bergerStratificationEffectCompensation2008}。
+在深海条件下，声速剖面与声线弯曲会引入系统性误差，因此工程实现中需进一步考虑固定处理延时标定误差、首达径检测误差与声速估计误差的综合影响\cite{sunRelationshipPropagationTime2019,bergerStratificationEffectCompensation2008}。
 
 \section*{本章小结}[Summary]
 
-本章分析了浅海水声信道的多径、噪声、时变和多普勒等关键特征，并从带宽、跳速、频点间隔和时延建模等角度讨论了其对 FH-MFSK 声学释放器通信与测距设计的影响，为后续算法研究奠定了信道基础。
-
-（1）使用 xelatex
-
-\begin{lstlisting}
-    $ xelatex spine
-    $ xelatex a3cover
-\end{lstlisting}
-
-（2）或者使用 latexmk
-
-\begin{lstlisting}
-    $ latexmk spine
-    $ latexmk a3cover
-\end{lstlisting}
-
-在 \texttt{Windows} 系统下也可以直接使用 \texttt{build\_all.bat} 批处理生成 \texttt{A3} 封面。
-
-\section{字库安装}[Font Install]
-
-可以通过模板选项选择~\texttt{fontset}~使用Windows系统字体或者Adobe字体。
-
-Windows系统下本模板默认是使用Windows字体字库，可以不用设置字体选项，如果使用Adobe字体字库，需要设置~\texttt{fontset=adobe}~。
-在使用此模板撰写论文前，应该确保相应的字库已经安装，并且最好是包含宋体、黑体、楷体和仿宋的完整套装。
-
-在 Windows 操作系统下，只要把字库文件复制到 Windows 的 Fonts 文件夹下即可，
-而对于 Linux 系统，可通过右键点击字库文件然后选择【安装字库】菜单选项进行安装。
-Linux 对于系统新安装的字库，需要使用命令~\texttt{sudo fc-cache -fsv}~刷新缓存后才可以使用。
-
-\section*{本章小结}[Brief Summary]
-\LaTeX{}~工作环境安装与配置简介。
+本章分析了深海水声信道在传播、噪声、多普勒与时延建模方面的主要特征，给出了其对 FH-MFSK 通信与测距算法参数设计的约束关系，为后续两类算法研究提供了信道基础。

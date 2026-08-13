@@ -2,54 +2,54 @@
 %! TEX root = ../main.tex
 %! TEX encoding = utf-8
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap01.tex
-%
-%  版本：1.0.0
-%  最后更新：
-%  修改者：Leo LiWenhui lwh@hrbeu.edu.cn
-%  修订者：
-%  编译环境1：Ubuntu 12.04 + TeXLive 2013/2014
-%  编译环境2：Windows 7/8  + TeXLive 2013/2014
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% 如需英文目录，章节的定义需要改用\BiChapterhe和\BiSection等, 例如
-%%   \BiChapter{中文章名称}{Chapter Name In English}
-%%   \BiSection{中文节名称}{Section Name In English}
-%%   \BiSubSection{中文小节名称}{SubSection Name In English}
-
 \chapter{绪论}[Introduction]
 \label{chap01}
 
-% 以下内容为可继续完善的论文写作草稿，请结合实际试验记录与个人研究过程补充细节。
-
 \section{课题背景与研究意义}[Background and Significance]
 
-声学释放器广泛应用于潜标回收、海底仪器布放、海洋环境长期观测与海洋工程作业之中，其基本任务是在预定时刻或接收到合法声学指令后完成机械解锁、浮体脱离或目标释放。随着海洋观测任务向长周期、深远海和无人值守方向发展，释放器已由单一的机械执行部件演化为集通信、身份识别、测距、状态管理和功耗控制于一体的综合水下装备\cite{ohDevelopmentReliableDeep2000,QiuJianJunShengXueShiFangQiYanZhi2006,liuUnderwaterAcousticRelease2026}。
+声学释放器广泛应用于深海潜标回收、海底设备长期布放和海洋观测任务。与浅海场景相比，深海环境具有传播距离长、环境参数垂向变化明显、作业窗口受限和维护成本高等特点，因此对释放器系统提出了更高的可靠性要求：既要保证远距离声学指令可达并可判，又要在复杂海况下提供稳定、可用的距离信息，以支撑回收决策与作业安全\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017,halonenDevelopmentLargeScaleTesting2024}。
 
-浅海环境是声学释放器应用中的重要场景之一。相较于深海环境，浅海水深有限、海面和海底边界作用强，多径结构复杂，且风浪、船噪、生物噪声以及岸基活动均会导致接收端信噪比较低。传统单频或固定频组体制在该环境下容易受到窄带干扰与频率选择性衰落影响，导致指令误检、失步甚至释放失败。与此同时，海上布放回收作业还要求设备具备一定的测距能力，用于判断目标距离、辅助操作者完成靠近与回收决策\cite{joDevelopmentAcousticRelease2016,zhangDesignImplementationPortable2018,YiQinFengShengXueShiFangQiYingJianSheJiYuCeJuJiShuYanJiu2024}。
+对于深海回收流程而言，通信算法是系统主体能力，其首要任务是保障远距离指令传输、同步捕获与可靠判决，确保“可控、可达、可执行”。围绕跳频序列设计、帧结构组织和非相干检测策略开展通信算法研究，是声学释放器稳定工作的基础，也是释放控制、状态回传和任务闭环能够可靠运行的前提。
 
-FH-MFSK 体制综合了跳频与多进制频移键控两类技术的优点。跳频机制能够将传输能量在时频域分散，从而减弱部分频带干扰与持续窄带噪声的影响；MFSK 调制在非相干检测条件下具有结构简单、对幅度起伏不敏感等工程优势，因此适合处理器资源受限、功耗严格受控的水下终端设备\cite{LiangZhaoZhengJiYuLiuErHaiMFSKTiaoPinTongXinDeKangBuFenPinDaiGanRaoXingNengYuShiXian1995,NiXiaoYuanJiYuFHMFSKDeShuiShengTongXinYanJiu2015,LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018}。围绕 FH-MFSK 体制开展声学释放器及测距技术研究，既具有明确的工程需求，也具有较强的学术研究价值。
+在通信链路稳定之后，测距功能作为关键协同能力参与作业闭环：甲板单元可依据实时距离变化判断目标接近趋势，优化船位与作业节奏，降低盲搜时间；当海况恶化或信道波动导致链路质量下降时，稳定的测距结果仍可提供有效态势信息，提升任务连续性与安全冗余。针对深海作业中目标深度先验难以准确获取的问题，采用“免目标深度的快速声线测距法”可在不依赖目标深度输入的条件下完成距离估计，从而降低部署约束并提升现场可操作性。
+
+在此背景下，采用 FH-MFSK 通信体制与免目标深度的快速声线测距法进行协同设计具有明确工程优势。跳频机制可在时频域分散能量，降低窄带干扰和频率选择性衰落带来的链路失效风险；MFSK 在非相干检测条件下实现复杂度较低，适合功耗受限的水下终端；快速声线测距法则在保留工程实现效率的同时增强了测距链路对先验条件不完备场景的适应性。围绕“通信主导、测距协同”的技术路线开展研究，有助于提升深海声学释放器的可用性与工程实装能力\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021,ShiYangShenHaiShengXueShiFangQiYuanJuChiTongXinJiShu2018}。
 
 \section{国内外研究现状}[Related Work]
 
-在声学释放器系统研究方面，国外较早开展了深海高可靠释放装置的设计与工程应用研究，重点关注系统可靠性、指令识别机制与海试可用性\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017}。近年来，面向渔业与低成本海洋装备的新型声学释放系统进一步强调低成本、低功耗与大规模测试能力\cite{halonenDevelopmentLargeScaleTesting2024}。国内在声学释放器的研制、通信算法和软硬件平台方面积累了较多成果，研究内容覆盖高可靠应答释放器、水下机数字平台、便携式甲板单元以及通信模块设计等方向\cite{QiuJianJunShengXueShiFangQiYanZhi2006,WangQiShengXueShiFangXiTongShuZiPingTaiSheJiJiZaiTongBuDingWeiXiTongZhongYingYong2009,QiFuQiangShengXueShiFangQiTongXinMoKuaiDeYanJiuYuSheJi2014,DengChaoDuoGongNengShengXueShiFangQiRuanYingJianPingTaiSheJiYuShiXian2016}。
+\subsection{声学释放器研制现状}
 
-在水声通信体制方面，跳频、扩频、FH/MFSK 与 FH-FSK 方案因其抗干扰能力与较低实现复杂度而持续受到关注。已有研究从信道特性、同步方法、序列设计、非相干检测和系统实现等角度对相关体制进行了分析\cite{freitagAnalysisChannelEffects2001,LiuChuanQingJiZhongTiaoPinTongXinJiShuXingNengFenXi2006,ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。针对声学释放器应用场景，也已有学者将 FH-FSK 用于远距离水声指令传输，并验证了其在低信噪比条件下的实用性\cite{ShiYangShenHaiShengXueShiFangQiYuanJuChiTongXinJiShu2018,shiLongDistanceCommucation2019,liuFHFSKRemoteControl2021}。
+声学释放器在海洋工程和军事任务中得到了广泛的应用。在海事监测和工程领域，不同类型的声学释放器已被应用于高架海事测量系统、水下应答器和潜标等设备中；在军事任务中，海上试验靶场的建设需要声学释放器，声学释放器是水下通信网络和水下网络中心战( NCW )中不可或缺的模块。声学释放器部分地决定了海事调查设备和实验数据能否收回投资数百万美元。尽管如此，中国目前仍是声学释放器的净进口国。 随着逆全球化浪潮的兴起和全球超级大国对中国的技术封锁，研制具有自主知识产权的高可靠声学释放器成为一项紧迫的任务。\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017,halonenDevelopmentLargeScaleTesting2024}。\cite{QiuJianJunShengXueShiFangQiYanZhi2006,WangQiShengXueShiFangXiTongShuZiPingTaiSheJiJiZaiTongBuDingWeiXiTongZhongYingYong2009,DengChaoDuoGongNengShengXueShiFangQiRuanYingJianPingTaiSheJiYuShiXian2016}。西方国家在声学释放器的研究方面领先于中国，在该领域处于世界领先地位。许多公司都有能力设计和制造声学释放器，在市场上竞争激烈。法国的iXblue、美国的海底生物、英国的Sonardyne、日本的NGK、美国的InterOcean等传统的声学脱扣器生产厂家都生产出了一系列性能稳定的声学脱扣器。在过去的二十年中，声学系统开发商的崛起，他们已经生产出了更多独特的水下脱扣器，如美国的Edegtech，英国的Applied Acoustic Engineering和美国的ORE离岸脱扣器。
 
-在测距与定位方面，研究热点主要包括传播时延建模、声速剖面修正、多径首达径检测以及单信标定位方法等\cite{XingZhiGangFengJinXingLiuBoShengShuiShengCeJuShuXueMoXingYanJiu2000,WangYanLiangGuoLongYiZhongGuaYongYuChangJiXianShuiShengDingWeiXiTongDeShengXianXiuZhengFangFa2002,HuAnPingShuiShengCeJuJiShuYanJiu2014,YuYanTingDanXinBiaoShuiShengDingWeiJiShuYanJiuXianZhuangJiYingYongZhanWang2022}。针对复杂声速剖面与未知目标深度条件，也已有学者提出了迭代声线修正、快速射线追踪和无实测声速剖面辅助的定位方法\cite{WuDeMingYiZhongYongYuShengXianXiuZhengDeDieDaiFa1992,bergerStratificationEffectCompensation2008,zhaoSelfconstraintUnderwaterPositioning2023,huangFastRaytracingbasedPrecise2024}。然而，将通信与测距功能在同一声学释放器平台上进行协同设计，仍存在体制耦合关系尚不清晰、测距误差来源复杂、系统测试流程不统一等问题。
+Edgetech公司的声学释放器工作在7 ~ 20 k Hz之间；深海模型工作深度为6 000 m，有效载荷为5 500 kg，采用BACS编码系统，电池充电一次可持续9年/ 500万次响应。工作深度为3 500 m的声学释放器PORT模型采用电机驱动的旋转正推式释放机构，8242模型采用弹簧驱动的电机驱动式释放机构。配备的甲板单元可以显示倾斜状态，解决了仪器舱被淹没时释放物姿态无反馈的问题。 此外，发送错误的释放命令会将用于绑扎水下仪器舱的安全绳解绑到船舶上，依靠浮力无法返回水面的仪器舱很有可能沉入大海。配备的甲板单元将降低这种风险[ 2 ]。
+
+美国海底生物公司是世界领先的海洋工程设备制造商。其生产的声波脱扣器主要工作在7 ~ 15 k Hz范围内，采用大扭矩电机驱动脱扣机构，最大脱扣载荷为5 000 kg，使用寿命为2年。水面单元不仅可以助推或停止释放器，接收反馈的运动信息，还可以远程勘测距离信息，斜距可达10 km。Sonadyne公司开发的声学释放器有的采用电机驱动机构，有的采用弹簧助压式释放机构(与i Xblue的海洋学模型相似)，有的采用主动分离释放机构。 Sonydyne脱扣器的工作深度为6 000 m，使用寿命为2 ~ 3年。
+
+我国研制的声学释放器在可靠性、电机伺服分离、灵敏度、水下工作寿命等技术指标上无法与西方声学释放器相媲美。国内多家单位在声学释放器研发方面投入较大，包括国家863项目资助的中船重工第710研究所和哈尔滨工程大学，以及国家863项目资助的不断引进吸收先进技术的国家海洋技术中心。 中国科学院海洋研究所、中船重工第715研究所、南京大学、厦门大学等单位，以及一些新兴的声学测量设备生产商，都对该领域进行了大量的研究工作。
+
+2007年，中船重工第710研究所为解决深水水下仪器平台与锚的分离问题，研制了可在1 000 m水深作业的定时气动分离释放器模型。该发布器的工作流程如下。首先，点火器通过气动定时电路启动，产生的高压气体推动连接销使装置解锁，从而将系泊水雷与锚分开。它可以在1000米的深度下工作，在水下最长可持续30天。随后，第710研究所进一步探索，采用带宽编码技术，研制了可在水下4 000 m深度、双释放机构工作的脱扣器。
+
+\subsection{FH-FSK 通信技术研究现状}
+
+FH-FSK 通信技术结合了跳频抗干扰与 FSK 非相干检测复杂度低的特点，已成为远距离低速率高可靠水声通信的重要技术路线之一。现有研究主要聚焦于跳频序列设计、同步捕获、帧结构优化、误码性能提升和抗窄带干扰能力增强等方向\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024,LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+
+从工程应用角度看，相关成果已在水下控制、远程唤醒和状态回传等任务中体现出较高实用性；但在深海长程链路下，仍面临多径扩展、频率选择性衰落和时变信道导致的同步鲁棒性下降等问题。因此，围绕 FH-FSK 体制开展面向深海场景的参数协同优化与接收机鲁棒设计，仍是提升释放器通信主链路性能的关键。
+
+\subsection{声线修正技术研究现状}
+
+在测距技术方面，声线修正是提升深海距离估计精度与稳定性的核心环节。现有研究通常基于往返时延模型，结合首达径检测、多径抑制、声速剖面修正和异常值抑制等方法，降低传播路径弯曲及环境不确定性对测距结果的影响\cite{HuAnPingShuiShengCeJuJiShuYanJiu2014,YuYanTingDanXinBiaoShuiShengDingWeiJiShuYanJiuXianZhuangJiYingYongZhanWang2022}。
+
+近年来，面向工程实时性的快速声线方法受到关注，其优势在于兼顾计算效率与修正效果。特别是对于深海作业中目标深度先验难以准确获取的场景，免目标深度的快速声线测距思路可减少先验依赖、提升现场适配性。总体而言，将声线修正技术与通信链路状态联合设计并在同一释放器平台完成系统级验证，仍是当前研究与工程应用中的薄弱环节。
 
 \section{论文主要研究内容}[Main Work]
 
-针对上述问题，本文围绕“基于 FH-MFSK 的声学释放器及测距技术研究与实现”开展研究，主要工作如下：
+本文围绕“基于 FH-MFSK 的声学释放器及测距技术研究与实现”开展研究，重点工作如下：
 
 \begin{enumerate}
-  \item 分析浅海水声信道的多径、噪声、时变和频率选择性衰落特征，构建面向 FH-MFSK 参数设计的信道认识框架。
-  \item 设计声学释放器 FH-MFSK 通信算法，包括帧结构、跳频序列组织、同步捕获、非相干检测与指令判决流程。
-  \item 建立基于应答时延的测距模型，研究首达径估计、多径抑制和声速修正方法，形成适用于浅海条件的测距流程。
-  \item 完成声学释放器水下机和甲板单元的软硬件系统方案设计，给出模块划分、接口关系、控制流程与测试方案。
+  \item 面向深海应用场景，分析水声信道传播特性及其对体制参数的约束关系。
+  \item 研究并实现 FH-MFSK 通信算法，包括帧结构、跳频序列、同步捕获与非相干判决。
+  \item 研究并实现往返时延测距算法，包括首达径检测、多径抑制和声速修正。
+  \item 完成软硬件系统集成与测试方案设计，以验证上述两类算法的工程可实现性。
 \end{enumerate}
 
 \section{论文结构安排}[Organization of the Thesis]
@@ -57,79 +57,13 @@ FH-MFSK 体制综合了跳频与多进制频移键控两类技术的优点。跳
 全文共分为五章，结构安排如下：
 
 \begin{enumerate}
-  \item 第一章为绪论，介绍课题背景、国内外研究现状、研究意义及本文主要内容。
-  \item 第二章分析浅海水声信道特性，并讨论其对 FH-MFSK 声学释放器设计的约束。
-  \item 第三章研究 FH-MFSK 通信算法，给出信号模型、同步与检测方法以及抗干扰设计。
-  \item 第四章研究测距算法，建立测距数学模型并分析多径、声速误差对结果的影响。
-  \item 第五章给出软硬件系统设计及测试方案，说明实现路径与工程化验证流程。
+  \item 第一章为绪论，介绍课题背景、研究现状、研究内容与论文结构。
+  \item 第二章分析深海水声信道特性，并讨论其对 FH-MFSK 体制设计的影响。
+  \item 第三章给出通信算法设计与实现，包括同步、检测与抗干扰机制。
+  \item 第四章给出测距算法设计与实现，包括时延估计与误差修正方法。
+  \item 第五章给出软硬件系统设计与测试方案，用于验证通信与测距算法性能。
 \end{enumerate}
 
 \section*{本章小结}[Summary]
 
-本章从工程需求与学术研究两个层面说明了开展 FH-MFSK 声学释放器及测距技术研究的必要性，梳理了通信、测距和系统实现三个方面的相关工作，并给出了本文的研究内容与结构安排。
-
-学位论文是典型的科技文献，其具有规范的科技文献排版要求，特别是理工类学位论文需要大量的公式和文档排版。因此研究如何提高学位论文编辑排版工作的效率有非常重要的现实意义。本文结合 Xe\LaTeX{} \footnote{读音：拉泰赫}文档编辑的特点，将 Xe\LaTeX{} 用在学位论文编辑排版，使用这种方法可以提高论文编辑的效率与排版质量，最大程度地降低论文排版的繁琐性。
-
-Xe\LaTeX{}是一种专业的科技文献排版语言，使用它写文档具有如下优势：
-
-\begin{itemize}
-  \item 将内容与格式分离，使人专注于内容书写；
-  \item 编程化控制排版格式，工作灵活性和精确度高；
-  \item 跨平台，兼容性和稳定性非常好。
-\end{itemize}
-
-本模板是在参考其他学校论文模板的基础上，根据哈尔滨工程的大学对本科生与研究生论文的格式要求制作，通过此模板，所有排版格式化工作由模板完成，使用户集中于论文的内容上。
-
-\section{TeX~简介}[Brief Induction of TeX]
-
-谈到\TeX{}，人们首先会想起Donald E. Knuth \footnote{1960年凯斯工学院数学学士，1963年加州理工数学博士，同年留校任教。1968年跳槽到斯坦福，1974年获图灵奖，1992年退休，1995年获冯·诺依曼奖。}(1938--)。1962年Knuth开始写一本关于编译器设计的书，原计划是12章的单行本。不久Knuth觉得此书涉及的领域应该扩大，于是越写越多，一发不可收拾。1965年完成的初稿居然有3000页，据出版商估计，这些手稿印刷出来大概需要2000页。出书的计划只好改为七卷，每卷一或两章，这就是 \emph{The Art of Computer Programming} \footnote{已完成的前三卷是：\emph{Fundamental Algorithms}, \emph{Seminumerical Algorithms}, \emph{Sorting and Searching}。 第四卷 \emph{Combinatorial Algorithms} 的第一部分4A已出版，其余部分和第五卷 \emph{Syntactic Algorithms}正在写作中，预计2020年完成。第六卷 \emph{Theory of Context-free Languages}和第七卷 \emph{Compiler Techniques}尚未安排上工作日程。}。
-
-1976年，当Knuth改写第二卷的第二版时，很郁闷地发现第一卷的铅版不见了；而当时数字排版刚刚兴起，质量还差强人意。于是Knuth决定自己开发一个全新的排版系统，这就是 \TeX。
-
-1978年 \TeX 第一版发布后好评如潮，Knuth趁热打铁在1982年发布了第二版，1989年发布的 \TeX{} 3.0将7位字符改为8位。之后Knuth宣布除了修正漏洞停止 \TeX 的开发，因为它已经很稳定，而且他要集中精力完成那部巨著的后几卷。
-
-从那时起，每发布一个修正版，版本号就增加一位小数，趋近于$\pi$；当前版本是2008年的3.1415926。他的另一个软件METAFONT的版本号趋近于$e$，目前是2.718281。Knuth希望在他离世时，\TeX 和METAFONT的版本号永远固定下来，从此人们不再改动他的代码。
-
-\subsection{格式}[Format]
-
-\TeX 是一种语言也是一个排版引擎 (engine) ，引擎的基本功能就是把字排成行，把行排成页，涉及到断字、断行、分页等算法。基本的 \TeX 系统只有300多个元命令 (primitive) ，十分精悍，但是很难读懂，只适于非正常人类。所以Knuth提供了一种格式 (format，宏命令的集合) 对 \TeX 进行了封装，这就是Plain \TeX ，包含600多个宏命令，然而它还是不够高级。
-
-1980年代初期，斯坦福研究所的Leslie Lamport (1941--)\footnote{1970年加入麻省计算机同伙公司。2008年获冯·诺依曼奖。} 开发了一种新的格式，也就是 \LaTeX。1992年 \LaTeX{} 2.09发布后，Lamport退居二线，之后的开发活动由Frank Mittelbach 等人接管。他们发布的最后版本是1994年的 \LaTeXe，\LaTeX 3 的开发也在进行中，只是正式版看起来遥遥无期。
-
-\subsection{宏包}[Package]
-
-\LaTeX 出现之后，在它的基础上出现了很多宏包 (package) 。起初，美国数学学会 {} 看着 \TeX 是好的，就派Michael D. Spivak (1940--)\footnote{1964年普林斯顿数学博士。} 开发基于Plain \TeX 的宏包AmS\TeX{}，它的开发进行了两年 (1983--1985) 。后来与时俱进的AMS又看着 \LaTeX 是好的，就想转移阵地，但是他们的字体遇到了麻烦。
-
-恰好Mittelbach和Rainer Schöpf\footnote{\LaTeX 3的开发者之一。} 刚刚搞了个字体系统new font selection scheme for \LaTeX{} (NFSS) ，AMS看着还不错，就拜托他们把AMSFonts加入 \LaTeX，继而在1989年请他们开发\AmS\LaTeX{}。次年\AmS\LaTeX 正式发布，之后它被整合为 \AmS 宏包。
-
-\section{优点缺点}[Advantage and Disadvantage]
-
-通过上节内容我们已经知道，\TeX 相对于其他标记语言有较大优势，但是在桌面印刷领域还有一种不可忽视的类别，所见即所得 (WYSIWYG) 系统，比如微软的Word。其实Word也有自己的域代码 (field code) ，只是一般用户不太了解。
-
-一般而言，\TeX 相对于所见即所得系统有如下优点：
-\begin{itemize}
-  \item  高质量，它制作的版面看起来更专业，数学公式尤其赏心悦目。
-  \item  结构化，它的文档结构清晰。
-  \item  批处理，它的源文件是文本文件，便于批处理，虽然解释 (parse) 源文件可能很费劲。
-  \item  跨平台，它几乎可以运行于所有电脑硬件和操作系统平台。
-  \item  免费，多数 \TeX 软件都是免费的，虽然也有一些商业软件。
-\end{itemize}
-
-相应地，\TeX 由于其工作流程，设计原则，资源的缺乏，以及历史局限性等原因也存在一些缺陷：
-\begin{itemize}
-  \item  语法不如HTML和XML严谨、清晰。
-  \item  制作过程繁琐，有时需要反复编译，不能直接或实时看到结果。
-  \item  宏包鱼龙混杂，水准参差不齐，风格不够统一。
-  \item  排版样式比较统一，但因而缺乏灵活性。
-  \item  相对于商业软件，用户支持不够好，文档不完善。
-\end{itemize}
-
-
-\section{XeTeX简介}[Inductuon of XeTeX]
-
-Xe\TeX{}\footnote{英文发音为"zee-\TeX{}"}是一种使用Unicode的\TeX{}排版引擎，并支持一些现代字体技术，例如OpenType。其作者和维护者是Jonathan Kew，并以X11自由软件许可证发布。
-
-虽然Xe\TeX{}最初只是为Mac OS X所开发，但它现在在各主要平台上都可以运作。它原生的支持Unicode，并默认其输入文件为UTF-8编码。Xe\TeX{}可以在不进行额外配置的情况下直接使用操作系统中安装的字体，因此可以直接利用OpenType，Graphite中的高级特性，例如额外的字形，花体，合字，可变的文本粗细等等。Xe\TeX{}提供了对OpenType中本地排版约定（locl标签）的支持，也允许向字体传递OpenType的元标签。它亦支持使用包含特殊数学字符的Unicode字体排版数学公式，例如使用Cambria Math或Asana Math字体代替传统的\TeX{}字体。
-
-\section*{本章小结}[Brief Summary]
-\LaTeX{}简介。
+本章明确了本文面向深海声学释放器应用的研究定位，凝练出通信算法与测距算法两条核心研究主线，并给出了全文的技术路线与章节组织。

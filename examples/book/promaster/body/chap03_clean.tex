@@ -13,7 +13,7 @@
 
 \section{系统通信体制}[Communication Scheme]
 
-声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与浅海复杂信道环境，本文采用 FH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与深海远距离信道环境，本文采用 FH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
 
 设单帧由前导段、同步段、地址段、命令段、校验段和保护段构成，则典型帧结构可表示为
 
