@@ -1,0 +1,25 @@
+\documentclass[tikz,border=2pt]{standalone}
+\usepackage{ctex}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[
+  width=5.1cm,
+  height=4.2cm,
+  xmin=0,xmax=1,
+  ymin=0,ymax=1,
+  xlabel={$*\pi\ \mathrm{rad}$},
+  ylabel={幅度},
+  xtick={0,0.5,1},
+  ytick={0,0.1,...,1.0},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  axis line style={black!55},
+  tick style={black!55}
+]
+\addplot[cyan!70!black, line width=0.7pt, samples=500, domain=0:1]
+  {0.015 + 0.985/(1 + 17000*(x-0.5)^2)};
+\end{axis}
+\end{tikzpicture}
+\end{document}

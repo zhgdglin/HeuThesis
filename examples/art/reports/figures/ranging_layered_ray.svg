@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <title>Layered ray tracing diagram</title>
+
+ <desc>Editable SVG. Axes, layer lines, ray path, normals, arrows, and labels are independent objects.</desc>
+ <style>.line { fill: none; stroke: #000000; stroke-width: 2; }
+    .thin { fill: none; stroke: #000000; stroke-width: 1.5; }
+    .dash { fill: none; stroke: #000000; stroke-width: 1.5; stroke-dasharray: 8 7; }
+    .arrow { fill: #000000; stroke: none; }
+    .label { fill: #000000; font-family: &quot;Times New Roman&quot;, SimSun, serif; font-size: 28px; }
+    .sub { font-size: 17px; baseline-shift: sub; }</style>
+ <g class="layer">
+  <title>Layer 1</title>
+  <line class="line" id="axis-y" x1="106" x2="701" y1="71" y2="71"/>
+  <polygon class="arrow" id="axis-y-arrowhead" points="701,71 678,61 678,81"/>
+  <line class="line" id="axis-z" x1="105" x2="105" y1="520" y2="70"/>
+  <polygon class="arrow" id="axis-z-arrowhead" points="105,518 95,541 115,541" transform="rotate(180 105 529.5)"/>
+  <line class="dash" id="layer-ci-minus-1-boundary" x1="105" x2="700" y1="400" y2="400"/>
+  <line class="dash" id="layer-ci-boundary" x1="105" x2="700" y1="280" y2="280"/>
+  <line class="dash" id="layer-ci-plus-1-boundary" x1="105" x2="700" y1="160" y2="160"/>
+  <line class="line" id="ray-path" x1="257" x2="172" y1="159" y2="72"/>
+  <line class="dash" id="normal-at-ci-minus-1" x1="477.5" x2="477.5" y1="440" y2="360"/>
+  <line class="dash" id="normal-at-ci" x1="325" x2="325" y1="320" y2="240"/>
+  <line class="dash" id="normal-at-ci-plus-1" x1="258.5" x2="258.5" y1="198" y2="118"/>
+  <line class="thin" id="delta-zi-line" x1="563" x2="563" y1="280.5" y2="160.5"/>
+  <polygon class="arrow" id="delta-zi-top-arrowhead" points="563,160.5 555,178.5 571,178.5"/>
+  <polygon class="arrow" id="delta-zi-bottom-arrowhead" points="563,280.5 555,262.5 571,262.5"/>
+  <text class="label" font-size="28" id="z-axis-label" x="76.5" y="501">Z</text>
+  <text class="label" font-size="28" id="y-axis-label" transform="matrix(1 0 0 1 0 0)" x="651.5" y="56.5">y</text>
+  <text class="label" font-size="28" id="theta-i-label" x="260" y="220.5">θ
+   <tspan class="sub" font-size="17" id="svg_1">i</tspan></text>
+  <text class="label" font-size="28" id="theta-i-plus-1-label" x="322.5" y="344.5">θ
+   <tspan class="sub" font-size="17" id="svg_2">i+1</tspan></text>
+  <text class="label" font-size="28" id="c-i-minus-1-label" x="645.5" y="126">C
+   <tspan class="sub" font-size="17" id="svg_3">i-1</tspan></text>
+  <text class="label" font-size="28" id="c-i-label" transform="matrix(1 0 0 1 0 0)" x="653" y="227">C
+   <tspan class="sub" font-size="17" id="svg_4">i</tspan></text>
+  <text class="label" font-size="28" id="c-i-plus-1-label" style="cursor: move;" transform="matrix(1 0 0 1 0 0)" x="648" y="358">C
+   <tspan class="sub" font-size="17" id="svg_5">i+1</tspan></text>
+  <text class="label" font-size="28" id="delta-zi-label" x="583" y="230.5">ΔZ
+   <tspan class="sub" font-size="17" id="svg_6">i</tspan></text>
+  <line class="line" id="svg_7" x1="323.25" x2="260.25" y1="279.5" y2="161"/>
+  <line class="line" id="svg_8" x1="476.75" x2="325.75" y1="399" y2="280.5"/>
+ </g>
+</svg>

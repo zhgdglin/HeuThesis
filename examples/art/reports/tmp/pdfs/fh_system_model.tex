@@ -1,0 +1,60 @@
+\documentclass[tikz,border=2pt]{standalone}
+\usepackage{ctex}
+\usetikzlibrary{calc}
+\begin{document}
+\begin{tikzpicture}[
+  >=latex,
+  font=\zihao{6},
+  block/.style={draw, rectangle, minimum height=0.62cm, align=center, inner sep=3pt},
+  sum/.style={draw, circle, minimum size=0.58cm, inner sep=0pt},
+  line/.style={draw, -latex, line width=0.45pt},
+  plain/.style={draw, line width=0.45pt},
+  dashedline/.style={draw, dashed, line width=0.35pt}
+]
+
+\node at (3.15,3.25) {发射端};
+\draw[dashedline] (0.25,2.75) .. controls (0.60,3.08) and (0.90,3.08) .. (1.25,3.08) -- (5.05,3.08) .. controls (5.45,3.08) and (5.70,2.98) .. (5.98,2.75);
+\draw[plain] (3.15,3.55) -- (3.15,3.08);
+
+\node at (9.45,3.25) {接收端};
+\draw[dashedline] (6.25,2.75) .. controls (6.60,3.08) and (6.90,3.08) .. (7.30,3.08) -- (12.45,3.08) .. controls (12.85,3.08) and (13.10,2.98) .. (13.38,2.75);
+\draw[plain] (9.45,3.55) -- (9.45,3.08);
+
+\node[block, minimum width=1.35cm] (info) at (0.95,1.55) {信息序列\\[-1pt]$m(k)$};
+\node[block, minimum width=0.62cm] (x) at (2.55,1.55) {$x(t)$};
+\node[sum] (mix1) at (3.75,1.55) {};
+\draw[plain] ($(mix1.center)+(-0.14,-0.14)$) -- ($(mix1.center)+(0.14,0.14)$);
+\draw[plain] ($(mix1.center)+(-0.14,0.14)$) -- ($(mix1.center)+(0.14,-0.14)$);
+\node[sum] (chan) at (4.70,1.55) {};
+\draw[plain] ($(chan.center)+(-0.25,0)$) -- ($(chan.center)+(0.25,0)$);
+\draw[plain] ($(chan.center)+(0,-0.25)$) -- ($(chan.center)+(0,0.25)$);
+\node[sum] (mix2) at (7.10,1.55) {};
+\draw[plain] ($(mix2.center)+(-0.14,-0.14)$) -- ($(mix2.center)+(0.14,0.14)$);
+\draw[plain] ($(mix2.center)+(-0.14,0.14)$) -- ($(mix2.center)+(0.14,-0.14)$);
+\node[block, minimum width=0.88cm] (bp) at (8.45,1.55) {带通\\滤波器};
+\node[block, minimum width=0.78cm] (demod) at (10.05,1.55) {解调};
+\node[block, minimum width=1.35cm] (out) at (11.75,1.55) {信息序列\\[-1pt]$\hat m(k)$};
+
+\draw[line] (info) -- node[above, align=center] {FSK\\[-1pt]调制} (x);
+\draw[line] (x) -- node[above] {$S(t)$} (mix1);
+\draw[line] (mix1) -- (chan);
+\draw[line] (chan) -- node[above] {$R(t)$} (mix2);
+\draw[line] (mix2) -- node[above] {$R'(t)$} (bp);
+\draw[line] (bp) -- node[above] {$R''(t)$} (demod);
+\draw[line] (demod) -- (out);
+
+\node[font=\scriptsize] at (3.70,2.48) {$\sum_{i=1}^{k}S_i(t)$};
+\draw[line] (3.95,2.20) -- (4.47,1.83);
+\node[font=\scriptsize] at (4.72,2.56) {$N(t)$};
+\draw[line] (4.72,2.28) -- (4.72,1.84);
+\node[font=\scriptsize] at (5.48,2.48) {$I(t)$};
+\draw[line] (5.22,2.20) -- (4.93,1.82);
+
+\draw[line] (3.75,0.55) -- (mix1);
+\node[align=center, font=\tiny] at (2.95,0.18) {$h(t)=\cos[2\pi(f_0+n\Delta f)t+\varphi_n]$};
+
+\draw[line] (7.10,0.55) -- (mix2);
+\node[align=center, font=\tiny] at (8.15,0.18) {$h_r(t)=\cos[2\pi(f_r+n\Delta f)t+\varphi_r]$};
+
+\end{tikzpicture}
+\end{document}

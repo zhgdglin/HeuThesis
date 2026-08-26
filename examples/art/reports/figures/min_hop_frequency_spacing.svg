@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<svg width="760" height="250" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <title>Minimum hop frequency spacing</title>
+ <defs>
+  <marker id="mkr_start_bandwidth-fb-arrow" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="50" refY="50" se_type="leftarrow" viewBox="0 0 100 100">
+   <path d="m0,50l100,40l-30,-40l30,-40l-100,40z" id="svg_1" stroke-width="10"/>
+  </marker>
+  <marker id="mkr_end_bandwidth-fb-arrow" markerHeight="5" markerUnits="strokeWidth" markerWidth="5" orient="auto" refX="50" refY="50" se_type="rightarrow" viewBox="0 0 100 100">
+   <path d="m100,50l-100,40l30,-40l-30,-40l100,40z" id="svg_2" stroke-width="10"/>
+  </marker>
+ </defs>
+ <desc>Editable SVG corresponding to min_hop_frequency_spacing.pdf.</desc>
+ <style>.axis { fill: none; stroke: #000000; stroke-width: 1.2; }
+    .curve { fill: none; stroke: #000000; stroke-width: 1.2; }
+    .main-curve { fill: none; stroke: #000000; stroke-width: 1.8; }
+    .dash { fill: none; stroke: #000000; stroke-width: 1.1; stroke-dasharray: 8 6; }
+    .measure { fill: none; stroke: #000000; stroke-width: 1.2; marker-start: url(#arrow-start); marker-end: url(#arrow-end); }
+    .label { fill: #000000; font-family: &quot;Times New Roman&quot;, SimSun, serif; font-size: 22px; text-anchor: middle; }
+    .sub { font-size: 14px; baseline-shift: sub; }</style>
+ <g class="layer">
+  <title>Layer 1</title>
+  <line class="axis" id="frequency-axis" x1="0" x2="760" y1="190" y2="190"/>
+  <path class="dash" d="m140,190c40,-65 85,-115 140,-125c45,10 85,65 100,125" id="left-dashed-spectrum"/>
+  <path class="dash" d="m380,190c20,-65 55,-115 100,-125c55,10 100,60 140,125" id="right-dashed-spectrum"/>
+  <path class="main-curve" d="m280,190c25,-85 65,-155 100,-158c35,3 75,73 100,158" id="center-spectrum" transform="matrix(1 0 0 1 0 0)"/>
+  <path class="curve" d="m70,190c25,-20 45,-25 70,0" id="far-left-side-lobe"/>
+  <path class="curve" d="m145,190c35,-35 80,-35 135,0" id="left-side-lobe"/>
+  <path class="curve" d="m480,190c55,-35 100,-35 135,0" id="right-side-lobe"/>
+  <path class="curve" d="m620,190c25,-25 45,-20 70,0" id="far-right-side-lobe"/>
+  <line class="dash" id="marker-fm-minus-1" x1="280" x2="280" y1="190" y2="32"/>
+  <line class="dash" id="marker-fm" x1="380" x2="380" y1="190" y2="32"/>
+  <line class="dash" id="marker-fm-plus-1" x1="480" x2="480" y1="190" y2="32"/>
+  <line class="measure" id="bandwidth-fb-arrow" marker-end="url(#mkr_end_bandwidth-fb-arrow)" marker-start="url(#mkr_start_bandwidth-fb-arrow)" stroke-dasharray="5" stroke-width="15" x1="380.5" x2="479.25" y1="57.25" y2="57.25"/>
+  <text class="label" font-size="22" id="fb-label" x="433.25" y="42.25">f
+   <tspan class="sub" font-size="14" id="svg_3">b</tspan></text>
+  <text class="label" id="fm-minus-1-label" x="280" y="226">f
+   <tspan class="sub" id="svg_4">m-1</tspan></text>
+  <text class="label" id="fm-label" x="380" y="226">f
+   <tspan class="sub" id="svg_5">m</tspan></text>
+  <text class="label" id="fm-plus-1-label" x="480" y="226">f
+   <tspan class="sub" id="svg_6">m+1</tspan></text>
+  <path class="line" d="m642.5,65l30,0" id="svg_8"/>
+  <polygon class="arrow" id="svg_9" points="480.5,57 472.5,52 472.5,62"/>
+  <polygon class="arrow" id="svg_10" points="387.5,57 379.5,52 379.5,62" transform="rotate(180 383.5 57)"/>
+ </g>
+</svg>

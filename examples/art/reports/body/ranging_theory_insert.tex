@@ -1,0 +1,73 @@
+\begingroup
+\setcounter{equation}{0}
+\renewcommand{\theequation}{3-\arabic{equation}}
+
+\subsubsection{声速修正与声线弯曲}
+
+水下环境复杂且介质不均匀，声信号传播易受海水温度、盐度及压强变化的影响，实际传播路径通常并非理想直线。若仍按照直线传播模型进行几何定位和距离估计，会引入声线弯曲误差。因此，测距模型需要结合声速剖面和声线折射规律对传播路径进行修正。本文仅围绕声线跟踪法展开理论分析，利用分层声速模型描述声线弯曲过程，不对其他声速修正方法作系统研究。
+
+结合声学释放器快速测距需求，本文重点关注基于声线跟踪法的声线弯曲误差修正和声线入射角求解问题。后续推导将建立声速剖面、Snell 常数、水平位移和传播时间之间的关系，并在传播时延约束下求解声线路径参数，为快速测距中的距离修正提供理论基础。
+
+\subsubsection{Snell 法则}
+
+声波在不同声速介质之间传播时会发生折射，其规律可由 Snell 定律描述。图~\ref{fig:ranging-snell-law} 给出了声线穿过相邻声速层时的折射关系。设第 $i$ 层和第 $i+1$ 层的声速分别为 $c_i$ 和 $c_{i+1}$，声线入射角分别为 $\theta_i$ 和 $\theta_{i+1}$，则有
+\begin{equation}
+\frac{\sin\theta_i}{c_i}
+=
+\frac{\sin\theta_{i+1}}{c_{i+1}}
+=p
+\label{eq:ranging-snell-law}
+\end{equation}
+其中，$\theta$ 为入射角，$p$ 为 Snell 常数，$c$ 为声速。该关系表明，在分层声速模型中，同一条声线在不同声速层内传播时，$\sin\theta/c$ 保持不变。因此，只要已知声速剖面和初始入射角，即可递推求解各层内的声线方向。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.55\textwidth]{ranging_snell_law.pdf}
+\caption{Snell 法则示意图}
+\label{fig:ranging-snell-law}
+\end{figure}
+
+\subsubsection{声线跟踪法}
+
+声波在水中传播时，水中介质的不均匀性会使声波沿曲线路径传播。若采用平均声速与传播时间直接相乘计算斜距，所得结果会受到声线弯曲影响，从而导致水声定位精度降低。因此，在已知或可估计声速剖面的条件下，可使用声线跟踪法修正传播路径。
+
+本文采用分层常声速声线跟踪法描述声线传播路径。该方法基于分层近似思想，将实验水域水柱沿垂直方向划分为 $N$ 层，并将每层内声速近似为常值。图~\ref{fig:ranging-layered-ray} 给出了分层常声速声线跟踪的基本原理。根据 Snell 定律，有
+\begin{equation}
+p c_i=\sin\theta_i
+\label{eq:ranging-layer-snell}
+\end{equation}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.68\textwidth]{ranging_layered_ray.pdf}
+\caption{分层常声速声线跟踪法原理}
+\label{fig:ranging-layered-ray}
+\end{figure}
+
+对于第 $i$ 层，其水平位移 $y_i$ 与传播时间 $t_i$ 可分别表示为
+\begin{equation}
+y_i=\Delta z_i\tan\theta_i
+=\frac{\sin\theta_i\Delta z_i}{\cos\theta_i}
+=\frac{p c_i\Delta z_i}{\sqrt{1-(p c_i)^2}}
+\label{eq:ranging-layer-horizontal-distance}
+\end{equation}
+\begin{equation}
+t_i=\frac{y_i}{\sin\theta_i c_i}
+=\frac{\Delta z_i}{c_i\sqrt{1-(p c_i)^2}}
+\label{eq:ranging-layer-travel-time}
+\end{equation}
+则整个实验水域水柱的水平位移 $y$ 与传播时间 $t$ 可表示为
+\begin{equation}
+y=\sum_{i=1}^{N}y_i
+=\sum_{i=1}^{N}\frac{p c_i\Delta z_i}{\sqrt{1-(p c_i)^2}}
+\label{eq:ranging-total-horizontal-distance}
+\end{equation}
+\begin{equation}
+t=\sum_{i=1}^{N}t_i
+=\sum_{i=1}^{N}\frac{\Delta z_i}{c_i\sqrt{1-(p c_i)^2}}
+\label{eq:ranging-total-travel-time}
+\end{equation}
+
+式~\eqref{eq:ranging-total-horizontal-distance} 和式~\eqref{eq:ranging-total-travel-time} 建立了声速剖面、Snell 常数、水平距离和传播时间之间的关系。对于本文不依赖目标深度信息的快速测距需求，可在已知或近似给定声速剖面的条件下，通过传播时延约束反求声线路径参数，并进一步修正由声线弯曲引起的距离估计误差。
+
+\endgroup

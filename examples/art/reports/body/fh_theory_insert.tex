@@ -1,0 +1,257 @@
+\begingroup
+\setcounter{equation}{0}
+\renewcommand{\theequation}{2-\arabic{equation}}
+
+\subsubsection{跳频通信原理}
+
+跳频通信通过一组伪随机码控制通信节内频率的跳变，按照特定的跳频图案进行频移键控。以常规 2FSK 调制为例，只需两个不同的频点分别代表 0 码和 1 码。跳频技术具有较强的频率分集能力，将 2FSK 与跳频调制结合后，可在较宽的频带内产生多组可供随机选择的频率。收发双方共用同一组伪随机码，可以减少多址通信中的多用户干扰，同时提高对信道的适应性。
+
+信号发射端的跳频信号 $S(t)$ 可表示为
+\begin{equation}
+S(t)=x(t)\cdot h(t)
+\label{eq:fh-transmitted-signal}
+\end{equation}
+其中，$x(t)$ 表示信息序列经 FSK 调制后的信号。以 2FSK 调制方式为例，假设待传输的二进制信息序列为 $m(k)=\{0,1,1,1,0,\ldots\}$，则 $x(t)$ 可表示为
+\begin{equation}
+x(t)=\cos(2\pi f_m t),\quad
+f_m=
+\begin{cases}
+f_0, & m(k)=0,\\
+f_1, & m(k)=1.
+\end{cases}
+\label{eq:fh-fsk-signal}
+\end{equation}
+其中，$h(t)$ 表示按照伪随机码映射的跳频信号，可表示为
+\begin{equation}
+h(t)=\cos\left[2\pi(f_0+n\Delta f)t+\varphi_n\right]
+\label{eq:fh-hopping-signal}
+\end{equation}
+其中，跳频点 $n=0,1,2,\ldots,N-1$，$N$ 为跳频点总数，$\varphi_n$ 表示初始相位，$\Delta f$ 为频率间隔。
+
+图~\ref{fig:fh-system-model} 给出了跳频系统在水声信道中的数学模型。信号 $S(t)$ 在水声信道中传输时，会引入环境噪声 $N(t)$、人为窄带干扰 $I(t)$ 以及多径或多用户干扰 $S_i(t)$。因此，到达接收端的信号可表示为
+\begin{equation}
+R(t)=S(t)+\sum_{i=1}^{k}S_i(t)+N(t)+I(t)
+\label{eq:fh-received-signal}
+\end{equation}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{fh_system_model.pdf}
+\caption{跳频系统的数学模型}
+\label{fig:fh-system-model}
+\end{figure}
+
+接收端按照发射端跳变规律生成的本地信号可表示为
+\begin{equation}
+h_n(t)=\cos\left[2\pi(f_c+n\Delta f)t+\varphi_n\right]
+\label{eq:fh-local-signal}
+\end{equation}
+其中，$f_c$ 为中心频率，$\varphi_n$ 为初始相位。假设接收端已严格同步，则接收信号 $R(t)$ 与本地跳频信号 $h_n(t)$ 经过混频后的信号 $R'(t)$ 可表示为
+\begin{align}
+R'(t)
+&=R(t)\cdot h_n(t) \notag\\
+&=\left[S(t)+\sum_{i=1}^{k}S_i(t)+N(t)+I(t)\right]
+\cos\left[2\pi(f_c+n\Delta f)t+\varphi_n\right] \notag\\
+&=\frac{1}{2}x(t)\left\{
+\cos\left[2\pi(f_m-f_c)t+\varphi_m-\varphi_n\right]
++\cos\left[2\pi(f_m+f_c+2n\Delta f)t+\varphi_m+\varphi_n\right]\right\}
+\notag\\
+&\quad+\left[\sum_{i=1}^{k}S_i(t)+N(t)+I(t)\right]
+\cos\left[2\pi(f_c+n\Delta f)t+\varphi_n\right]
+\label{eq:fh-mixed-signal}
+\end{align}
+
+由式~\eqref{eq:fh-mixed-signal} 可知，有用信号经接收端混频后频率发生固定搬移，搬移量为 $f_c-f_0$。因此，可使用中心频率为 $f_c-f_0$、带宽为 $B$ 的带通滤波器滤除低频分量和其他干扰，保留有用信号。其中，多用户间的跳频图案相互正交，多用户干扰 $S_i(t)$ 可忽略；人为窄带干扰 $I(t)$ 在混频后通常会被搬移到带通滤波器之外。因此，滤波后的信号 $R''(t)$ 可表示为
+\begin{equation}
+R''(t)=\frac{1}{2}x(t)\left\{\cos\left[2\pi(f_m-f_0)t+\varphi_m-\varphi_n\right]+N'(t)\right\}
+\label{eq:fh-filtered-signal}
+\end{equation}
+滤波后的信号 $R''(t)$ 再经过常规 FSK 解调即可恢复原始信息序列。
+
+\subsubsection{跳频系统参数}
+
+（1）最小跳频频率间隔。在跳频系统中，为了将各个频点间的影响降至最小，需要使相邻频点满足正交关系。对于信息传输率为 $R_s$、带宽为 $f_s$ 的跳频系统，最小频率间隔 $\Delta f$ 为
+\begin{equation}
+\Delta f=f_{n+1}-f_n=f_s
+\label{eq:fh-min-frequency-spacing}
+\end{equation}
+实际应用中，为了减少水声信道多普勒扩展的影响，可将 $\Delta f$ 取值为 $2f_s$。最小频率间隔只要是 $f_s$ 的整数倍，均可满足各个频点间的正交性。图~\ref{fig:min-hop-frequency-spacing} 示意了相邻跳频频点之间的最小频率间隔。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{min_hop_frequency_spacing.pdf}
+\caption{最小跳频频率间隔}
+\label{fig:min-hop-frequency-spacing}
+\end{figure}
+
+（2）最小跳频时间间隔。最小跳频时间间隔可用于表征系统跳频速度的快慢。若信息码元宽度为 $T_s=1/R_s$，最小跳频时间间隔即时隙宽度为 $T_h$。在水声通信中，通常满足
+\begin{equation}
+T_h=mT_s,\quad m=1,2,3,\ldots,N
+\label{eq:fh-hop-interval}
+\end{equation}
+
+（3）跳频增益。通信系统的处理增益定义为接收机输出信噪比和输入信噪比的比值，反映接收机对输入信噪比的改善程度和抗干扰能力。对于跳频系统来说，增益为
+\begin{equation}
+G=\frac{(S/N)_o}{(S/N)_i}=\frac{B_s}{B}
+\label{eq:fh-processing-gain-definition}
+\end{equation}
+其中，$B_s$ 为跳频通信系统带宽，$B$ 为信息带宽。设通信系统的所有可用频点总数为 $N$，则跳频增益可表示为
+\begin{equation}
+G=\frac{B_s}{B}=N
+\label{eq:fh-processing-gain-points}
+\end{equation}
+即跳频系统的处理增益等于通带内可用跳频点总数，用分贝表示为
+\begin{equation}
+G=10\lg N
+\label{eq:fh-processing-gain-db}
+\end{equation}
+
+（4）抗多途干扰条件。假设水声信道的多径时延为 $T_m$，可用频点总数为 $N$，信号码元持续时间为 $T_s$，若想消除水声信道中由多径效应产生的码间干扰，则需要满足
+\begin{equation}
+NT_s>T_m
+\label{eq:fh-multipath-condition}
+\end{equation}
+
+\subsubsection{跳频信号的生成}
+
+生成跳频信号的核心技术是跳频序列的设计。跳频序列也称为跳频图案，它直接控制着载波频率的跳变规则。系统为每一个用户分配唯一的跳频序列，因此跳频序列的设计至关重要。它不仅通过控制频率跳变实现扩展频谱作用，同时也是组网内各个用户地址和标志。跳频序列的优劣对跳频通信系统的抗干扰、抗多径衰落能力以及安全保密性、精确同步能力、组网能力等性能均具有决定性作用。理想的跳频序列应满足以下特性。
+
+（1）优良的汉明自相关和互相关特性。良好的自相关性能保证跳频序列与其自身平移序列的频率重合次数尽量较少；良好的互相关性能保证跳频序列之间在所有相对时延下的频率重合次数尽量较少，即正交性好。设计序列时，通常要使“汉明移位自相关”和“汉明交错互相关”的最大值达到最小，从而降低码间干扰、多址干扰和邻信道干扰。
+
+（2）良好的平衡性。为提高通信中的抗干扰和抗频率选择性衰落性能，各个不同频点在一个序列周期内出现的概率应尽量一致。
+
+（3）计算矩阵乘积。设
+\begin{equation}
+U_0(i)=0,\quad
+U_1(i)=\operatorname{ceil}\left(\frac{i}{(Q-1)Q}\right),\quad
+U_2(i)=\operatorname{floor}\left(\frac{i-1}{Q-1}\right),
+\quad i=1,2,\ldots,L
+\label{eq:fh-u-matrix-elements}
+\end{equation}
+计算矩阵乘积 $[1\ 1\ 1](G-U)$，并将该乘积得到的向量对 $Q$ 取模，可输出最终的跳频序列。例如，当 $Q=11$、$b=3$，生成一组长度为 8 的跳频序列时，计算出的 $G$ 矩阵和 $U$ 矩阵分别为
+\begin{equation}
+G=
+\begin{bmatrix}
+1&1&1&1&1&1&1&1\\
+2&4&8&5&10&9&7&3\\
+4&5&9&3&1&4&5&9
+\end{bmatrix},
+\quad
+U=
+\begin{bmatrix}
+0&0&0&0&0&0&0&0\\
+1&1&1&1&1&1&1&1\\
+0&0&0&0&0&0&0&0
+\end{bmatrix}
+\label{eq:fh-example-matrices}
+\end{equation}
+经过矩阵相乘，可得到长度为 8 的跳频序列 $\{2,4,8,5,10,9,7,3\}$。根据该跳频序列中每一个索引即可按照发送端流程在频率表中找到对应的跳频组，再根据映射信息映射到具体跳频频率，完成跳频调制并生成待发射的跳频信号。
+
+\subsubsection{跳频信号的解调}
+
+如前所述，接收端水听器接收到水声信号后，需经过前置滤波、同步、混频、带通滤波等处理后，解跳后的有用信息信号最终由 FSK 解调器进行检测和解码。跳频通信系统中的 FSK 调制方式便于在解调时使用基于能量的非相干检测方法，不仅可以避免复杂的相位跟踪，接收机实现简单，同时也具有较好的抗干扰能力。
+
+在跳频信号解跳和滤波处理中，可采用自适应 Notch 滤波器来抑制窄带干扰。单通道 Notch 滤波器的两路正交参考信号可表示为
+\begin{equation}
+\begin{cases}
+x_c(k)=A\cos(\omega_o k),\\
+x_s(k)=A\sin(\omega_o k)
+\end{cases}
+\label{eq:fh-single-channel-reference}
+\end{equation}
+设学习步长为常数 $\mu$，步长 $\mu$ 能够控制系统的稳定性和自适应学习速度，该系统的自适应迭代过程为
+\begin{align}
+y(k)&=u_c(k)x_c(k)+u_s(k)x_s(k)
+\label{eq:fh-notch-output}\\
+e(k)&=d(k)-y(k)=s(k)+n(k)-y(k)
+\label{eq:fh-notch-error}\\
+u_c(k+1)&=u_c(k)+\mu e(k)x_c(k) \notag\\
+u_s(k+1)&=u_s(k)+\mu e(k)x_s(k)
+\label{eq:fh-notch-update}
+\end{align}
+
+由式~\eqref{eq:fh-notch-error} 可得，均方误差为
+\begin{align}
+E[e^2(k)]
+&=E\{[s(k)-y(k)]^2+n^2(k)+2n(k)[s(k)-y(k)]\} \notag\\
+&=E\{[s(k)-y(k)]^2\}+E[n^2(k)]
+\label{eq:fh-notch-mse}
+\end{align}
+根据最小均方误差准则，使 $E[e^2(k)]$ 趋于最小值，可得
+\begin{equation}
+\min\{E[e^2(k)]\}\geq E[n^2(k)],\quad E\{[s(k)-y(k)]^2\}\rightarrow0
+\label{eq:fh-notch-min-mse}
+\end{equation}
+即 Notch 滤波器输出信号 $y(k)$ 是输入信号 $s(k)$ 的最小均方估计。从信号输入端到信号输出端可看成线性时不变系统，其传递函数为
+\begin{equation}
+H_y(z)=
+\frac{\mu A^2(z\cos\omega_o-1)}
+{z^2-(2-\mu A^2)z\cos\omega_o+(1-\mu)}
+\label{eq:fh-notch-transfer-function}
+\end{equation}
+
+图~\ref{fig:single-channel-notch-filter} 给出了单通道 Notch 滤波器的基本结构及其幅频响应特性。
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}{0.40\textwidth}
+\centering
+\includegraphics[width=\textwidth]{single_channel_notch_structure.pdf}
+\caption{滤波器结构}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.40\textwidth}
+\centering
+\includegraphics[width=\textwidth]{single_channel_notch_response.pdf}
+\caption{幅频响应}
+\end{subfigure}
+\caption{单通道 Notch 滤波器结构及幅频响应}
+\label{fig:single-channel-notch-filter}
+\end{figure}
+
+当 $\omega_o=\pi/2$、$\mu=0.02$、$A=1$ 时，可绘制 Notch 滤波器的幅频响应曲线。若 $f_s$ 为采样率，$B_n$ 为噪声带宽，则单通道 Notch 滤波器的带宽 $B$、自适应收敛时间 $t_{\mathrm{set}}$ 和最大处理增益 $G_{\max}$ 可分别表示为
+\begin{align}
+B&=\frac{\mu A^2 f_s}{2\pi}
+\label{eq:fh-notch-bandwidth}\\
+t_{\mathrm{set}}&=\frac{2}{\mu A^2 f_s}
+\label{eq:fh-notch-settling-time}\\
+G_{\max}&=10\lg\frac{(2-\mu A^2)B_n}{\mu f_s}
+\label{eq:fh-notch-max-gain}
+\end{align}
+
+对于本文设计的 SFH-MFSK 系统，接收端在解跳后需要处理的信号包含不同频点。由此，可以采用不同频点滤波器并行处理的形式，即并行多通道 Notch 滤波器。图~\ref{fig:parallel-multichannel-notch-filter} 给出了并行多通道 Notch 滤波器的结构及多频点幅频响应示意。每个通道与单通道滤波器的原理相似，区别在于总输出信号是各通道输出之和，残差信号是总输出与输入值之差。与单通道类似，并行滤波器的各组参考信号可以由式~\eqref{eq:fh-multichannel-reference} 表示，其自适应迭代过程可表示为式~\eqref{eq:fh-multichannel-update}。
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}{0.55\textwidth}
+\centering
+\includegraphics[width=\textwidth]{parallel_multichannel_notch_structure.pdf}
+\caption{滤波器结构}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.42\textwidth}
+\centering
+\includegraphics[width=\textwidth]{multichannel_notch_response.pdf}
+\caption{多频点幅频响应}
+\end{subfigure}
+\caption{并行多通道 Notch 滤波器结构及幅频响应}
+\label{fig:parallel-multichannel-notch-filter}
+\end{figure}
+
+\begin{equation}
+\begin{cases}
+x_{ci}(k)=A\cos(\omega_i k),\\
+x_{si}(k)=A\sin(\omega_i k)
+\end{cases}
+\quad i=1,2,\ldots,n
+\label{eq:fh-multichannel-reference}
+\end{equation}
+\begin{align}
+u_{ci}(k+1)&=u_{ci}(k)+\mu e(k)x_{ci}(k) \notag\\
+u_{si}(k+1)&=u_{si}(k)+\mu e(k)x_{si}(k) \notag\\
+e(k)&=d(k)-\sum_{i=1}^{N}y_i(k) \notag\\
+y_i(k)&=u_{ci}(k)x_{ci}(k)+u_{si}(k)x_{si}(k)
+\label{eq:fh-multichannel-update}
+\end{align}
+
+\endgroup

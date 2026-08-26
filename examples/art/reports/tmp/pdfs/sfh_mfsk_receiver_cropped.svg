@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<svg viewBox="20 12 634 224" width="634" height="224" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <style>.box {
+      fill: #fff;
+      stroke: #000;
+      stroke-width: 1;
+    }
+    .line {
+      fill: none;
+      stroke: #000;
+      stroke-width: 1.3;
+    }
+    .dash {
+      fill: none;
+      stroke: #000;
+      stroke-width: 1.3;
+      stroke-dasharray: 7 4;
+    }
+    .arrow {
+      fill: #000;
+      stroke: none;
+    }
+    .label {
+      font-family: &quot;SimSun&quot;, &quot;Songti SC&quot;, &quot;Noto Serif CJK SC&quot;, serif;
+      font-size: 16px;
+      fill: #000;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }</style>
+ <g class="layer">
+  <title>Layer 1</title>
+  <g id="top-receiver-chain">
+   <rect class="box" height="42" id="svg_1" width="70" x="28" y="20"/>
+   <text class="label" id="svg_2" x="63" y="41">换能器</text>
+   <rect class="box" height="42" id="svg_3" width="100" x="135" y="20"/>
+   <text class="label" id="svg_4" x="185" y="34">前置放大</text>
+   <text class="label" id="svg_5" x="185" y="52">滤波</text>
+   <rect class="box" height="42" id="svg_6" width="70" x="270" y="20"/>
+   <text class="label" id="svg_7" x="305" y="41">混频器</text>
+   <rect class="box" height="42" id="svg_8" transform="matrix(1 0 0 1 0 0)" width="70" x="425.5" y="21"/>
+   <text class="label" font-size="16" id="svg_9" transform="matrix(1 0 0 1 0 0)" x="460.5" y="42">下变频</text>
+   <rect class="box" height="42" id="svg_10" width="91.5" x="524" y="21.5"/>
+   <text class="label" font-size="16" id="svg_11" x="569.5" y="44">MFSK解调</text>
+   <path class="line" d="m98,41l32,0" id="svg_12"/>
+   <polygon class="arrow" id="svg_13" points="130,41 122,36 122,46"/>
+   <path class="line" d="m235,41l30,0" id="svg_14"/>
+   <polygon class="arrow" id="svg_15" points="265,41 257,36 257,46"/>
+   <path class="line" d="m340,41l76.5,0" id="svg_16"/>
+   <polygon class="arrow" id="svg_17" points="425,41 417,36 417,46"/>
+   <path class="line" d="m495.5,42l28,0" id="svg_18" transform="matrix(1 0 0 1 0 0)"/>
+   <polygon class="arrow" id="svg_19" points="523.5,42 515.5,37 515.5,47" transform="matrix(1 0 0 1 0 0)"/>
+   <path class="line" d="m616,41l30,0" id="svg_20"/>
+   <polygon class="arrow" id="svg_21" points="646,41 638,36 638,46"/>
+  </g>
+  <g id="frequency-control">
+   <rect class="box" height="42" id="svg_22" width="88" x="263" y="104"/>
+   <text class="label" id="svg_23" x="307" y="117">频率</text>
+   <text class="label" id="svg_24" x="307" y="135">合成器</text>
+   <rect class="box" height="42" id="svg_25" width="88" x="263" y="186"/>
+   <text class="label" id="svg_26" x="307" y="199">伪码</text>
+   <text class="label" id="svg_27" x="307" y="217">发生器</text>
+   <path class="line" d="m305,104l0,-38" id="svg_28"/>
+   <polygon class="arrow" id="svg_29" points="305,66 300,74 310,74"/>
+   <path class="line" d="m268,186l0,-36" id="svg_30"/>
+   <polygon class="arrow" id="svg_31" points="268,150 263,158 273,158"/>
+   <path class="line" d="m287,186l0,-36" id="svg_32"/>
+   <polygon class="arrow" id="svg_33" points="287,150 282,158 292,158"/>
+   <path class="line" d="m304.5,186.5l0,-36" id="svg_34"/>
+   <polygon class="arrow" id="svg_35" points="304.5,150.5 299.5,158.5 309.5,158.5"/>
+   <path class="dash" d="m305,171.5l36,0" id="svg_36"/>
+   <path class="line" d="m342,186.5l0,-36" id="svg_46"/>
+   <polygon class="arrow" id="svg_45" points="342,150.5 337,158.5 347,158.5"/>
+  </g>
+  <g id="clock-sync">
+   <rect class="box" height="42" id="svg_38" width="66" x="372" y="104"/>
+   <text class="label" id="svg_39" x="405" y="117">时钟</text>
+   <text class="label" id="svg_40" x="405" y="135">同步</text>
+   <path class="line" d="m395.5,42l0,58" id="svg_41"/>
+   <polygon class="arrow" id="svg_42" points="396.5,103.5 391.5,95.5 401.5,95.5"/>
+   <path class="line" d="m397.5,146l0,61l-45,0" id="svg_43"/>
+   <polygon class="arrow" id="svg_44" points="350.5,206.5 358.5,201.5 358.5,211.5"/>
+  </g>
+ </g>
+</svg>
