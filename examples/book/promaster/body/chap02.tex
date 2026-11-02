@@ -2,22 +2,60 @@
 %! TEX root = ../main.tex
 %! TEX encoding = utf-8
 
-\chapter{深海水声信道}[Deep-Sea Acoustic Channel]
+\chapter{水声通信与测距技术基础}[Fundamentals of Underwater Acoustic Communication and Ranging]
 \label{chap02}
 
-\section{深海水声传播特点}[Propagation Characteristics]
+本章介绍水声通信与测距所涉及的基础理论。首先分析水声信道的传播损耗、多径扩展、噪声干扰与时变多普勒特性；随后阐述 SFH-MFSK 调制原理，明确慢跳频与快跳频的界定；进而给出数字通信中帧结构、同步与检测性能的基本结论；最后归纳水声测距的基本方法及其误差来源，为后续算法设计提供理论依据。
 
-深海环境下，声传播路径长、垂向声速剖面变化显著，且海面与海底边界相对远离有效传播主通道。与浅海相比，深海信道通常表现为多径结构相对稀疏但时延跨度更大，传播损耗与频率关系更敏感，低频段在远距离链路中更具优势\cite{hovemRayTraceModeling2013,nosalMeasuredModeledHighfrequency2010}。
+\section{水声信道特性}[Characteristics of Underwater Acoustic Channel]
 
-对声学释放器而言，深海应用的关键问题在于：在较长传播时延与有限带宽条件下，保证指令链路可用性与应答可检测性，并在任务窗口内稳定输出可用测距结果。
+\subsection{传播损耗与声速剖面}
 
-\section{噪声与干扰特性}[Noise and Interference]
+水声信道是典型的时变、频变、空变信道。声波在海水中传播时，其能量损耗主要由扩展损失和吸收损失两部分构成。对于传播距离 $r$、频率 $f$ 的声信号，传播损失可近似表示为
 
-深海背景噪声主要由海况噪声、航运噪声和平台自噪声叠加而成，且频谱分布随作业海域和季节变化。对于释放器常用的中低频工作带，系统既要规避窄带持续干扰，也要应对突发脉冲干扰。若通信体制对单一频点依赖较强，则在局部频带受扰时易出现漏检或误判\cite{freitagAnalysisChannelEffects2001}。
+\begin{equation}
+  TL(r,f) = n\cdot 10\lg r + \alpha(f)\,r,
+  \label{eq:transmission_loss}
+\end{equation}
 
-FH-MFSK 可通过多跳频率分集降低局部干扰风险，在深海长时延链路中具有较好的抗窄带干扰能力和工程鲁棒性。
+其中 $n$ 为扩展因子，球面扩展时 $n=2$，柱面扩展时 $n=1$；$\alpha(f)$ 为吸收系数，单位为 dB/m，随频率升高而迅速增大。式\eqref{eq:transmission_loss}表明，水声信道可用带宽随距离增加而急剧收窄，远距离链路只能工作在较低频段，这是水声通信速率受限的根本原因\cite{hovemRayTraceModeling2013,nosalMeasuredModeledHighfrequency2010}。
 
-\section{时变特性与多普勒影响}[Time Variability and Doppler]
+海水中的声速 $c$ 由温度 $T$、盐度 $S$ 和深度 $z$ 共同决定，工程上常采用经验公式近似：
+
+\begin{equation}
+  c(T,S,z) = 1449.2 + 4.6T - 0.055T^{2} + 2.9\times10^{-4}T^{3} + (1.34-0.01T)(S-35) + 0.016z.
+  \label{eq:sound_speed}
+\end{equation}
+
+声速随深度的变化形成声速剖面，进而决定声线的折射路径。深海环境中典型的声速剖面存在声速极小值层（声道轴），声线在声道轴附近发生折射并形成会聚区，使远距离传播损耗显著低于球面扩展预测值。这一特性为深海远距离声学指令传输提供了有利条件，但也使声线弯曲成为测距误差的重要来源。
+
+\subsection{多径扩展与频率选择性衰落}
+
+声波在海面与海底之间的多次反射、水体内部折射以及不同声线路径的到达时间差异，共同形成多径传播。设第 $i$ 条路径的幅度为 $\alpha_i$、时延为 $\tau_i$，则信道冲激响应可表示为
+
+\begin{equation}
+  h(t) = \sum_{i=1}^{L} \alpha_i \delta(t-\tau_i),
+  \label{eq:channel_ir}
+\end{equation}
+
+其中 $L$ 为有效路径数。多径扩展程度通常用最大时延扩展 $\tau_{\max}$ 描述，对应的相干带宽为
+
+\begin{equation}
+  B_c \approx \frac{1}{\tau_{\max}}.
+  \label{eq:coherence_bw}
+\end{equation}
+
+当信号带宽 $B > B_c$ 时，信道呈现频率选择性衰落，接收信号出现码间干扰；当 $B < B_c$ 时，信道近似为平坦衰落。与浅海相比，深海信道的多径结构相对稀疏，但时延跨度更大，且海面与海底边界相对远离有效传播主通道，因此其多径表现为“路径数少、时延差大”的特征。
+
+对声学释放器而言，多径带来的关键问题在于：在较长传播时延与有限带宽条件下，既要保证指令链路可用性与应答可检测性，又要在任务窗口内稳定输出可用测距结果。
+
+\subsection{噪声与干扰特性}
+
+水声信道的背景噪声主要由海况噪声、航运噪声和平台自噪声叠加而成，且频谱分布随作业海域和季节变化。海况噪声在低频段主要来源于湍流与船舶航行，在中高频段主要由风生海面气泡与热噪声贡献，其功率谱可用 Wenz 谱近似描述。对于释放器常用的中低频工作带，系统既要规避窄带持续干扰，也要应对突发脉冲干扰。若通信体制对单一频点依赖较强，则在局部频带受扰时易出现漏检或误判\cite{freitagAnalysisChannelEffects2001}。
+
+跳频体制可通过多跳频率分集降低局部干扰风险。设干扰在可用带宽内所占比例为 $\rho$，则单跳被干扰的概率为 $\rho$；若一帧包含 $N_h$ 跳且采用纠错编码，则整帧失效概率随 $N_h$ 增加而显著下降，这是 SFH-MFSK 在深海长时延链路中具有较好抗窄带干扰能力和工程鲁棒性的根本原因。
+
+\subsection{时变特性与多普勒影响}
 
 当发射端与接收端存在相对径向速度 $v$，载频为 $f_c$，等效声速为 $c$ 时，多普勒频移近似为
 
@@ -26,9 +64,68 @@ FH-MFSK 可通过多跳频率分集降低局部干扰风险，在深海长时延
   \label{eq:doppler}
 \end{equation}
 
-尽管深海作业平台相对运动通常较慢，但在长距离传播和高载频条件下，频偏仍会影响跳频频点判决与同步稳定性。因此需在参数设计中为多普勒偏移预留频点间隔与检测带宽裕量。
+尽管深海作业平台相对运动通常较慢，但在长距离传播和高载频条件下，频偏仍会影响跳频频点判决与同步稳定性。此外，海面起伏、内波和平台运动还会引起信道冲激响应的时变，其变化速率可用信道相干时间 $T_c$ 描述。为保证每跳内信道近似时不变，需满足
 
-\section{深海信道对 FH-MFSK 参数设计的约束}[Design Constraints]
+\begin{equation}
+  T_h \ll T_c.
+  \label{eq:slow_fading}
+\end{equation}
+
+因此需在参数设计中为多普勒偏移预留频点间隔与检测带宽裕量，并合理选择跳频驻留时间。
+
+\section{SFH-MFSK 调制原理}[Principles of SFH-MFSK Modulation]
+
+\subsection{跳频通信基本原理}
+
+跳频通信的基本思想是使载波频率按照预先约定的伪随机序列在多个频点之间跳变，从而在时频域上分散信号能量。接收端采用与发射端同步的跳频序列进行解跳，只有跳频规律一致的信号才能被正确还原，而窄带干扰和截获信号则被分散到不同频点，难以形成持续有效的干扰或窃听。
+
+跳频通信的主要性能指标包括跳频带宽、跳频点数、跳频速率和跳频序列周期。跳频带宽决定了系统可获得的频率分集增益，跳频点数决定了抗部分频带干扰的能力，跳频序列周期则影响系统的抗截获性能和多址区分能力。
+
+\subsection{慢跳频与快跳频的界定}
+
+按跳频速率 $R_h$ 与符号速率 $R_s$ 的关系，跳频通信可分为快跳频（Fast Frequency Hopping, FFH）与慢跳频（Slow Frequency Hopping, SFH）两类。当 $R_h > R_s$ 时，一个符号周期内经历多次频率跳变，称为快跳频；当 $R_h \le R_s$ 时，一跳驻留时间内至少传输一个完整符号，称为慢跳频。
+
+快跳频依靠频率分集对抗衰落，但要求接收机具备快速跳频同步与相位相干处理能力，对时钟精度和运算资源要求较高。慢跳频则允许接收机在每跳内独立完成能量积累与非相干判决，对同步误差和多普勒频移的容忍度更高，更适合功耗与算力受限的水声终端。
+
+本文采用的 SFH-MFSK 体制中，跳频驻留时间 $T_h$ 与 MFSK 符号周期 $T_s$ 相等，即 $R_h = R_s$，属于慢跳频的临界情形；同时要求 $T_h \gg \tau_{\max}$，使每跳内信道可近似视为时不变，从而保证非相干能量检测的有效性。这一设计在牺牲部分频率分集增益的同时，换取了接收机结构的简化和低信噪比下的检测稳健性，符合声学释放器“低速率、高可靠、低功耗”的应用定位。
+
+\subsection{MFSK 调制与非相干检测}
+
+MFSK 调制在每个符号周期内从 $M$ 个正交子频点中选择一个发送，携带 $\log_2 M$ 比特信息。由于各子频点相互正交，接收端可采用非相干能量检测，无需估计载波相位，因而对信道相位扰动和多普勒频移不敏感。
+
+在加性高斯白噪声信道下，采用非相干检测的正交 MFSK 误符号率可表示为
+
+\begin{equation}
+  P_s = \sum_{m=1}^{M-1} (-1)^{m+1}\binom{M-1}{m}\frac{1}{m+1}\exp\left(-\frac{m}{m+1}\frac{E_s}{N_0}\right),
+  \label{eq:mfsk_ser}
+\end{equation}
+
+其中 $E_s$ 为符号能量，$N_0$ 为噪声单边功率谱密度。当 $E_s/N_0$ 较大时，式\eqref{eq:mfsk_ser}可近似为
+
+\begin{equation}
+  P_s \approx \frac{M-1}{2}\exp\left(-\frac{E_s}{2N_0}\right).
+  \label{eq:mfsk_ser_approx}
+\end{equation}
+
+由式\eqref{eq:mfsk_ser_approx}可见，增大 $M$ 可提高频谱效率，但会带来检测性能的下降；同时，在相同信息速率下增大 $M$ 可延长符号周期，从而增强抗多径能力。因此 $M$ 的选取需要在频谱效率、检测性能和抗多径能力之间折中。
+
+\subsection{SFH-MFSK 信号模型}
+
+设单跳持续时间为 $T_h$，第 $k$ 跳选用的载频为 $f_h(k)$，MFSK 信息频移索引为 $m_k \in \{0,1,\ldots,M-1\}$，则第 $k$ 跳发送信号可写为
+
+\begin{equation}
+  s_k(t)=A\cos\left[2\pi\left(f_h(k)+m_k\Delta f\right)t+\varphi_k\right],\quad kT_h \leq t < (k+1)T_h,
+  \label{eq:fhmfsk_signal}
+\end{equation}
+
+其中 $A$ 为幅度，$\Delta f$ 为相邻 MFSK 子频点间隔，$\varphi_k$ 为相位项。若考虑多径信道，则接收信号可表示为
+
+\begin{equation}
+  r(t)=\sum_{i=1}^{L} \alpha_i(t)s\left(t-\tau_i(t)\right)e^{j2\pi \nu_i(t)t}+n(t),
+  \label{eq:channel_model}
+\end{equation}
+
+其中 $L$ 为有效路径数，$\alpha_i(t)$、$\tau_i(t)$ 和 $\nu_i(t)$ 分别表示第 $i$ 条路径的衰落系数、时延和多普勒项，$n(t)$ 为加性噪声。
 
 设系统可用带宽为 $B$，每跳候选频点数为 $M$，单频点有效带宽为 $B_s$，保护带宽为 $B_g$，则有
 
@@ -46,47 +143,79 @@ FH-MFSK 可通过多跳频率分集降低局部干扰风险，在深海长时延
   \item 前导段长度需满足深海条件下的稳健同步需求。
 \end{enumerate}
 
-\section{面向测距的传播时延建模}[Propagation Delay Model for Ranging]
+\section{数字通信基础}[Fundamentals of Digital Communication]
 
-测距算法建立在传播时延估计基础上。若采用等效声速 $c_e$，传播时延为 $\tau$，则一阶近似距离模型为
+\subsection{帧结构与同步}
+
+数字通信系统通常将待传输信息组织为帧，帧内按功能划分为前导段、同步段、数据段和校验段。前导段用于接收端能量检测与粗同步，同步段用于符号定时与跳频图样对齐，数据段承载有效信息，校验段用于差错检测。
+
+同步是接收机工作的前提。按精度要求，同步可分为粗同步与精同步两个层次：粗同步通过能量门限或滑动相关确定信号到达的大致区间，精同步在此基础上细化符号边界与跳点位置。同步性能直接决定后续解调的正确性，在低信噪比和大多径扩展条件下，同步失败往往是链路中断的主要原因。
+
+\subsection{误码率与检测性能}
+
+误码率是衡量通信系统可靠性的核心指标。对于采用非相干检测的 SFH-MFSK 系统，在平坦衰落信道下，其误码率性能由式\eqref{eq:mfsk_ser}决定；在频率选择性衰落信道下，由于各跳经历独立的衰落，系统可通过跳频获得频率分集增益，其平均误码率可表示为各跳误码率的加权平均。
+
+设第 $k$ 跳的瞬时信噪比为 $\gamma_k$，则平均误符号率为
 
 \begin{equation}
-  R = c_e\tau.
-  \label{eq:simple_range}
+  \bar{P}_s = \int_{0}^{\infty} P_s(\gamma) p(\gamma)\,\mathrm{d}\gamma,
+  \label{eq:average_ser}
 \end{equation}
 
-在深海条件下，声速剖面与声线弯曲会引入系统性误差，因此工程实现中需进一步考虑固定处理延时标定误差、首达径检测误差与声速估计误差的综合影响\cite{sunRelationshipPropagationTime2019,bergerStratificationEffectCompensation2008}。
+其中 $p(\gamma)$ 为信噪比的概率密度函数。当各跳衰落相互独立时，跳数越多，$\bar{P}_s$ 随平均信噪比下降的速度越快，即分集阶数越高。
 
-\section*{本章小结}[Summary]
+\subsection{差错控制与可靠性}
 
-本章分析了浅海水声信道的多径、噪声、时变和多普勒等关键特征，并从带宽、跳速、频点间隔和时延建模等角度讨论了其对 FH-MFSK 声学释放器通信与测距设计的影响，为后续算法研究奠定了信道基础。
+差错控制包括检错与纠错两类机制。对于声学释放器控制链路，其首要目标并非高吞吐率，而是高可靠和低误触发率，因此通常采用“检错 + 重传确认”的策略：接收端通过循环冗余校验（Cyclic Redundancy Check, CRC）判断帧是否正确，正确则回传确认帧，错误则丢弃并等待重传。
 
-（1）使用 xelatex
+对于释放类关键命令，还需在协议层增加重复确认与软件互锁机制，将“通信正确识别”与“执行安全控制”分层处理，避免单次偶发误码导致误动作。
 
-\begin{lstlisting}
-    $ xelatex spine
-    $ xelatex a3cover
-\end{lstlisting}
+\section{水声测距基本方法}[Basic Methods of Underwater Acoustic Ranging]
 
-（2）或者使用 latexmk
+\subsection{测距方法分类}
 
-\begin{lstlisting}
-    $ latexmk spine
-    $ latexmk a3cover
-\end{lstlisting}
+水声测距方法按观测量可分为以下几类：
 
-在 \texttt{Windows} 系统下也可以直接使用 \texttt{build\_all.bat} 批处理生成 \texttt{A3} 封面。
+\begin{enumerate}
+  \item 传播时延法：利用声波传播时间与距离的确定性关系估计距离，精度高、应用最广，可分为单程时延法和双程往返时延法；
+  \item 接收信号强度法：根据传播损失模型由接收电平反推距离，实现简单但受信道起伏和声源级不确定性影响较大，精度较低；
+  \item 多普勒法：利用多普勒频移估计相对径向速度，通常用于测速而非测距；
+  \item 匹配场处理法：利用声场模型与接收阵列数据进行匹配估计，可实现定位，但计算量大且依赖环境模型精度。
+\end{enumerate}
 
-\section{字库安装}[Font Install]
+综合考虑声学释放器的算力约束、功耗预算和作业需求，本文采用双程往返时延法作为测距基础方案。
 
-可以通过模板选项选择~\texttt{fontset}~使用Windows系统字体或者Adobe字体。
+\subsection{往返时延测距原理}
 
-Windows系统下本模板默认是使用Windows字体字库，可以不用设置字体选项，如果使用Adobe字体字库，需要设置~\texttt{fontset=adobe}~。
-在使用此模板撰写论文前，应该确保相应的字库已经安装，并且最好是包含宋体、黑体、楷体和仿宋的完整套装。
+设甲板单元发送询问信号时刻为 $t_1$，水下机接收到该信号的时刻为 $t_2$，完成固定处理后在时刻 $t_3$ 发出应答，甲板单元在时刻 $t_4$ 接收到应答，则往返传播关系为
 
-在 Windows 操作系统下，只要把字库文件复制到 Windows 的 Fonts 文件夹下即可，
-而对于 Linux 系统，可通过右键点击字库文件然后选择【安装字库】菜单选项进行安装。
-Linux 对于系统新安装的字库，需要使用命令~\texttt{sudo fc-cache -fsv}~刷新缓存后才可以使用。
+\begin{equation}
+  t_4 - t_1 = \tau_{\mathrm{up}} + \tau_{\mathrm{proc}} + \tau_{\mathrm{down}},
+  \label{eq:rtt_model}
+\end{equation}
 
-\section{本章小结}[Brief Summary]
-\LaTeX{}~工作环境安装与配置简介。
+其中 $\tau_{\mathrm{up}}$ 为下行传播时延，$\tau_{\mathrm{down}}$ 为上行传播时延，$\tau_{\mathrm{proc}} = t_3 - t_2$ 为固定处理时延。若上下行传播路径近似对称，则有
+
+\begin{equation}
+  \hat{R} = \frac{c_e}{2}\left(t_4 - t_1 - \tau_{\mathrm{proc}}\right),
+  \label{eq:range_estimation}
+\end{equation}
+
+其中 $c_e$ 为等效声速。式\eqref{eq:range_estimation}表明，测距精度主要受三个因素影响：传播时延估计误差、固定处理延时标定误差以及声速估计误差。
+
+\subsection{声线弯曲与声速修正}
+
+在声速剖面非均匀的水体中，声线按 Snell 定律发生折射：
+
+\begin{equation}
+  \frac{\cos\theta(z)}{c(z)} = \text{const},
+  \label{eq:snell}
+\end{equation}
+
+其中 $\theta(z)$ 为声线与水平方向的夹角。声线弯曲使得实际传播路径长于几何直线距离，若仍按式\eqref{eq:range_estimation}计算，将引入系统性误差。
+
+工程上常用的修正方法包括等效声速法和分层积分法。等效声速法以实测时延与已知斜距反算平均声速，实现简单但依赖标定数据；分层积分法将水体按声速梯度划分为若干层，逐层积分求得声线轨迹与传播时延，精度较高但计算量较大。对于目标深度先验难以准确获取的作业场景，免目标深度的快速声线测距方法可在不依赖目标深度输入的条件下完成距离估计，从而降低部署约束并提升现场可操作性\cite{sunRelationshipPropagationTime2019,bergerStratificationEffectCompensation2008}。
+
+\section{本章小结}[Summary]
+
+本章梳理了水声通信与测距的基础理论。首先分析了水声信道的传播损耗、多径扩展、噪声干扰和时变多普勒特性，明确了信道对体制参数的约束；其次阐述了跳频通信原理，界定了慢跳频与快跳频的划分依据，并给出了 SFH-MFSK 的信号模型与带宽约束；随后归纳了数字通信中帧结构、同步、误码率与差错控制的基本结论；最后比较了水声测距的主要方法，给出了往返时延测距模型及声线弯曲修正思路。本章内容为第 3 章的算法设计提供了理论支撑。

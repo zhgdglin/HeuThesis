@@ -1,0 +1,3 @@
+# Agent skills are installed locally for this workspace and are not version controlled.
+/.agents/
+/skills-lock.json

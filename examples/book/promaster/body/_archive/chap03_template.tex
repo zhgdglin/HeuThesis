@@ -1,0 +1,128 @@
+\chapter{通信算法}[Communication Algorithm]
+\label{chap03}
+
+\section{系统通信体制}[Communication Scheme]
+
+声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与浅海复杂信道环境，本文采用 FH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+
+设单帧由前导段、同步段、地址段、命令段、校验段和保护段构成，则典型帧结构可表示为
+
+\begin{equation}
+  \mathcal{F}=\left[\mathcal{P},\mathcal{S},\mathcal{A},\mathcal{C},\mathcal{Q},\mathcal{G}\right].
+\end{equation}
+
+其中 $\mathcal{P}$ 用于粗同步与能量门限触发，$\mathcal{S}$ 用于精同步和频点对齐，$\mathcal{A}$ 表示地址字段，$\mathcal{C}$ 表示控制命令字段，$\mathcal{Q}$ 表示差错校验字段，$\mathcal{G}$ 为保护间隔。
+
+\section{FH-MFSK 信号模型}[Signal Model]
+
+设单跳持续时间为 $T_h$，第 $k$ 跳选用的载频为 $f_h(k)$，MFSK 信息频移索引为 $m_k \in \{0,1,\ldots,M-1\}$，则第 $k$ 跳发送信号可写为
+
+\begin{equation}
+  s_k(t)=A\cos\left[2\pi\left(f_h(k)+m_k\Delta f\right)t+\varphi_k\right],\quad kT_h \leq t < (k+1)T_h,
+  \label{eq:fhmfsk_signal}
+\end{equation}
+
+其中 $A$ 为幅度，$\Delta f$ 为相邻 MFSK 子频点间隔，$\varphi_k$ 为相位项。若考虑多径信道，则接收信号可表示为
+
+\begin{equation}
+  r(t)=\sum_{i=1}^{L} \alpha_i(t)s\left(t-\tau_i(t)\right)e^{j2\pi \nu_i(t)t}+n(t),
+  \label{eq:channel_model}
+\end{equation}
+
+其中 $L$ 为有效路径数，$\alpha_i(t)$、$\tau_i(t)$ 和 $\nu_i(t)$ 分别表示第 $i$ 条路径的衰落系数、时延和多普勒项，$n(t)$ 为加性噪声。
+
+\section{跳频序列与帧设计}[Hopping Sequence and Frame Design]
+
+跳频序列设计直接影响系统抗干扰能力与多址区分能力。对于单设备控制场景，序列的主要要求是周期足够长、相邻跳间碰撞概率低、频谱占用均匀，并便于嵌入式设备在线生成\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。工程实现中可采用线性反馈移位寄存器生成伪随机序列，再通过模运算映射到可用跳频集合。
+
+帧结构设计遵循“先同步、后识别、再执行”的原则。前导段可选用重复跳频图样，使接收端通过滑动相关或能量突变实现粗捕获；同步段用于完成跳点对齐和符号边界精化；地址段与命令段采用固定长度设计，以降低解析复杂度；校验字段可使用 CRC 或奇偶校验以抑制误触发风险。对于释放命令，系统应增加重复确认机制，避免单次偶发误码导致误释放。
+
+\section{同步捕获算法}[Synchronization]
+
+同步是 FH-MFSK 接收机的关键环节，可划分为粗同步与精同步两个阶段。粗同步阶段依据接收带通信号短时能量
+
+\begin{equation}
+  E(n)=\sum_{i=0}^{N-1} \left|r(n+i)\right|^2,
+  \label{eq:energy_det}
+\end{equation}
+
+与门限比较，识别潜在信号到达区间。精同步阶段利用本地已知前导模板计算相关统计量
+
+\begin{equation}
+  \Lambda(\tau)=\sum_{n=0}^{N_p-1} r(n+\tau) p^{\ast}(n),
+  \label{eq:correlation_sync}
+\end{equation}
+
+其中 $p(n)$ 为前导模板，$N_p$ 为相关长度。取 $|\Lambda(\tau)|$ 最大的位置作为同步参考点，并结合相邻跳频能量一致性对异常峰值进行剔除。已有研究表明，在跳频体制下通过同步段与导频段的联合设计，可有效改善低信噪比下的同步稳健性\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,WangDingTiaoPinTongXinXiTongZhongTongBuJiShuDeYanJiuYuFangZhenFenXi2014}。
+
+\section{非相干检测与判决}[Noncoherent Detection]
+
+考虑到声学释放器处理器资源有限且相位跟踪困难，本文采用基于滤波器组和能量积累的非相干检测方法。对每一跳的候选频点建立并行带通滤波器或数字匹配检测支路，计算各支路输出能量
+
+\begin{equation}
+  Z_m(k)=\sum_{n=0}^{N_h-1} \left|y_{m,k}(n)\right|^2,\quad m=0,1,\ldots,M-1,
+  \label{eq:noncoherent_metric}
+\end{equation}
+
+其中 $y_{m,k}(n)$ 为第 $k$ 跳第 $m$ 个候选频点的滤波器输出。取
+
+\begin{equation}
+  \hat{m}_k = \arg\max_m Z_m(k)
+\end{equation}
+
+作为第 $k$ 跳的符号判决结果。若最大能量与次大能量之差小于预设可信度门限，则该跳可标记为低可信度符号，在后续帧级判决或重复发送机制中进一步处理。
+
+\section{抗干扰与可靠执行策略}[Anti-Interference Strategy]
+
+声学释放器控制命令不同于一般数据通信，其首要目标并非高吞吐率，而是高可靠和低误触发率。基于这一要求，本文采用以下策略：
+
+\begin{enumerate}
+  \item 对关键控制命令采用双重地址校验与重复发送确认；
+  \item 对接收符号设置置信度评价，避免低可信度单帧直接触发动作；
+  \item 通过跳频分散传输降低窄带干扰集中破坏的概率；
+  \item 对释放命令设置软件互锁和机械执行前延时确认流程。
+\end{enumerate}
+
+上述设计可将“通信正确识别”与“执行安全控制”分层处理，使系统既具有抗噪抗干扰能力，又能满足释放类装备对安全性的严格要求。
+
+\section*{本章小结}[Summary]
+
+本章围绕 FH-MFSK 声学释放器通信体制，给出了信号模型、帧结构、跳频序列组织、同步捕获、非相干检测及抗干扰执行策略。相关算法设计以低复杂度、高可靠和工程可实现性为目标，为后续测距功能融合和系统落地提供了通信基础。
+    \yihao    \textbackslash yihao~   一号，默认1.5  倍行距 \\
+  }
+\end{flushleft}
+
+\subsection{颜色设置}[Color]
+
+设置文字颜色的方法为：
+\begin{lstlisting}
+\definecolor {myrgb}{rgb}{0.25, 0.5, 0.25}
+\definecolor {mycmyk}{cmyk}{1, 0.8, 0.2, 0.1}
+
+\heiti \textcolor{black}  {这是预定义颜色－黑色 balck}  \\
+\heiti \textcolor{red}    {这是预定义颜色－红色 red}  \\
+\heiti \textcolor{blue}   {这是预定义颜色－蓝色 blue}  \\
+\heiti \textcolor{yellow} {这是预定义颜色－黄色 yellow} \\
+\heiti \textcolor{myrgb}  {这是自定义RGB颜色 myrgb}  \\
+\heiti \textcolor{mycmyk} {这是自定义CMYK颜色 mycmyk} \\
+\end{lstlisting}
+
+
+文字颜色设置打印效果：
+\begin{flushleft}
+  \xiaosan
+  {
+    \definecolor {myrgb}{rgb}{0.25, 0.5, 0.25}
+    \definecolor {mycmyk}{cmyk}{1, 0.8, 0.2, 0.1}
+
+    \heiti \textcolor{black}  {这是预定义颜色－黑色 balck}  \\
+    \heiti \textcolor{red}    {这是预定义颜色－红色 red}  \\
+    \heiti \textcolor{blue}   {这是预定义颜色－蓝色 blue}  \\
+    \heiti \textcolor{yellow} {这是预定义颜色－黄色 yellow} \\
+    \heiti \textcolor{myrgb}  {这是自定义RGB颜色 myrgb}  \\
+    \heiti \textcolor{mycmyk} {这是自定义CMYK颜色 mycmyk} \\
+  }
+\end{flushleft}
+
+\section{本章小结}[Brief summary]
+简单介绍模板使用方法和文字格式化方法。

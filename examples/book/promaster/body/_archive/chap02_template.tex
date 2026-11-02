@@ -1,0 +1,92 @@
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+\chapter{深海水声信道}[Deep-Sea Acoustic Channel]
+\label{chap02}
+
+\section{深海水声传播特点}[Propagation Characteristics]
+
+深海环境下，声传播路径长、垂向声速剖面变化显著，且海面与海底边界相对远离有效传播主通道。与浅海相比，深海信道通常表现为多径结构相对稀疏但时延跨度更大，传播损耗与频率关系更敏感，低频段在远距离链路中更具优势\cite{hovemRayTraceModeling2013,nosalMeasuredModeledHighfrequency2010}。
+
+对声学释放器而言，深海应用的关键问题在于：在较长传播时延与有限带宽条件下，保证指令链路可用性与应答可检测性，并在任务窗口内稳定输出可用测距结果。
+
+\section{噪声与干扰特性}[Noise and Interference]
+
+深海背景噪声主要由海况噪声、航运噪声和平台自噪声叠加而成，且频谱分布随作业海域和季节变化。对于释放器常用的中低频工作带，系统既要规避窄带持续干扰，也要应对突发脉冲干扰。若通信体制对单一频点依赖较强，则在局部频带受扰时易出现漏检或误判\cite{freitagAnalysisChannelEffects2001}。
+
+FH-MFSK 可通过多跳频率分集降低局部干扰风险，在深海长时延链路中具有较好的抗窄带干扰能力和工程鲁棒性。
+
+\section{时变特性与多普勒影响}[Time Variability and Doppler]
+
+当发射端与接收端存在相对径向速度 $v$，载频为 $f_c$，等效声速为 $c$ 时，多普勒频移近似为
+
+\begin{equation}
+  \Delta f \approx \frac{v}{c}f_c.
+  \label{eq:doppler}
+\end{equation}
+
+尽管深海作业平台相对运动通常较慢，但在长距离传播和高载频条件下，频偏仍会影响跳频频点判决与同步稳定性。因此需在参数设计中为多普勒偏移预留频点间隔与检测带宽裕量。
+
+\section{深海信道对 FH-MFSK 参数设计的约束}[Design Constraints]
+
+设系统可用带宽为 $B$，每跳候选频点数为 $M$，单频点有效带宽为 $B_s$，保护带宽为 $B_g$，则有
+
+\begin{equation}
+  B \geq M(B_s + B_g).
+  \label{eq:bandwidth_constraint}
+\end{equation}
+
+此外，单跳时长 $T_h$ 与检测增益、链路实时性之间存在折中：
+
+\begin{enumerate}
+  \item $T_h$ 过短会导致能量积累不足，降低低信噪比下检测概率；
+  \item $T_h$ 过长会增加时变失配风险并拉长单帧时延；
+  \item 频点间隔需覆盖最大预期频偏及滤波主瓣宽度；
+  \item 前导段长度需满足深海条件下的稳健同步需求。
+\end{enumerate}
+
+\section{面向测距的传播时延建模}[Propagation Delay Model for Ranging]
+
+测距算法建立在传播时延估计基础上。若采用等效声速 $c_e$，传播时延为 $\tau$，则一阶近似距离模型为
+
+\begin{equation}
+  R = c_e\tau.
+  \label{eq:simple_range}
+\end{equation}
+
+在深海条件下，声速剖面与声线弯曲会引入系统性误差，因此工程实现中需进一步考虑固定处理延时标定误差、首达径检测误差与声速估计误差的综合影响\cite{sunRelationshipPropagationTime2019,bergerStratificationEffectCompensation2008}。
+
+\section*{本章小结}[Summary]
+
+本章分析了浅海水声信道的多径、噪声、时变和多普勒等关键特征，并从带宽、跳速、频点间隔和时延建模等角度讨论了其对 FH-MFSK 声学释放器通信与测距设计的影响，为后续算法研究奠定了信道基础。
+
+（1）使用 xelatex
+
+\begin{lstlisting}
+    $ xelatex spine
+    $ xelatex a3cover
+\end{lstlisting}
+
+（2）或者使用 latexmk
+
+\begin{lstlisting}
+    $ latexmk spine
+    $ latexmk a3cover
+\end{lstlisting}
+
+在 \texttt{Windows} 系统下也可以直接使用 \texttt{build\_all.bat} 批处理生成 \texttt{A3} 封面。
+
+\section{字库安装}[Font Install]
+
+可以通过模板选项选择~\texttt{fontset}~使用Windows系统字体或者Adobe字体。
+
+Windows系统下本模板默认是使用Windows字体字库，可以不用设置字体选项，如果使用Adobe字体字库，需要设置~\texttt{fontset=adobe}~。
+在使用此模板撰写论文前，应该确保相应的字库已经安装，并且最好是包含宋体、黑体、楷体和仿宋的完整套装。
+
+在 Windows 操作系统下，只要把字库文件复制到 Windows 的 Fonts 文件夹下即可，
+而对于 Linux 系统，可通过右键点击字库文件然后选择【安装字库】菜单选项进行安装。
+Linux 对于系统新安装的字库，需要使用命令~\texttt{sudo fc-cache -fsv}~刷新缓存后才可以使用。
+
+\section{本章小结}[Brief Summary]
+\LaTeX{}~工作环境安装与配置简介。

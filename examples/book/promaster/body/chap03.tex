@@ -1,45 +1,64 @@
-\chapter{通信算法}[Communication Algorithm]
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap03.tex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{基于 SFH-MFSK 的水声通信与测距算法}[Underwater Acoustic Communication and Ranging Algorithms Based on SFH-MFSK]
 \label{chap03}
 
-\section{系统通信体制}[Communication Scheme]
+本章给出基于 SFH-MFSK 的水声通信与测距算法设计。首先给出通信与测距一体化的总体方案；随后分别阐述 SFH-MFSK 通信算法与往返时延测距算法的关键环节，包括信号模型、跳频序列与帧结构、同步捕获、非相干检测、抗干扰策略、首达径检测、多径抑制与声速修正；最后给出通信与测距一体化的整体处理流程，并分析算法的主要误差来源。
 
-声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与浅海复杂信道环境，本文采用 FH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+\section{通信与测距一体化总体方案}[Overall Scheme of Integrated Communication and Ranging]
+
+声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与深海远距离信道环境，本文采用 SFH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+
+在通信链路的基础上，测距功能复用同一套收发通道与帧结构：甲板单元发送测距请求，水下机在识别请求后经固定处理延时发回应答，甲板单元依据往返时延估计斜距。由此形成“通信主导、测距协同”的一体化方案，其总体结构如图~\ref{fig:overall_scheme} 所示。
+
+\begin{figure}[htbp]
+  \centering
+  %\includegraphics[width=0.85\textwidth]{overall_scheme.png}
+  \fbox{\parbox[c][4cm][c]{0.85\textwidth}{\centering 图待补充：通信与测距一体化总体方案框图}}
+  \bicaption[fig:overall_scheme]{}{通信与测距一体化总体方案}{Fig.}{Overall scheme of integrated communication and ranging}
+\end{figure}
+
+该方案的设计原则如下：
+
+\begin{enumerate}
+  \item 通信与测距共用跳频波形与同步机制，避免增加额外硬件开销；
+  \item 测距请求与应答复用控制帧格式，通过命令字段区分工作模式；
+  \item 关键控制命令采用重复确认与软件互锁，保证释放动作安全；
+  \item 算法实现以低复杂度、低功耗为目标，适配嵌入式处理器资源约束。
+\end{enumerate}
+
+\section{SFH-MFSK 通信算法}[SFH-MFSK Communication Algorithm]
+
+\subsection{信号模型}
 
 设单帧由前导段、同步段、地址段、命令段、校验段和保护段构成，则典型帧结构可表示为
 
 \begin{equation}
   \mathcal{F}=\left[\mathcal{P},\mathcal{S},\mathcal{A},\mathcal{C},\mathcal{Q},\mathcal{G}\right].
+  \label{eq:frame_structure}
 \end{equation}
 
 其中 $\mathcal{P}$ 用于粗同步与能量门限触发，$\mathcal{S}$ 用于精同步和频点对齐，$\mathcal{A}$ 表示地址字段，$\mathcal{C}$ 表示控制命令字段，$\mathcal{Q}$ 表示差错校验字段，$\mathcal{G}$ 为保护间隔。
 
-\section{FH-MFSK 信号模型}[Signal Model]
+第 $k$ 跳发送信号如式\eqref{eq:fhmfsk_signal}所示，接收信号如式\eqref{eq:channel_model}所示。由于采用慢跳频体制，每跳驻留时间 $T_h$ 远大于信道最大多径时延扩展 $\tau_{\max}$，因此每跳内信道可近似视为时不变，接收端可在每跳内独立完成能量积累与判决。
 
-设单跳持续时间为 $T_h$，第 $k$ 跳选用的载频为 $f_h(k)$，MFSK 信息频移索引为 $m_k \in \{0,1,\ldots,M-1\}$，则第 $k$ 跳发送信号可写为
-
-\begin{equation}
-  s_k(t)=A\cos\left[2\pi\left(f_h(k)+m_k\Delta f\right)t+\varphi_k\right],\quad kT_h \leq t < (k+1)T_h,
-  \label{eq:fhmfsk_signal}
-\end{equation}
-
-其中 $A$ 为幅度，$\Delta f$ 为相邻 MFSK 子频点间隔，$\varphi_k$ 为相位项。若考虑多径信道，则接收信号可表示为
-
-\begin{equation}
-  r(t)=\sum_{i=1}^{L} \alpha_i(t)s\left(t-\tau_i(t)\right)e^{j2\pi \nu_i(t)t}+n(t),
-  \label{eq:channel_model}
-\end{equation}
-
-其中 $L$ 为有效路径数，$\alpha_i(t)$、$\tau_i(t)$ 和 $\nu_i(t)$ 分别表示第 $i$ 条路径的衰落系数、时延和多普勒项，$n(t)$ 为加性噪声。
-
-\section{跳频序列与帧设计}[Hopping Sequence and Frame Design]
+\subsection{跳频序列与帧结构设计}
 
 跳频序列设计直接影响系统抗干扰能力与多址区分能力。对于单设备控制场景，序列的主要要求是周期足够长、相邻跳间碰撞概率低、频谱占用均匀，并便于嵌入式设备在线生成\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。工程实现中可采用线性反馈移位寄存器生成伪随机序列，再通过模运算映射到可用跳频集合。
 
 帧结构设计遵循“先同步、后识别、再执行”的原则。前导段可选用重复跳频图样，使接收端通过滑动相关或能量突变实现粗捕获；同步段用于完成跳点对齐和符号边界精化；地址段与命令段采用固定长度设计，以降低解析复杂度；校验字段可使用 CRC 或奇偶校验以抑制误触发风险。对于释放命令，系统应增加重复确认机制，避免单次偶发误码导致误释放。
 
-\section{同步捕获算法}[Synchronization]
+\subsection{同步捕获算法}
 
-同步是 FH-MFSK 接收机的关键环节，可划分为粗同步与精同步两个阶段。粗同步阶段依据接收带通信号短时能量
+同步是 SFH-MFSK 接收机的关键环节，可划分为粗同步与精同步两个阶段。粗同步阶段依据接收带通信号短时能量
 
 \begin{equation}
   E(n)=\sum_{i=0}^{N-1} \left|r(n+i)\right|^2,
@@ -55,7 +74,7 @@
 
 其中 $p(n)$ 为前导模板，$N_p$ 为相关长度。取 $|\Lambda(\tau)|$ 最大的位置作为同步参考点，并结合相邻跳频能量一致性对异常峰值进行剔除。已有研究表明，在跳频体制下通过同步段与导频段的联合设计，可有效改善低信噪比下的同步稳健性\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,WangDingTiaoPinTongXinXiTongZhongTongBuJiShuDeYanJiuYuFangZhenFenXi2014}。
 
-\section{非相干检测与判决}[Noncoherent Detection]
+\subsection{非相干检测与判决}
 
 考虑到声学释放器处理器资源有限且相位跟踪困难，本文采用基于滤波器组和能量积累的非相干检测方法。对每一跳的候选频点建立并行带通滤波器或数字匹配检测支路，计算各支路输出能量
 
@@ -68,11 +87,12 @@
 
 \begin{equation}
   \hat{m}_k = \arg\max_m Z_m(k)
+  \label{eq:decision}
 \end{equation}
 
 作为第 $k$ 跳的符号判决结果。若最大能量与次大能量之差小于预设可信度门限，则该跳可标记为低可信度符号，在后续帧级判决或重复发送机制中进一步处理。
 
-\section{抗干扰与可靠执行策略}[Anti-Interference Strategy]
+\subsection{抗干扰与可靠执行策略}
 
 声学释放器控制命令不同于一般数据通信，其首要目标并非高吞吐率，而是高可靠和低误触发率。基于这一要求，本文采用以下策略：
 
@@ -85,44 +105,89 @@
 
 上述设计可将“通信正确识别”与“执行安全控制”分层处理，使系统既具有抗噪抗干扰能力，又能满足释放类装备对安全性的严格要求。
 
-\section*{本章小结}[Summary]
+\section{往返时延测距算法}[Round-Trip Delay Ranging Algorithm]
 
-本章围绕 FH-MFSK 声学释放器通信体制，给出了信号模型、帧结构、跳频序列组织、同步捕获、非相干检测及抗干扰执行策略。相关算法设计以低复杂度、高可靠和工程可实现性为目标，为后续测距功能融合和系统落地提供了通信基础。
-    \yihao    \textbackslash yihao~   一号，默认1.5  倍行距 \\
-  }
-\end{flushleft}
+\subsection{测距任务与技术路线}
 
-\subsection{颜色设置}[Color]
+在声学释放器作业过程中，测距功能主要服务于两类需求：一是辅助作业人员判断目标方位与距离变化，提升回收作业效率；二是为后续水下定位、设备状态评估或释放后目标搜索提供基础观测量。结合声学释放器通信链路，本文采用“主动询问 + 被动应答”的双向时延测距模式，即甲板单元发送测距请求信号，水下机在识别后经过固定处理延时发回应答信号，甲板单元再根据往返时延估计目标距离\cite{LiangBoZhongChengShuiXiaCeJuJiYaoKongXiTongZhuKongJiSheJi2009,ZhangMeiKaiJiYuSTM32ChuLiQiDeShuiXiaXinBiaoDeZhuDongCeJuSheJi2016}。
 
-设置文字颜色的方法为：
-\begin{lstlisting}
-\definecolor {myrgb}{rgb}{0.25, 0.5, 0.25}
-\definecolor {mycmyk}{cmyk}{1, 0.8, 0.2, 0.1}
+\subsection{往返时延测距模型}
 
-\heiti \textcolor{black}  {这是预定义颜色－黑色 balck}  \\
-\heiti \textcolor{red}    {这是预定义颜色－红色 red}  \\
-\heiti \textcolor{blue}   {这是预定义颜色－蓝色 blue}  \\
-\heiti \textcolor{yellow} {这是预定义颜色－黄色 yellow} \\
-\heiti \textcolor{myrgb}  {这是自定义RGB颜色 myrgb}  \\
-\heiti \textcolor{mycmyk} {这是自定义CMYK颜色 mycmyk} \\
-\end{lstlisting}
+设甲板单元发送询问信号时刻为 $t_1$，水下机接收到该信号的时刻为 $t_2$，完成固定处理后在时刻 $t_3$ 发出应答，甲板单元在时刻 $t_4$ 接收到应答，则往返传播关系如式\eqref{eq:rtt_model}所示，距离估计如式\eqref{eq:range_estimation}所示。
 
+式\eqref{eq:range_estimation}表明，测距精度主要受三个因素影响：传播时延估计误差、固定处理延时标定误差以及声速估计误差。其中固定处理延时 $\tau_{\mathrm{proc}}$ 由水下机软件流程决定，需通过标定获得并在实现中保持稳定。
 
-文字颜色设置打印效果：
-\begin{flushleft}
-  \xiaosan
-  {
-    \definecolor {myrgb}{rgb}{0.25, 0.5, 0.25}
-    \definecolor {mycmyk}{cmyk}{1, 0.8, 0.2, 0.1}
+\subsection{首达径检测与时延估计}
 
-    \heiti \textcolor{black}  {这是预定义颜色－黑色 balck}  \\
-    \heiti \textcolor{red}    {这是预定义颜色－红色 red}  \\
-    \heiti \textcolor{blue}   {这是预定义颜色－蓝色 blue}  \\
-    \heiti \textcolor{yellow} {这是预定义颜色－黄色 yellow} \\
-    \heiti \textcolor{myrgb}  {这是自定义RGB颜色 myrgb}  \\
-    \heiti \textcolor{mycmyk} {这是自定义CMYK颜色 mycmyk} \\
-  }
-\end{flushleft}
+多径条件下，最大相关峰值并不一定对应首达径，因此不能简单地把最大峰值位置作为测距时延。本文采用匹配滤波与门限判决相结合的方法进行首达径估计。设发送参考信号为 $s(t)$，接收信号为 $r(t)$，则匹配滤波输出为
 
-\section{本章小结}[Brief summary]
-简单介绍模板使用方法和文字格式化方法。
+\begin{equation}
+  y(\tau) = \int r(t)s(t-\tau)\mathrm{d}t,
+  \label{eq:mf_output}
+\end{equation}
+
+在离散实现中，通过滑动相关计算序列 $y[n]$，并结合噪声统计特性设置门限 $\gamma$。当某一候选峰值同时满足
+
+\begin{equation}
+  |y[n]| > \gamma
+  \label{eq:threshold_decision}
+\end{equation}
+
+且其前方保护区间内不存在更早的高可信峰值时，将其判定为首达径位置。该方法兼顾了对低信噪比条件下弱直达径的敏感性，以及对后续强反射峰值的抑制能力\cite{HaoMengHuaJiYuQianHaiDuoJingShiYanDeFuHeMaShuiShengCeJuYanJiu2020}。
+
+\subsection{多径抑制与异常值剔除}
+
+在连续多次测距过程中，受海面起伏和瞬时干扰影响，个别测距结果可能出现跳变。为提高结果稳定性，可对多次测距结果采用中值滤波或限差判决。若第 $i$ 次测距结果为 $R_i$，窗口长度为 $K$，则平滑结果可表示为
+
+\begin{equation}
+  \tilde{R}_i = \operatorname{median}\left\{R_{i-K+1}, \ldots, R_i\right\}.
+  \label{eq:median_filter}
+\end{equation}
+
+若 $|R_i - \tilde{R}_i|$ 超过异常门限，则可将该次结果标记为异常值，并触发重测。该策略适用于舰船或小型作业平台缓慢运动条件下的近实时距离显示。
+
+\subsection{声速修正方法}
+
+声速变化是测距误差的重要来源。若声速存在偏差 $\Delta c$，传播时延估计为 $\hat{\tau}$，则距离误差近似满足
+
+\begin{equation}
+  \Delta R \approx \hat{\tau} \Delta c,
+  \label{eq:sound_speed_error}
+\end{equation}
+
+当作业海域可提供温盐深数据或经验声速剖面时，可采用平均声速修正或分层积分近似方法提高测距精度\cite{ChenHongXiaLuLianGangHuaFengFanBinLiuNuoFangJunWeiSanZhongChangYongShengSuSuanFaDeBiJiao2005,ZhaoDiNengShengSuPouMianJingJianYunSuanDeGaiJinDPSuanFaJiQiPingGu2014}。若缺少完整剖面信息，可根据历史海区数据、实时温度测量值和作业深度估计得到简化等效声速，用于工程场景下的一阶补偿。
+
+针对深海作业中目标深度先验难以准确获取的问题，本文采用免目标深度的快速声线测距方法：以实测往返时延和已知收发深度为输入，通过快速声线追踪迭代求解水平距离，避免了对目标深度的先验依赖，在保证修正效果的同时满足工程实时性要求。
+
+\section{通信与测距一体化处理流程}[Integrated Processing Flow]
+
+综合上述分析，本文通信与测距一体化处理流程可概括为：
+
+\begin{enumerate}
+  \item 甲板单元按跳频序列组织帧结构，发射唤醒或测距请求信号并记录发送时刻；
+  \item 水下机通过能量门限完成粗同步，通过前导相关完成精同步与跳点对齐；
+  \item 水下机对每跳候选频点进行非相干能量检测与判决，完成地址识别与命令解析；
+  \item 若为测距请求，水下机在固定延时后发射应答信号；若为控制命令，则进入安全校验与执行流程；
+  \item 甲板单元对接收信号进行匹配滤波和首达径检测，扣除固定处理延时并根据等效声速换算斜距；
+  \item 对连续测距结果进行平滑处理和异常值剔除，并将结果提供给上位界面或控制逻辑使用。
+\end{enumerate}
+
+该流程将通信与测距在波形、同步和帧结构三个层面统一，使两类功能共享同一套硬件与软件资源，降低了系统复杂度与功耗。
+
+\section{算法误差来源分析}[Error Analysis]
+
+通信与测距算法的误差主要来源包括：
+
+\begin{enumerate}
+  \item 时延估计误差：由低信噪比、相关峰扩展和多径混叠引起；
+  \item 固定延时误差：由处理器中断抖动、任务调度和串口缓存造成；
+  \item 声速模型误差：由环境参数不准确或声速剖面简化带来；
+  \item 同步误差：由多普勒频移和跳频图样失配引起，会同时影响解调正确性与测距时延估计；
+  \item 几何误差：当收发换能器位置不一致时，显示距离与目标参考点距离存在偏差。
+\end{enumerate}
+
+因此，系统设计中不仅要优化算法本身，还需对硬件时钟、任务优先级和延时标定机制进行协同设计。
+
+\section{本章小结}[Summary]
+
+本章给出了基于 SFH-MFSK 的水声通信与测距算法。首先提出了通信与测距一体化总体方案；随后设计了 SFH-MFSK 通信算法，包括帧结构、跳频序列组织、同步捕获、非相干检测及抗干扰执行策略；进而建立了往返时延测距模型，研究了首达径检测、多径抑制、声速修正和异常值剔除方法；最后给出了通信与测距一体化的整体处理流程，并分析了算法的主要误差来源。相关算法设计以低复杂度、高可靠和工程可实现性为目标，为第 4 章的仿真分析和第 5 章的嵌入式移植提供了算法基础。

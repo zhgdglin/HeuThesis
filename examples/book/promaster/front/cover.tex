@@ -18,8 +18,8 @@
   %=========
   % 中文信息
   %=========
-  ctitlecover={基于 FH-MFSK 的声学释放器及测距技术研究与实现}, %放在封面中使用，在需要换行的地方插入\\
-  ctitle={基于 FH-MFSK 的声学释放器及测距技术研究与实现},        %页眉使用论文标题，不换行
+  ctitlecover={基于 SFH-MFSK 的水声通信与测距算法研究}, %放在封面中使用，在需要换行的地方插入\\
+  ctitle={基于 SFH-MFSK 的水声通信与测距算法研究},        %页眉使用论文标题，不换行
   cxueke={专业学位},                %学位类型：工学/专业学位/工商管理/……
   csubject={电子信息},              %专业
   caffil={水声工程学院},              %所在单位/学院
@@ -41,7 +41,7 @@
   %=========
   % 英文信息
   %=========
-  etitle={Research and Implementation of Acoustic Releaser and Ranging Technology Based on FH-MFSK}, %论文题目（英文），在需要换行的地方插入\\
+  etitle={Research on Underwater Acoustic Communication and Ranging Algorithms Based on SFH-MFSK}, %论文题目（英文），在需要换行的地方插入\\
   exueke={Professional Degree}, %学科名称（英文）
   esubject={Underwater Acoustic Engineering}, %专业名称（英文）
   eaffil={School to Be Filled}, %学院名称（英文）
@@ -56,23 +56,31 @@
   estudenttype={Master of Electronic Information}, %专业学位类型（英文）
   %
   % 中英文关键词，用“英文逗号（,）”分割
-  ckeywords={声学释放器,FH-MFSK,水声通信,测距技术,浅海信道},
-  ekeywords={acoustic releaser,FH-MFSK,underwater acoustic communication,ranging technology,shallow-water channel},
+  ckeywords={SFH-MFSK,水声通信,测距算法,声学释放器,慢跳频},
+  ekeywords={SFH-MFSK,underwater acoustic communication,ranging algorithm,acoustic releaser,slow frequency hopping},
 }
 
 \begin{cabstract}
-  声学释放器是深海潜标、海底观测节点和水下布放回收系统中的关键装备，其通信可靠性和测距精度直接影响海上作业安全、设备回收成功率以及任务组织效率。针对浅海环境中多径扩展显著、混响复杂、环境噪声强和多普勒扰动明显等问题，本文围绕基于频率跳变多进制频移键控（Frequency Hopping Multi-Frequency Shift Keying, FH-MFSK）的声学释放器开展通信与测距一体化研究。
+  声学释放器是深海潜标、海底观测节点和水下布放回收系统中的关键装备，其通信可靠性和测距精度直接影响海上作业安全、设备回收成功率以及任务组织效率。针对水声信道传播损耗大、多径扩展显著、环境噪声强和多普勒扰动明显等问题，本文以声学释放器为应用背景，围绕基于慢跳频多进制频移键控（Slow Frequency Hopping Multi-Frequency Shift Keying, SFH-MFSK）的水声通信与测距算法开展研究。
 
-  首先，结合浅海水声传播机理，对多径、噪声、时变和频率选择性衰落特性进行分析，建立面向 FH-MFSK 信号设计的浅海信道描述框架，明确跳频间隔、符号时长、带宽配置以及同步门限等关键参数之间的约束关系。其次，设计了适用于低信噪比和窄带干扰环境的 FH-MFSK 通信算法，给出了跳频序列组织、导频与帧结构设计、同步捕获、非相干能量检测及判决流程，并从抗部分频带干扰、抗多径和工程实现复杂度三个方面分析了算法特点。随后，针对声学释放器近中距离作业需求，研究了基于应答时延估计的测距方法，构建了包含传播时延、固定处理时延和声速修正项的测距模型，提出利用匹配滤波峰值搜索与多径甄别相结合的首达径估计流程，以提高复杂浅海环境下的测距稳定性。
+  首先，分析了水声信道的传播损耗、多径扩展、噪声干扰和时变多普勒特性，明确了信道对体制参数的约束关系；阐述了跳频通信原理，界定了慢跳频与快跳频的划分依据，并给出了 SFH-MFSK 的信号模型与带宽约束；归纳了数字通信中帧结构、同步、误码率与差错控制的基本结论，并比较了水声测距的主要方法。
 
-  在系统实现方面，完成了由水下机与甲板单元构成的声学释放器总体方案设计，给出了硬件模块划分、嵌入式软件流程、指令交互机制以及联调测试方案，并对通信性能、时延稳定性和测距误差评估方法进行了说明。本文工作为 FH-MFSK 声学释放器的工程实现提供了可复用的算法与系统设计思路，也为后续开展海试验证、参数优化和产品化研制奠定了基础。
+  其次，设计了基于 SFH-MFSK 的水声通信与测距算法。通信算法方面，给出了帧结构、跳频序列组织、基于能量门限与相关统计量的同步捕获方法，以及适用于低复杂度嵌入式平台的非相干能量检测与判决流程，并从抗部分频带干扰、抗多径和工程实现复杂度三个方面分析了算法特点。测距算法方面，建立了包含传播时延、固定处理时延和声速修正项的往返时延测距模型，提出了匹配滤波峰值搜索与多径甄别相结合的首达径估计流程，并引入免目标深度的快速声线修正方法，以提高复杂水声环境下的测距稳定性。在此基础上给出了通信与测距一体化的整体处理流程。
+
+  随后，搭建了算法仿真平台，在不同信道条件下对误码率、通信成功率、同步性能、抗干扰能力、测距误差和声速修正效果进行了仿真分析，并讨论了跳频点数、MFSK 进制数、跳频驻留时间和同步门限等关键参数的影响规律，给出了推荐参数配置。
+
+  最后，完成了算法的嵌入式移植与实验验证，给出了软硬件平台设计、定点化实现方法、参数配置以及实验室、水池和外场三个层次的测试结果，并与仿真结果进行了对比分析。本文工作为 SFH-MFSK 水声通信与测距算法的工程实现提供了可复用的算法与系统设计思路，也为后续开展海试验证、参数优化和产品化研制奠定了基础。
 \end{cabstract}
 
 \begin{eabstract}
-  Acoustic releasers are key devices in deep-sea moorings, seabed observation nodes, and underwater deployment-recovery systems. Their communication reliability and ranging accuracy directly affect operational safety, recovery success rate, and mission efficiency. To address the problems of severe multipath spread, strong reverberation, ambient noise, and Doppler disturbance in shallow-water environments, this thesis studies an integrated communication and ranging scheme for an acoustic releaser based on Frequency Hopping Multi-Frequency Shift Keying (FH-MFSK).
+  Acoustic releasers are key devices in deep-sea moorings, seabed observation nodes, and underwater deployment-recovery systems. Their communication reliability and ranging accuracy directly affect operational safety, recovery success rate, and mission efficiency. To address the problems of high propagation loss, severe multipath spread, strong ambient noise, and Doppler disturbance in underwater acoustic channels, this thesis takes an acoustic releaser as the application background and studies underwater acoustic communication and ranging algorithms based on Slow Frequency Hopping Multi-Frequency Shift Keying (SFH-MFSK).
 
-  First, the propagation characteristics of shallow-water acoustic channels are analyzed, and a channel description framework oriented to FH-MFSK signal design is established. The relationships among hopping interval, symbol duration, bandwidth allocation, and synchronization threshold are clarified. Then, an FH-MFSK communication algorithm suitable for low signal-to-noise ratio and narrowband interference environments is designed, including hopping sequence organization, pilot and frame structure, synchronization acquisition, noncoherent energy detection, and decision rules. Its anti-interference capability, multipath robustness, and implementation complexity are discussed from an engineering perspective. After that, a ranging method based on reply delay estimation is investigated for short- and medium-range operation of acoustic releasers. A ranging model containing propagation delay, fixed processing delay, and sound-speed correction is constructed, and a first-arrival estimation procedure combining matched filtering peak search with multipath discrimination is presented to improve ranging stability in complex shallow-water environments.
+  First, the propagation loss, multipath spread, noise, and time-varying Doppler characteristics of underwater acoustic channels are analyzed, and the constraints imposed by the channel on system parameters are clarified. The principles of frequency hopping communication are described, the criterion distinguishing slow frequency hopping from fast frequency hopping is defined, and the signal model and bandwidth constraint of SFH-MFSK are derived. The fundamentals of frame structure, synchronization, bit error rate, and error control in digital communication are summarized, and the main methods of underwater acoustic ranging are compared.
 
-  Finally, the overall system architecture consisting of an underwater unit and a deck unit is developed. The hardware partition, embedded software flow, command interaction mechanism, and joint testing scheme are described, together with the evaluation methods for communication performance, delay stability, and ranging error. The work in this thesis provides a reusable algorithmic and system-level design route for FH-MFSK acoustic releasers and lays a foundation for subsequent sea trials, parameter optimization, and product-oriented development.
+  Second, underwater acoustic communication and ranging algorithms based on SFH-MFSK are designed. For the communication algorithm, the frame structure, hopping sequence organization, synchronization acquisition based on energy threshold and correlation statistics, and a noncoherent energy detection and decision procedure suitable for low-complexity embedded platforms are presented, and the algorithm characteristics are analyzed in terms of partial-band interference rejection, multipath robustness, and implementation complexity. For the ranging algorithm, a round-trip delay ranging model containing propagation delay, fixed processing delay, and sound-speed correction is established, a first-arrival estimation procedure combining matched filtering peak search with multipath discrimination is proposed, and a fast ray-based sound-speed correction method that does not require target depth is introduced to improve ranging stability in complex underwater acoustic environments. On this basis, an integrated processing flow for communication and ranging is given.
+
+  Third, a simulation platform is built, and the bit error rate, communication success rate, synchronization performance, anti-interference capability, ranging error, and sound-speed correction effect are analyzed under different channel conditions. The influence of key parameters, including the number of hopping frequencies, the MFSK order, the hopping dwell time, and the synchronization threshold, is discussed, and a recommended parameter configuration is provided.
+
+  Finally, the embedded implementation and experimental verification of the algorithms are completed. The hardware and software platform design, fixed-point implementation methods, parameter configuration, and test results at the laboratory, water tank, and field levels are presented and compared with the simulation results. The work in this thesis provides a reusable algorithmic and system-level design route for the engineering implementation of SFH-MFSK underwater acoustic communication and ranging algorithms, and lays a foundation for subsequent sea trials, parameter optimization, and product-oriented development.
 \end{eabstract}
 

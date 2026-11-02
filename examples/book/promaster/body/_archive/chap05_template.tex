@@ -1,0 +1,799 @@
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap04.tex
+%
+%  版本：1.0.0
+%  最后更新：
+%  修改者：Leo LiWenhui lwh@hrbeu.edu.cn
+%  修订者：
+%  编译环境1：Ubuntu 12.04 + TeXLive 2013/2014
+%  编译环境2：Windows 7/8  + TeXLive 2013/2014
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{软硬件系统设计及测试}[System Design and Test]
+\label{chap05}
+
+\section{系统总体方案}[Overall Architecture]
+
+本文设计的声学释放器系统由甲板单元、水下机、换能器组件和机械释放机构组成。甲板单元负责指令生成、发射控制、应答接收、测距计算与人机交互；水下机负责信号接收与解调、身份识别、应答发射、状态管理及释放执行；机械释放机构完成最终的物理解锁动作。系统总体设计原则如下：
+
+\begin{enumerate}
+  \item 以可靠执行为首要目标，通信、控制与执行分层实现；
+  \item 以低功耗为重要约束，水下机采用休眠唤醒与事件驱动机制；
+  \item 以可维护性为工程目标，软硬件接口清晰、模块边界明确；
+  \item 以测试可验证性为导向，关键链路均支持时序观测与参数标定。
+\end{enumerate}
+
+\section{水下机硬件设计}[Underwater Unit Hardware]
+
+水下机硬件可划分为电源管理模块、主控处理模块、接收前端、发射驱动模块、传感与状态检测模块以及机械释放执行模块。主控处理器负责运行同步解调、命令判决和测距应答程序；接收前端完成信号调理、放大与模数转换；发射驱动模块根据数字基带控制换能器输出指定频点信号；机械释放执行模块通过电机、电磁或其他执行机构完成最终动作\cite{XiaDongShengXueShiFangQiShuZiDianLuSheJiYuShiXian2011,XieShuangWenXinXingShengXueShiFangQiKongZhiDianLuDeSheJiYuZhiZuo2018,ChenKaiYunShengXueShiFangQiJiJieShiFangDanYuanDuoYuWuLiJianMoYuShiYanYanJiu2024}。
+
+考虑到系统长期水下部署需求，电源管理设计应支持低静态功耗、欠压保护和关键动作期间的瞬态大电流供给；结构设计应兼顾密封、耐压和电磁兼容要求。
+
+\section{甲板单元硬件设计}[Deck Unit Hardware]
+
+甲板单元主要由主控板、发射功放、接收通道、电源模块、显示与按键接口及外部通信接口构成。其功能包括：
+
+\begin{enumerate}
+  \item 生成人机界面下发的通信与测距指令；
+  \item 完成发射波形组织、功放控制与换能器切换；
+  \item 对水下应答信号进行采样、解调和结果显示；
+  \item 向上位机输出设备编号、距离和状态信息。
+\end{enumerate}
+
+已有便携式甲板单元研究表明，采用 MCU 或 MCU+FPGA 结构可较好兼顾运算能力、接口扩展性和整机功耗\cite{zhangDesignImplementationPortable2018,CaoMingChengJiYuSTM32H7DeDuoGongNengBianXiShiJiaBanDanYuanYanJiuSheJi2021}。对于本文场景，若频点数量和实时性需求较高，可将波形生成和高速采样处理交由专用外设或协处理单元完成。
+
+\section{嵌入式软件设计}[Embedded Software]
+
+系统软件采用分层架构，包括驱动层、服务层和应用层。驱动层完成 ADC、DAC、定时器、串口、GPIO 等外设操作；服务层实现帧组装、缓存管理、测距时戳记录、故障检测与日志输出；应用层负责通信流程控制、命令解释、测距任务调度和释放逻辑管理。水下机侧核心任务流程为：休眠等待、信号唤醒、同步捕获、地址识别、命令执行、应答发射和低功耗回退。
+
+为保证释放动作安全，软件需设置多级防护：
+
+\begin{enumerate}
+  \item 非本机地址或校验失败命令直接丢弃；
+  \item 关键控制命令需满足重复确认条件；
+  \item 释放动作执行前检查电压、执行机构状态和互锁标志；
+  \item 动作完成后回传状态并记录故障码。
+\end{enumerate}
+
+\section{系统联调与测试方案}[Integration and Test Scheme]
+
+系统测试应覆盖实验室功能验证、水池试验和外场试验三个层次。实验室阶段主要验证收发链路、频点切换、同步与延时标定功能；水池试验侧重验证近距离测距、指令识别与功耗控制；外场试验则重点考察复杂环境下的通信成功率和测距稳定性\cite{HuangDongYiZhongQianHaiXingShengXueYingDaShiFangQiShuiXiaDanYuanDeSheJiYuShiXian2022}。
+
+建议测试指标包括：
+
+\begin{enumerate}
+  \item 指令识别成功率；
+  \item 测距均方误差与最大绝对误差；
+  \item 水下机固定处理延时稳定度；
+  \item 平均功耗与待机时长；
+  \item 释放动作成功率与重复动作一致性。
+\end{enumerate}
+
+\section{测试记录表设计}[Test Record Templates]
+
+为便于后续将真实实验结果直接回填到论文中，本文给出建议测试记录表，如表~\ref{tab:test_item} 和表~\ref{tab:ranging_result} 所示。表中数值请根据实际试验结果填写。
+
+\begin{table}[htbp]
+  \bicaption[tab:test_item]{}{系统测试项目设计}{Table\!}{Test items of the system}
+  \vspace{0.5em}\centering\wuhao
+  \begin{tabular}{ccc}
+    \toprule[1.5pt]
+    测试类别 & 关键指标 & 说明 \\
+    \midrule[1pt]
+    通信测试 & 识别成功率 & 不同距离、不同信噪比条件 \\
+    测距测试 & 绝对误差/相对误差 & 多次重复测量统计 \\
+    时序测试 & 固定处理延时抖动 & 基于示波器或逻辑分析仪 \\
+    功耗测试 & 待机/接收/发射功耗 & 不同工作模式下测量 \\
+    释放测试 & 执行动作成功率 & 连续多次重复验证 \\
+    \bottomrule[1.5pt]
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \bicaption[tab:ranging_result]{}{测距结果记录示例}{Table\!}{Template of ranging results}
+  \vspace{0.5em}\centering\wuhao
+  \begin{tabular}{cccc}
+    \toprule[1.5pt]
+    真实距离/m & 测量均值/m & 最大误差/m & 备注 \\
+    \midrule[1pt]
+    待填写 & 待填写 & 待填写 & 水池试验 \\
+    待填写 & 待填写 & 待填写 & 近海试验 \\
+    待填写 & 待填写 & 待填写 & 复杂海况 \\
+    \bottomrule[1.5pt]
+  \end{tabular}
+\end{table}
+
+\section{测试结果分析写作建议}[Writing Guidance for Results]
+
+在后续补充真实测试结果时，建议围绕以下逻辑展开分析：
+
+\begin{enumerate}
+  \item 先给出测试条件，包括海况、水深、换能器布设、采样参数和设备编号；
+  \item 再对通信成功率、同步稳定性和测距误差进行定量统计；
+  \item 分析误差与距离、海况、多径强度及声速估计偏差之间的关系；
+  \item 最后总结系统的适用范围、性能边界与仍需优化的问题。
+\end{enumerate}
+
+\section*{本章小结}[Summary]
+
+本章完成了 FH-MFSK 声学释放器的总体方案、关键硬件模块和嵌入式软件流程设计，并给出了联调测试方案与结果记录模板。该部分为将算法研究转化为工程系统实现提供了清晰路径，也为后续补充真实实验数据和形成定量性能结论预留了接口。
+            \coordinate [label=right:$B$] (B) at (0.75,0.25);
+            \coordinate [label=above:$C$] (C) at (1,1.5);
+            \draw (A) -- (B) -- (C);
+            \coordinate [label=above:$D$] (D) at
+            ($ (A) ! .5 ! (B) ! {sin(60)*2} ! 90:(B) $) {};
+            \node (H) [label=135:$H$,draw,circle through=(C)] at (B) {};
+            \draw (D) -- ($ (D) ! 3.5 ! (B) $) coordinate [label=below:$F$] (F);
+            \draw (D) -- ($ (D) ! 2.5 ! (A) $) coordinate [label=below:$E$] (E);
+        \end{tikzpicture}
+
+        \bicaption[fig:sun]
+        {长标题示例}
+        {一个很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长
+        的标题示例这个图形是由TikZ绘制当然你也可以用JPG图片}
+        {Fig.}
+        {a long long long long long long long long long long long long caption}
+    \end{figure}
+\end{lstlisting}
+
+长图题一般没有必要在插图目录中也完整显示，可使用 \cs bicaption 中的中文索引图名称作为插图目录中的短标题。
+
+\section{并排图和子图}[Abreast-picture and Sub-picture example]
+\subsection{双图并列}[Two Figures]
+
+并列图示例如图\ref{fig:lang}与图\ref{fig:niang}所示。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[keepaspectratio]{lang.jpg}
+    \bicaption[fig:lang]{}{新郎}{Fig.}{Bridegroom}
+  \end{minipage}
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[keepaspectratio]{niang.jpg}
+    \bicaption[fig:niang]{}{新娘}{Fig.}{Brige}
+  \end{minipage}
+\end{figure}
+
+\begin{lstlisting}
+  \begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[keepaspectratio]{lang.jpg}
+      \bicaption[fig:lang]{}{新郎}{Fig.}{Bridegroom}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[keepaspectratio]{niang.jpg}
+      \bicaption[fig:niang]{}{新娘}{Fig.}{Brige}
+    \end{minipage}
+  \end{figure}
+\end{lstlisting}
+
+如果想要两幅并排的插图各有自己的标题,可以在 figure 环境中使用两
+个 minipage 环境,每个里面插入一幅图 (见图~\ref{fig:lang}和
+图~\ref{fig:niang}) 。不用 minipage 的话,因为插图标题的缺省宽度是
+整个行宽，两幅插图就会上下排列。
+
+这里指定了每个 minipage 的宽度为0.4倍的版芯宽度。当然，也可以自
+己指定，只是两个宽度加起来不超过版芯宽度就可以了。
+
+使用并排图时，需要注意对齐方式。默认情况是中部对齐。这里给出中部对齐、顶部对齐
+、图片底部对齐三种常见方式。其中，底部对齐方式有一个很巧妙的方式，将长度比较小
+的图放在左面即可。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{golfer}
+    \bicaption[fig:golfer2]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+  \end{minipage}
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{golfer}
+    \bicaption[fig:golfer3]{}{打高尔夫球的人。注意，这里默认居中}{Fig.$\!$}{The person playing golf. Please note that, it is vertically center aligned by default.}
+  \end{minipage}
+\end{figure}
+
+图~\ref{fig:golfer2}和图~\ref{fig:golfer3}的实现方式如下：
+
+\begin{lstlisting}
+    \begin{figure}[htbp]
+      \centering
+      \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{golfer}
+        \bicaption[fig:golfer2]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+      \end{minipage}
+      \centering
+      \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{golfer}
+        \bicaption[fig:golfer3]{}{打高尔夫球的人。注意，这里默认居中}{Fig.$\!$}{The person playing golf. Please note that, it is vertically center aligned by default.}
+      \end{minipage}
+    \end{figure}
+\end{lstlisting}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[t]{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{golfer}
+    \bicaption[fig:golfer5]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+  \end{minipage}
+  \centering
+  \begin{minipage}[t]{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{golfer}
+    \bicaption[fig:golfer8]{}{打高尔夫球的人。注意，此图是顶部对齐}{Fig.$\!$}{The person playing golf. Please note that, it is vertically top aligned.}
+  \end{minipage}
+\end{figure}
+
+图~\ref{fig:golfer5}和图~\ref{fig:golfer8}的实现方式如下：
+
+\begin{lstlisting}
+    \begin{figure}[htbp]
+      \centering
+      \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{golfer}
+        \bicaption[fig:golfer5]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+      \end{minipage}
+      \centering
+      \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{golfer}
+        \bicaption[fig:golfer8]{}{打高尔夫球的人。注意，此图是顶部对齐}{Fig.$\!$}{The person playing golf. Please note that, it is vertically top aligned.}
+      \end{minipage}
+    \end{figure}
+\end{lstlisting}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[t]{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=\textwidth]{golfer}
+    \bicaption[fig:golfer9]{}{打高尔夫球的人。注意，此图对齐方式是图片底部对齐}{Fig.$\!$}{The person playing golf. Please note that, it is vertically bottom aligned for figure.}
+  \end{minipage}
+  \centering
+  \begin{minipage}[t]{0.4\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{golfer}
+    \bicaption[fig:golfer6]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+  \end{minipage}
+\end{figure}
+
+图~\ref{fig:golfer9}和图~\ref{fig:golfer6}的实现方式如下：
+
+\begin{lstlisting}
+    \begin{figure}[htbp]
+      \centering
+      \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=\textwidth]{golfer}
+        \bicaption[fig:golfer9]{}{打高尔夫球的人。注意，此图对齐方式是图片底部对齐}{Fig.$\!$}{The person playing golf. Please note that, it is vertically bottom aligned for figure.}
+      \end{minipage}
+      \centering
+      \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{golfer}
+        \bicaption[fig:golfer6]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf}
+      \end{minipage}
+    \end{figure}
+\end{lstlisting}
+
+\subsection{子图}[Sub Figure]
+
+子图并列示例如图\ref{fig:judy}所示。
+注意：子图题注也可以只用中文。规范规定“分图题置于分图之下或图题之下”，但没有给出具体的格式要求。
+没有要求的另外一个说法就是“无论什么格式都不对”。
+
+所以只有在一个图中有标注“（a），（b）”，无法使用\cs{subfigure}的情况下，使用最后一个图例中的格式设置方法，否则不要使用。
+
+子图图题使用“minipage”和“description”环境，宽度，对齐方式可以按照需要自由设置。
+
+\begin{figure}[htbp]
+  \centering
+  \subfigure{\label{fig:1a}}\addtocounter{subfigure}{-2}
+  \subfigure[Girl A]{\subfigure[女孩A]{\includegraphics[keepaspectratio]{chao.jpg}}}
+  \hspace{20pt}
+  \subfigure{\label{fig:1b}}\addtocounter{subfigure}{-2}
+  \subfigure[Girl B]{\subfigure[女孩B]{\includegraphics[keepaspectratio]{ren.jpg}}}
+  \bicaption[fig:judy]{}{女孩}{Fig.}{Judy}
+\end{figure}
+
+\begin{lstlisting}
+  \begin{figure}[htbp]
+    \centering
+    \subfigure{\label{fig:1a}}\addtocounter{subfigure}{-2}
+    \subfigure[Girl A]{\subfigure[女孩A]{
+        \includegraphics[keepaspectratio]{chao.jpg}}
+    }
+    \hspace{20pt}
+    \subfigure{\label{fig:1b}}\addtocounter{subfigure}{-2}
+    \subfigure[Girl B]{\subfigure[女孩B]{
+        \includegraphics[keepaspectratio]{ren.jpg}}
+    }
+    \bicaption[fig:judy]{}{女孩}{Fig.}{Judy}
+  \end{figure}
+\end{lstlisting}
+
+
+如果想要两幅并排的图片共享一个标题,并且各有自己的子标题,学位论文规范要求不止总图的标题为中英文形式，其各个子图也应具有中英文形式的标题。
+然而~ccaption~宏包却无法实现子图的中英文标题功能，这里采用对 \verb|\subfigure| 命令进行嵌套的方法来实现子图的中英文标题功能。如图~\ref{fig:judy}，子图的标题用命令 \verb|\subcaption| 即可。
+学位论文规范要求不止总图的标题为中英文形式，其各个子图也应具有中英文形式的标题。
+然而~ccaption~宏包却无法实现子图的中英文标题功能，这里采用对 \verb|\subfigure| 命令进行嵌套的方法来实现子图的中英文标题功能。
+
+\begin{figure}[!h]
+  \setlength{\subfigcapskip}{-1bp}
+  \centering
+  \begin{minipage}{\textwidth}
+    \centering
+    \subfigure{\label{golfer41}}\addtocounter{subfigure}{-2}
+    \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~1]{\includegraphics[width=0.4\textwidth]{golfer}}}
+    \hspace{2em}
+    \subfigure{\label{golfer42}}\addtocounter{subfigure}{-2}
+    \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~2]{\includegraphics[width=0.4\textwidth]{golfer}}}
+  \end{minipage}
+  \centering
+  \begin{minipage}{\textwidth}
+    \centering
+    \subfigure{\label{golfer43}}\addtocounter{subfigure}{-2}
+    \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~3]{\includegraphics[width=0.4\textwidth]{golfer}}}
+    \hspace{2em}
+    \subfigure{\label{golfer44}}\addtocounter{subfigure}{-2}
+    \subfigure[The person playing golf. Here, 'hang indent' and 'center last line' are not stipulated in the regulation.]{\subfigure[打高尔夫球的人~4。注意，规范中没有明确规定要悬挂缩进、最后一行居中。]{\includegraphics[width=0.4\textwidth]{golfer}}}
+  \end{minipage}
+  \vspace{0.2em}
+  \bicaption[fig:golfer4]{}{打高尔夫球的人}{Fig.$\!$}{The person playing gol}
+\end{figure}
+
+这是图~\ref{fig:golfer4}的实现方式：
+
+\begin{lstlisting}
+    \begin{figure}[!h]
+      \setlength{\subfigcapskip}{-1bp}
+      \centering
+      \begin{minipage}{\textwidth}
+        \centering
+        \subfigure{\label{golfer41}}\addtocounter{subfigure}{-2}
+        \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~1]{\includegraphics[width=0.4\textwidth]{golfer}}}
+        \hspace{2em}
+        \subfigure{\label{golfer42}}\addtocounter{subfigure}{-2}
+        \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~2]{\includegraphics[width=0.4\textwidth]{golfer}}}
+      \end{minipage}
+      \centering
+      \begin{minipage}{\textwidth}
+        \centering
+        \subfigure{\label{golfer43}}\addtocounter{subfigure}{-2}
+        \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~3]{\includegraphics[width=0.4\textwidth]{golfer}}}
+        \hspace{2em}
+        \subfigure{\label{golfer44}}\addtocounter{subfigure}{-2}
+        \subfigure[The person playing golf. Here, 'hang indent' and 'center last line' are not stipulated in the regulation.]{\subfigure[打高尔夫球的人~4。注意，规范中没有明确规定要悬挂缩进、最后一行居中。]{\includegraphics[width=0.4\textwidth]{golfer}}}
+      \end{minipage}
+      \vspace{0.2em}
+      \bicaption[fig:golfer4]{}{打高尔夫球的人}{Fig.$\!$}{The person playing gol}
+    \end{figure}
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}{.7\linewidth}
+    \setlength{\subfigcapskip}{-1bp}
+    \centering
+    \begin{minipage}{\textwidth}
+      \centering
+      \subfigure{\label{golfer45}}\addtocounter{subfigure}{-2}
+      \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~1]{\includegraphics[width=0.4\textwidth]{golfer}}}
+      \hspace{4em}
+      \subfigure{\label{golfer46}}\addtocounter{subfigure}{-2}
+      \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~2]{\includegraphics[width=0.4\textwidth]{golfer}}}
+    \end{minipage}
+    \vspace{0.2em}
+    \bicaption[fig:golfer47]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf.}
+  \end{minipage}
+\end{figure}
+
+这是图~\ref{fig:golfer47}的实现方式：
+
+\begin{lstlisting}
+    \begin{figure}[t]
+      \centering
+      \begin{minipage}{.7\linewidth}
+        \setlength{\subfigcapskip}{-1bp}
+        \centering
+        \begin{minipage}{\textwidth}
+          \centering
+          \subfigure{\label{golfer45}}\addtocounter{subfigure}{-2}
+          \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~1]{\includegraphics[width=0.4\textwidth]{golfer}}}
+          \hspace{4em}
+          \subfigure{\label{golfer46}}\addtocounter{subfigure}{-2}
+          \subfigure[The person playing golf]{\subfigure[打高尔夫球的人~2]{\includegraphics[width=0.4\textwidth]{golfer}}}
+        \end{minipage}
+        \vspace{0.2em}
+        \bicaption[fig:golfer47]{}{打高尔夫球的人}{Fig.$\!$}{The person playing golf.}
+      \end{minipage}
+    \end{figure}
+\end{lstlisting}
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.3\textwidth]{golfer}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \node at (0.3,0.5) {a)};
+      \node at (0.8,0.2) {b)};
+    \end{scope}
+  \end{tikzpicture}
+  \bicaption[fig:golfer0]{}{打高尔夫球球的人（硕士论文双语题注）}{Fig.$\!$}{The person playing golf (Master thesis)}
+  \vskip -0.4em
+  \hspace{2em}
+  \begin{minipage}[t]{0.3\textwidth}
+    \wuhao \setlist[description]{font=\normalfont}
+    \begin{description}
+      \item[(a)]a点说明
+      \item[(a)]Note of Point a
+    \end{description}
+  \end{minipage}
+  \hspace{2em}
+  \begin{minipage}[t]{0.3\textwidth}
+    \wuhao \setlist[description]{font=\normalfont}
+    \begin{description}
+      \item[(b)]b点说明
+      \item[(b)]Note of Point b
+    \end{description}
+  \end{minipage}
+\end{figure}
+
+这是图~\ref{fig:golfer0}的实现方式：
+
+\begin{lstlisting}
+    \begin{figure}[t]
+      \centering
+      \begin{tikzpicture}
+        \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.3\textwidth]{golfer}};
+        \begin{scope}[x={(image.south east)},y={(image.north west)}]
+          \node at (0.3,0.5) {a)};
+          \node at (0.8,0.2) {b)};
+        \end{scope}
+      \end{tikzpicture}
+      \bicaption[fig:golfer0]{}{打高尔夫球球的人（硕士论文双语题注）}{Fig.$\!$}{The person playing golf (Master thesis)}
+      \vskip -0.4em
+      \hspace{2em}
+      \begin{minipage}[t]{0.3\textwidth}
+        \wuhao \setlist[description]{font=\normalfont}
+        \begin{description}
+          \item[(a)]a点说明
+          \item[(a)]Note of Point a
+        \end{description}
+      \end{minipage}
+      \hspace{2em}
+      \begin{minipage}[t]{0.3\textwidth}
+        \wuhao \setlist[description]{font=\normalfont}
+        \begin{description}
+          \item[(b)]b点说明
+          \item[(b)]Note of Point b
+        \end{description}
+      \end{minipage}
+    \end{figure}
+\end{lstlisting}
+
+\begin{figure}[!h]
+  \centering
+  \begin{sideways}
+    \begin{minipage}{\textheight}
+      \centering
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+      \bicaption[fig:golfer7]{}{打高尔夫球的人（多图组合）}{Fig.$\!$}{The person playing golf (Many pictures arrange)}
+    \end{minipage}
+  \end{sideways}
+\end{figure}
+
+这是图~\ref{fig:golfer7}的实现方式：
+
+\begin{lstlisting}
+    \begin{figure}[!h]
+      \centering
+      \begin{sideways}
+        \begin{minipage}{\textheight}
+          \centering
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \fbox{\includegraphics[width=0.2\textwidth]{golfer}}
+          \bicaption[fig:golfer7]{}{打高尔夫球的人（多图组合）}{Fig.$\!$}{The person playing golf (Many pictures arrange)}
+        \end{minipage}
+      \end{sideways}
+    \end{figure}
+\end{lstlisting}
+
+\clearpage
+
+如果不想让图片浮动到下一章节，那么在此处使用\cs{clearpage}命令。
+
+\section{pgf/TikZ~插图}[pgf/TikZ Figure]
+
+pgf/TikZ是一个在tex系统中的画图宏包，除了可以精确的作图外，对于某些不要求精确控制的图形绘制，如：流程图，树图，等等，也提供了简便易用的支持。
+下面这张图片是用TikZ宏包进行绘制的图形，其实现代码为：
+\begin{lstlisting}
+    \begin{tikzpicture}[thick,smooth,domain=0:4,scale=0.9]
+        \draw[very thin,gray] (0,0) grid (12,4);
+        \draw plot[mark=*] (\x,{\x * \x/4});
+        \draw[blue,xshift=4cm] plot[samples=5,mark=+] (\x,{\x * \x/4});
+        \draw[red,xshift=8cm] plot[samples=10,mark=x] (\x,{\x * \x/4});
+    \end{tikzpicture}
+\end{lstlisting}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[thick,smooth,domain=0:4,scale=0.9]
+    \draw[very thin,gray] (0,0) grid (12,4);
+    \draw plot[mark=*] (\x,{\x * \x/4});
+    \draw[blue,xshift=4cm] plot[samples=5,mark=+] (\x,{\x * \x/4});
+    \draw[red,xshift=8cm] plot[samples=10,mark=x] (\x,{\x * \x/4});
+  \end{tikzpicture}
+  \bicaption[fig:TikZ]{TikZ插图}{TikZ插图}{Fig.}{Draw with TikZ}
+\end{figure}
+
+使用pgf/TikZ可以直接使用数据表绘图，如图~\ref{fig:TikZTable}，其实现代码和数据如下。
+
+{\wuhao
+\begin{lstlisting}
+\begin{figure}[htbp]
+    \centering
+	\begin{tikzpicture}[scale=0.85]
+	\pgfplotstableread{
+	budget    name1   name2   name3   name4    name5    name6
+	0.2 1   1   1   1   1   1
+	0.4 10  10  10  10  10  10
+	0.6 30  30  30  30  30  30
+	0.8 50  49  51  48  50  50
+	1.0 110 110 110 110 110 110
+	1.2 120 110 120 110 110 110
+	1.4 130 130 130 110 110 130
+	1.6 150 150 150 110 110 150
+	1.8 160 150 150 160 111 150
+	2.0 170 170 170 100 160 160
+	}{\datatable}
+	\begin{axis}[
+	    width = \linewidth, height = 0.5\linewidth,
+	    title style={at={(0.5,-0.35)}},
+	    xtick pos=bottom,
+	    ytick pos=left,
+	    ybar=0,
+	    ylabel={ylabel},
+	    ylabel style={at={(axis description cs:0.03,0.5)}},
+	    ytick={0,20,...,180},
+	    bar width=4pt, ymin=0, ymax=180,
+	    legend image code/.code={\draw [#1] (0cm,-0.1cm) rectangle (0.35cm,0.1cm);
+	    },
+	    legend style={
+	        legend pos=north west,
+	        nodes={scale=1},
+	        draw = none,
+	        cells={anchor=west},
+	    },
+	    xlabel={xlabel},
+	    xtick=data,
+	    xticklabels from table={\datatable}{budget},
+	    ]
+
+	\newcommand{\mysubplot}[2]{
+	    \addplot[#2] table [x=budget,y=#1] {\datatable};
+	    \addlegendentry{#1};
+	}
+	\mysubplot{name1}{}
+	\mysubplot{name2}{pattern=crosshatch dots}
+	\mysubplot{name3}{pattern=north east lines}
+	\mysubplot{name4}{pattern=crosshatch}
+	\mysubplot{name5}{pattern=north west lines}
+	\mysubplot{name6}{fill=black}
+
+	\end{axis}
+	\end{tikzpicture}
+   \bicaption[fig:TikZTable]{TikZ数据表绘图}{TikZ数据表}{Fig.}{Draw with Data Table}
+\end{figure}
+\end{lstlisting}
+}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[scale=0.85]
+    \pgfplotstableread{
+      budget    name1   name2   name3   name4    name5    name6
+      0.2 1   1   1   1   1   1
+      0.4 10  10  10  10  10  10
+      0.6 30  30  30  30  30  30
+      0.8 50  49  51  48  50  50
+      1.0 110 110 110 110 110 110
+      1.2 120 110 120 110 110 110
+      1.4 130 130 130 110 110 130
+      1.6 150 150 150 110 110 150
+      1.8 160 150 150 160 111 150
+      2.0 170 170 170 100 160 160
+    }{\datatable}
+    \begin{axis}[
+        width = \linewidth, height = 0.5\linewidth,
+        %title={The Title},
+        title style={at={(0.5,-0.35)}},
+        xtick pos=bottom,
+        ytick pos=left, % remove the tick from the right and top
+        ybar=0,
+        ylabel={ylabel},
+        ylabel style={at={(axis description cs:0.03,0.5)}},
+        ytick={0,20,...,180},
+        bar width=4pt,
+        %enlarge x limits=0.15,
+        ymin=0, ymax=180,
+        % legned related -------------
+        legend image code/.code={
+            \draw [#1] (0cm,-0.1cm) rectangle (0.35cm,0.1cm);
+          },
+        legend style={
+            %at={(0.13,1)},
+            legend pos=north west,
+            nodes={scale=1},
+            draw = none,        % without box
+            cells={anchor=west}, % algin left
+          },
+        xlabel={xlabel},
+        % xtick related
+        xtick=data,
+        xticklabels from table={\datatable}{budget},
+        %xticklabel style={
+        %j    rotate=45,xshift=-100,yshift=-100,anchor=mid east
+        %j},
+      ] % end of options of axis environment
+
+      \newcommand{\mysubplot}[2]{
+        \addplot[#2] table [x=budget,y=#1] {\datatable};
+        \addlegendentry{#1};
+      }
+      \mysubplot{name1}{}
+      \mysubplot{name2}{pattern=crosshatch dots}
+      \mysubplot{name3}{pattern=north east lines}
+      \mysubplot{name4}{pattern=crosshatch}
+      \mysubplot{name5}{pattern=north west lines}
+      \mysubplot{name6}{fill=black}
+
+    \end{axis}
+  \end{tikzpicture}
+  \bicaption[fig:TikZTable]{TikZ数据表绘图}{TikZ数据表}{Fig.}{Draw with Data Table}
+\end{figure}
+
+pgf/TikZ不仅可以使用文档内部数据绘图，还可以直接读取外部~csv~数据文件进行绘图，如图 ~\ref{fig:TikZcsv}~便是
+读取~\texttt{data/datafile1.csv}~数据文件完成的绘图。
+
+{\wuhao
+\begin{lstlisting}
+\begin{figure}[htbp]
+    \centering
+ \begin{tikzpicture}[scale=0.85]
+    \pgfplotstableread{data/datafile1.csv}{\datatable}
+    \begin{axis}[
+        xlabel={Computation time passed~[minutes]},
+        ylabel={bits per channel use},
+        ylabel style={at={(axis description cs:0.06,0.5)}},
+        xmin= 0, xmax= 120, ymin= 0,
+        legend style = {
+            legend pos=south east,
+            legend columns = {2},
+            nodes={scale=0.5},
+        },
+        grid = major,
+        grid style=dashed,
+        mark repeat={8},
+        width = \linewidth,
+        height = 0.5\linewidth,
+        mark options={solid},
+        every axis/.append style={
+            extra description/.code={
+                \node[scale=0.5] at (0.07,0.93) {Information Rate};
+                \node[scale=0.5] at (0.93,0.93) {Information Rate};
+            },
+        },
+    ]
+
+    \addplot[red,mark=o,dashed] table [x index=0, y index=1] {\datatable};
+    \addlegendentry{EM-type algorithm~[13] with 4-state FSMC}
+    \addplot[dashed,mark=o] table [x index=0, y index=2] {\datatable};
+    \addlegendentry{EM-type algorithm~[13] with 16-state FSMC}
+    \addplot[blue,mark=diamond] table [x index=0, y index=3] {\datatable};
+    \addlegendentry{Algorithm~11 with 1-qubit QSC}
+    \addplot[red,mark=+] table [x index=0, y index=4] {\datatable};
+    \addlegendentry{Algorithm~11 with 4-state FSMC}
+    \addplot[mark=+] table [x index=0, y index=5] {\datatable};
+    \addlegendentry{Algorithm~11 with 16-state FSMC}
+    \addplot[red,mark=diamond] table [x index=0, y index=6] {\datatable};
+    \addlegendentry{Algorithm~11 with 2-qubit QSC}
+    \addplot[dashed] table [x index=0, y index=7] {\datatable};
+    \addlegendentry{Estimated Information Rate~(Alg.~9)}
+
+    \end{axis}
+    \end{tikzpicture}
+   \bicaption[fig:TikZcsv]{TikZ数据文件绘图}{TikZ数据文件绘图}{Fig.}{Draw with Data File}
+\end{figure}
+\end{lstlisting}
+}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[scale=0.85]
+    \pgfplotstableread{data/datafile1.csv}{\datatable}
+    \begin{axis}[
+      xlabel={Computation time passed~[minutes]},
+      ylabel={bits per channel use},
+      ylabel style={at={(axis description cs:0.06,0.5)}},
+      xmin= 0, xmax= 120, ymin= 0,
+      legend style = {
+          legend pos=south east,
+          legend columns = {2},
+          nodes={scale=0.5}, % make the legend box smaller
+          %font = {\tiny},
+        },
+      grid = major,
+      grid style=dashed,
+      mark repeat={8},
+      width = \linewidth,
+      height = 0.5\linewidth,
+      mark options={solid},
+      %% extra label for information rate
+      every axis/.append style={
+          extra description/.code={
+              \node[scale=0.5] at (0.07,0.93) {Information Rate};
+              \node[scale=0.5] at (0.93,0.93) {Information Rate};
+            },
+        },
+      ]
+
+      %1
+      \addplot[red,mark=o,dashed] table [x index=0, y index=1] {\datatable};
+      \addlegendentry{EM-type algorithm~[13] with 4-state FSMC}
+      %2
+      \addplot[dashed,mark=o] table [x index=0, y index=2] {\datatable};
+      \addlegendentry{EM-type algorithm~[13] with 16-state FSMC}
+      %3
+      \addplot[blue,mark=diamond] table [x index=0, y index=3] {\datatable};
+      \addlegendentry{Algorithm~11 with 1-qubit QSC}
+      %4
+      \addplot[red,mark=+] table [x index=0, y index=4] {\datatable};
+      \addlegendentry{Algorithm~11 with 4-state FSMC}
+      %5
+      \addplot[mark=+] table [x index=0, y index=5] {\datatable};
+      \addlegendentry{Algorithm~11 with 16-state FSMC}
+      %6
+      \addplot[red,mark=diamond] table [x index=0, y index=6] {\datatable};
+      \addlegendentry{Algorithm~11 with 2-qubit QSC}
+      %7
+      \addplot[dashed] table [x index=0, y index=7] {\datatable};
+      \addlegendentry{Estimated Information Rate~(Alg.~9)}
+
+    \end{axis}
+  \end{tikzpicture}
+  \bicaption[fig:TikZcsv]{TikZ数据文件绘图}{TikZ数据文件绘图}{Fig.}{Draw with Data File}
+\end{figure}
+
+更多的关于pgf/TikZ绘图方法请参考相关资料。
+
+\section{本章小结}[Brief Summary]
+插图方法介绍。

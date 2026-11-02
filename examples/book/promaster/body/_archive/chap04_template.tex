@@ -1,0 +1,588 @@
+%! TEX program = xelatex
+%! TEX root = ../main.tex
+%! TEX encoding = utf-8
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap04.tex
+%
+%  版本：1.0.0
+%  最后更新：
+%  修改者：Leo LiWenhui lwh@hrbeu.edu.cn
+%  修订者：
+%  编译环境1：Ubuntu 12.04 + TeXLive 2013/2014
+%  编译环境2：Windows 7/8  + TeXLive 2013/2014
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{测距算法}[Ranging Algorithm]
+\label{chap04}
+
+\section{测距任务与技术路线}[Task and Technical Route]
+
+在声学释放器作业过程中，测距功能主要服务于两类需求：一是辅助作业人员判断目标方位与距离变化，提升回收作业效率；二是为后续水下定位、设备状态评估或释放后目标搜索提供基础观测量。结合声学释放器通信链路，本文采用“主动询问 + 被动应答”的双向时延测距模式，即甲板单元发送测距请求信号，水下机在识别后经过固定处理延时发回应答信号，甲板单元再根据往返时延估计目标距离\cite{LiangBoZhongChengShuiXiaCeJuJiYaoKongXiTongZhuKongJiSheJi2009,ZhangMeiKaiJiYuSTM32ChuLiQiDeShuiXiaXinBiaoDeZhuDongCeJuSheJi2016}。
+
+\section{往返时延测距模型}[Round-Trip Delay Model]
+
+设甲板单元发送询问信号时刻为 $t_1$，水下机接收到该信号的时刻为 $t_2$，完成固定处理后在时刻 $t_3$ 发出应答，甲板单元在时刻 $t_4$ 接收到应答，则往返传播关系为
+
+\begin{equation}
+  t_4 - t_1 = \tau_{\mathrm{up}} + \tau_{\mathrm{proc}} + \tau_{\mathrm{down}},
+  \label{eq:rtt_model}
+\end{equation}
+
+其中 $\tau_{\mathrm{up}}$ 为下行传播时延，$\tau_{\mathrm{down}}$ 为上行传播时延，$\tau_{\mathrm{proc}} = t_3 - t_2$ 为固定处理时延。若上下行传播路径近似对称，则有
+
+\begin{equation}
+  \hat{R} = \frac{c_e}{2}\left(t_4 - t_1 - \tau_{\mathrm{proc}}\right),
+  \label{eq:range_estimation}
+\end{equation}
+
+其中 $c_e$ 为等效声速。式\eqref{eq:range_estimation}表明，测距精度主要受三个因素影响：传播时延估计误差、固定处理延时标定误差以及声速估计误差。
+
+\section{首达径检测与时延估计}[First-Arrival Detection]
+
+浅海多径条件下，最大相关峰值并不一定对应首达径，因此不能简单地把最大峰值位置作为测距时延。本文采用匹配滤波与门限判决相结合的方法进行首达径估计。设发送参考信号为 $s(t)$，接收信号为 $r(t)$，则匹配滤波输出为
+
+\begin{equation}
+  y(\tau) = \int r(t)s(t-\tau)\mathrm{d}t,
+  \label{eq:mf_output}
+\end{equation}
+
+在离散实现中，通过滑动相关计算序列 $y[n]$，并结合噪声统计特性设置门限 $\gamma$。当某一候选峰值同时满足
+
+\begin{equation}
+  |y[n]| > \gamma
+\end{equation}
+
+且其前方保护区间内不存在更早的高可信峰值时，将其判定为首达径位置。该方法兼顾了对低信噪比条件下弱直达径的敏感性，以及对后续强反射峰值的抑制能力\cite{HaoMengHuaJiYuQianHaiDuoJingShiYanDeFuHeMaShuiShengCeJuYanJiu2020}。
+
+\section{多径抑制与异常值剔除}[Multipath Suppression and Outlier Rejection]
+
+在连续多次测距过程中，受海面起伏和瞬时干扰影响，个别测距结果可能出现跳变。为提高结果稳定性，可对多次测距结果采用中值滤波或限差判决。若第 $i$ 次测距结果为 $R_i$，窗口长度为 $K$，则平滑结果可表示为
+
+\begin{equation}
+  \tilde{R}_i = \operatorname{median}\left\{R_{i-K+1}, \ldots, R_i\right\}.
+\end{equation}
+
+若 $|R_i - \tilde{R}_i|$ 超过异常门限，则可将该次结果标记为异常值，并触发重测。该策略适用于舰船或小型作业平台缓慢运动条件下的近实时距离显示。
+
+\section{声速修正方法}[Sound-Speed Correction]
+
+声速变化是测距误差的重要来源。若声速存在偏差 $\Delta c$，传播时延估计为 $\hat{\tau}$，则距离误差近似满足
+
+\begin{equation}
+  \Delta R \approx \hat{\tau} \Delta c,
+  \label{eq:sound_speed_error}
+\end{equation}
+
+当作业海域可提供温盐深数据或经验声速剖面时，可采用平均声速修正或分层积分近似方法提高测距精度\cite{ChenHongXiaLuLianGangHuaFengFanBinLiuNuoFangJunWeiSanZhongChangYongShengSuSuanFaDeBiJiao2005,ZhaoDiNengShengSuPouMianJingJianYunSuanDeGaiJinDPSuanFaJiQiPingGu2014}。若缺少完整剖面信息，可根据历史海区数据、实时温度测量值和作业深度估计得到简化等效声速，用于工程场景下的一阶补偿。
+
+\section{测距流程设计}[Ranging Procedure]
+
+综合上述分析，本文测距流程可概括为：
+
+\begin{enumerate}
+  \item 甲板单元发射测距请求信号并记录发送时刻；
+  \item 水下机识别请求并在固定延时后发射应答信号；
+  \item 甲板单元对接收信号进行匹配滤波和首达径检测；
+  \item 扣除固定处理延时并根据等效声速换算斜距；
+  \item 对连续测距结果进行平滑处理和异常值剔除；
+  \item 将测距结果提供给上位界面或控制逻辑使用。
+\end{enumerate}
+
+\section{算法误差来源分析}[Error Analysis]
+
+测距误差主要来源包括：
+
+\begin{enumerate}
+  \item 时延估计误差：由低信噪比、相关峰扩展和多径混叠引起；
+  \item 固定延时误差：由处理器中断抖动、任务调度和串口缓存造成；
+  \item 声速模型误差：由环境参数不准确或声速剖面简化带来；
+  \item 几何误差：当收发换能器位置不一致时，显示距离与目标参考点距离存在偏差。
+\end{enumerate}
+
+因此，系统设计中不仅要优化算法本身，还需对硬件时钟、任务优先级和延时标定机制进行协同设计。
+
+\section*{本章小结}[Summary]
+
+本章建立了声学释放器往返时延测距模型，研究了首达径检测、多径抑制、声速修正和异常值剔除方法，并给出了完整测距流程。相关分析说明了测距算法与通信体制、硬件延时和环境参数之间的耦合关系。
+  \multicolumn{ 列数}{ 对齐方式 }{ 表格内容 }
+\end{lstlisting}
+
+“列数”是指这一列横跨的列数，在表~\ref{tab:linux}是2列，就填“2”；“对
+齐方式”从\texttt{lcr}三者中选其一即可，在表~\ref{tab:linux}中是\texttt{c}。“表格
+内容”填入自己的内容。一般还会在这一列的下面画一小横线，已示辨识。使
+用 \verb|\cmidrule| 命令。在表~\ref{tab:linux}中，由于横跨的是第2列和第3列，
+因此 \verb|\cmidrule| 的参数是2-3。
+
+\begin{table}[htbp]
+  \bicaption[tab:linux]{不同操作系统下的\LaTeX{}}{ 不同操作系统下的\LaTeX{} }{Tab.}{OS with \LaTeX{}}
+  \centering
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabular}{ccc}
+    \toprule
+    Test       & \multicolumn{2}{c}{Common Tools}             \\
+    \cmidrule{2-3}
+    OS         & Distribution                     & Editor    \\
+    \midrule
+    Windows    & MikTeX                           & TexMakerX \\
+    Mac OS     & MacTeX                           & TeXShop   \\
+    Linux/Unix & TeX Live                         & TeXworks  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \bicaption[tab:linux]{不同操作系统下的\LaTeX{}}{不同操作系统下的\LaTeX{}}
+    {Tab.}{OS with \LaTeX{}}
+    \centering
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabular}{ccc}
+      \toprule
+      Test    & \multicolumn{2}{c}{Common Tools} \\
+                \cmidrule{2-3}
+      OS         & Distribution & Editor  \\
+      \midrule
+      Windows    & MikTeX       & TexMakerX  \\
+      Mac OS     & MacTeX       & TeXShop  \\
+      Linux/Unix & TeX Live     & TeXworks  \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{lstlisting}
+
+\subsection{多行三线表}[Multiline Table]
+
+既然有多列三线表，多行三线表也是用类似的方法解决。我们把表~\ref{tab:linux} 来改造一下，相对应的，一般使用 \verb|\multirow| 命令。它的用法
+是：
+\begin{lstlisting}
+  \multirow{ 行数 }*{ 表格内容 }
+\end{lstlisting}
+
+“行数”是指竖向跨的行数，在表~\ref{tab:unix}中是2行，中间有个星号，表示自然宽度。
+
+\begin{table}[htbp]
+  \bicaption[tab:unix]{不同操作系统下的\LaTeX{}}{ 不同操作系统下的\LaTeX{} }{Tab.}{OS with \LaTeX{}}
+  \centering
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabular}{ccc}
+    \toprule
+    \multirow{2}*{OS} & \multicolumn{2}{c}{Common Tools}             \\
+    \cmidrule{2-3}
+                      & Distribution                     & Editor    \\
+    \midrule
+    Windows           & MikTeX                           & TexMakerX \\
+    Mac OS            & MacTeX                           & TeXShop   \\
+    Linux/Unix        & TeX Live                         & TeXworks  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \bicaption[tab:unix]{不同操作系统下的\LaTeX{}}{不同操作系统下的\LaTeX{}}
+    {Tab.}{OS with \LaTeX{}}
+    \centering
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabular}{ccc}
+      \toprule
+      \multirow{2}*{OS} & \multicolumn{2}{c}{Common Tools} \\
+                          \cmidrule{2-3}
+                        & Distribution & Editor  \\
+      \midrule
+      Windows          & MikTeX       & TexMakerX  \\
+      Mac OS           & MacTeX       & TeXShop  \\
+      Linux/Unix       & TeX Live     & TeXworks  \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{lstlisting}
+
+\section{列宽可调表格的绘制方法}[Adjustable Width]
+
+论文中能用到列宽可调表格的情况共有两种，一种是当插入的表格某一单元格内容过长以至于一行放不下的情况，
+另一种是当对公式中首次出现的物理量符号进行注释的情况，这两种情况都需要调用~tabularx~宏包。下面将分别对这两种情况下可调表格的绘制方法进行阐述。
+
+\subsection{宽度控制}[Width Setting]
+
+有时候表格中的某行太长了，需要折行。可以使用\texttt{tabularx} 宏包的同名
+环境,其语法如下：
+
+\begin{lstlisting}
+  \begin{tabularx}{ 表格总宽度 }{ 对齐方式 }
+    ...
+  \end{tabularx}
+\end{lstlisting}
+
+“表格总宽度”最好用\texttt{textwidth}乘以某个系数表示。例
+如\texttt{0.8\textbackslash{textwidth}}表示表格宽度是版芯宽度的0.8倍。这
+样出来的效果比较好看。对齐方式除了原有的\texttt{l,c,r}之外，多了一
+个\texttt{X}，表示某列可以折行。
+
+\begin{table}[htbp]
+  \centering
+  \bicaption[tab:wall44]{墙上的44句话}{墙上的44句话}{Tab.}{Mikko Kuorinki}
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabularx}{0.8\textwidth{}}{lX}
+    \toprule
+    People        & Says                                                 \\
+    \midrule
+    Elias Canetti & If you were alone, you would cut yourself in two, so
+    that one part would shape the other.                                 \\
+    Franz Kafka   & In the struggle between yourself and the world,
+    second the world.                                                    \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \centering
+    \bicaption[tab:wall44]{墙上的44句话}{墙上的44句话}{Tab.}{Mikko Kuorinki}
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabularx}{0.8\textwidth{}}{lX}
+      \toprule
+      People & Says \\
+      \midrule Elias Canetti & If you were alone, you would cut yourself
+      in two, so  that one part would shape the other.\\
+      Franz Kafka & In the struggle between yourself and the world,
+      second the world.\\
+      \bottomrule
+    \end{tabularx}
+  \end{table}
+\end{lstlisting}
+
+\subsection{表格内某单元格内容过长的情况}[Long Table]
+
+首先给出这种情况下的一个例子如表~\ref{table3}~所示。
+\begin{table}[htbp]
+  \centering
+  \bicaption[table3]{}{最小的三个正整数的英文表示法}{Table$\!$}{The English construction of the smallest three positive integral numbers}\vspace{0.5em}\wuhao
+  \begin{tabularx}{0.7\textwidth}{llX}
+    \toprule[1.5pt]
+    Value & Name  & Alternate names, and names for sets of the given size                                                                                           \\\midrule[1pt]
+    1     & One   & ace, single, singleton, unary, unit, unity                                                                                                      \\
+    2     & Two   & binary, brace, couple, couplet, distich, deuce, double, doubleton, duad, duality, duet, duo, dyad, pair, snake eyes, span, twain, twosome, yoke \\
+    3     & Three & deuce-ace, leash, set, tercet, ternary, ternion, terzetto, threesome, tierce, trey, triad, trine, trinity, trio, triplet, troika, hat-trick     \\\bottomrule[1.5pt]
+  \end{tabularx}
+\end{table}
+
+绘制这种表格的代码及其说明如下。
+\vspace{1em}
+\begin{lstlisting}
+\begin{table}[htbp]
+\bicaption[标签名]{}{中文标题}{Table$\!$}{English caption}
+\vspace{0.5em}\wuhao
+\begin{tabularx}{\textwidth}{l...X...l}
+\toprule[1.5pt]
+表头第1个格   & ... & 表头第X个格   & ... & 表头第n个格  \\
+\midrule[1pt]
+表中数据(1,1) & ... & 表中数据(1,X) & ... & 表中数据(1,n)\\
+表中数据(2,1) & ... & 表中数据(2,X) & ... & 表中数据(2,n)\\
+.........................................................\\
+表中数据(m,1) & ... & 表中数据(m,X) & ... & 表中数据(m,n)\\
+\bottomrule[1.5pt]
+\end{tabularx}
+\end{table}
+\end{lstlisting}
+
+
+tabularx环境共有两个必选参数：第1个参数用来确定表格的总宽度，这里取为排版表格能达到的最大宽度——正文宽度 \verb|\textwidth| ；第2个参数用来确定每列格式，其中标为X的项表示该列的宽度可调，其宽度值由表格总宽度确定。
+标为X的列一般选为单元格内容过长而无法置于一行的列，这样使得该列内容能够根据表格总宽度自动分行。若列格式中存在不止一个X项，则这些标为X的列的列宽相同，因此，一般不将内容较短的列设为X。
+标为X的列均为左对齐，因此其余列一般选为\texttt{l}（左对齐），这样可使得表格美观，但也可以选为\texttt{c}或\texttt{r}。
+
+
+\section{斜线表头}[Diagbox Table]
+
+还是有些童鞋的表示三线表不实用啊，非要回归到原来的斜线表头去。我们可以使
+用宏包 diagbox 提供的命令轻松完成。不过呢，出来的表格很 ugly 罢了。
+
+diagbox 是宏包提供的主要命令。它可以带有两个必选参数,表示要生成斜
+线表头的两部分内容。默认斜线是从西北到东南方向的。
+
+需要注意的是，使用斜线表格后就不能使用三线表的三条横线，不然请看
+表~\ref{tab:diagbox}的下场。正确的做法是使用最原始的 hline,见
+表~\ref{tab:xiexian}。
+
+\begin{table}[htbp]
+  \bicaption[tab:diagbox]{斜线表头}{斜线表头}{Tab.}{Diagbox}
+  \centering
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabular}{|l|ccc|}
+    \toprule
+    \diagbox{Times}{Day} & Mon  & Tue  & Wed  \\
+    \midrule
+    Morning              & used & used &      \\
+    Afternoon            &      & used & used \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \bicaption[tab:diagbox]{斜线表头}{斜线表头}{Tab.}{Diagbox}
+    \centering
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabular}{|l|ccc|}
+      \toprule
+      \diagbox{Times}{Day} & Mon  & Tue  & Wed  \\
+      \midrule
+      Morning              & used & used &  \\
+      Afternoon            &      & used & used \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{lstlisting}
+
+\begin{table}[htbp]
+  \bicaption[tab:xiexian]{斜线表头}{斜线表头}{Tab.}{Diagbox}
+  \centering
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabular}{|l|ccc|}
+    \hline
+    \diagbox{Times}{Day} & Mon  & Tue  & Wed  \\
+    \hline
+    Morning              & used & used &      \\
+    Afternoon            &      & used & used \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \bicaption[tab:xiexian]{斜线表头}{ 斜线表头 }{Tab.}{Diagbox}
+    \centering
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabular}{|l|ccc|}
+      \hline
+      \diagbox{Times}{Day} & Mon  & Tue  & Wed  \\
+      \hline
+      Morning              & used & used &  \\
+      Afternoon            &      & used & used \\
+      \hline
+    \end{tabular}
+  \end{table}
+\end{lstlisting}
+
+
+\section{表格的列按小数点对齐}[Alian]
+
+以表~\ref{tab:xingxing}为例，想把其中的第三列按小数点对齐\footnote{参见宏
+  包siunitx}。先看一下效果：
+
+在表~\ref{tab:xiaoshu}中，我们调整了原来四列数的对齐方式。原来
+是\texttt{cccc}，现在是\texttt{lcSr}。第一列左对齐，第二列不变，还是居中
+对齐，第四列右对齐。值得注意的是第三列，这里新引入了一个参数\texttt{S}，
+含义就是这一列的数字按照小数点对齐。一定是大写的\texttt{S}。另外，第三列的列
+头Weight(Earth=1)两边也加上了大括号，因为这不是数字。在使用参
+数\texttt{S}的时候，不是数字的行需要用大括号括起来，不然会造成编译错误。
+
+\begin{table}[htbp]
+  \bicaption[tab:xiaoshu]{行星数据表2}{行星数据表}{Tab.}{Planet}
+  \centering
+  \vspace{0.2cm}
+  \wuhao
+  \begin{tabular}{lcSr}
+    \toprule
+    Planet  & Size(Earth=1) & {Weight(Earth=1)} & Radius  \\
+    \midrule
+    Mercury & 0.056         & 0.055             & 0.3871  \\
+    Venus   & 0.857         & 0.815             & 0.7233  \\
+    Earth   & 1.00          & 1.000             & 1.0000  \\
+    Mars    & 0.151         & 0.107             & 1.5237  \\
+    Jupiter & 1321          & 317.832           & 5.2026  \\
+    Saturn  & 755           & 95.16             & 9.5549  \\
+    Uranus  & 63            & 14.54             & 19.2184 \\
+    Neptune & 58            & 17.15             & 30.1104 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{lstlisting}
+  \begin{table}[htbp]
+    \bicaption[tab:xiaoshu]{行星数据表}{行星数据表}{Tab.}{Planet}
+    \centering
+    \vspace{0.2cm}
+    \wuhao
+    \begin{tabular}{lcSr}
+      \toprule
+      Planet  & Size(Earth=1) & {Weight(Earth=1)} & Radius  \\
+      \midrule
+      Mercury & 0.056         & 0.055           & 0.3871  \\
+      Venus   & 0.857         & 0.815           & 0.7233  \\
+      Earth   & 1.00          & 1.000           & 1.0000  \\
+      Mars    & 0.151         & 0.107           & 1.5237  \\
+      Jupiter & 1321          & 317.832         & 5.2026  \\
+      Saturn  & 755           & 95.16           & 9.5549  \\
+      Uranus  & 63            & 14.54           & 19.2184 \\
+      Neptune & 58            & 17.15           & 30.1104 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{lstlisting}
+
+\section{对物理量符号进行注释的情况}[Note of Units]
+
+为使得对公式中物理量符号注释的转行与破折号“——”后第一个字对齐，此处最好采用表格环境。此表格无任何线条，左对齐，
+且在破折号处对齐，一共有“式中”二字、物理量符号和注释三列，表格的总宽度可选为文本宽度，因此应该采用\verb|tabularx|环境。
+由\verb|tabularx|环境生成的对公式中物理量符号进行注释的公式如式(\ref{eq:1})所示。
+
+\begin{equation}\label{eq:1}
+  \ddot{\boldsymbol{\rho}}-\frac{\mu}{R_{t}^{3}}\left(3\mathbf{R_{t}}\frac{\mathbf{R_{t}\rho}}{R_{t}^{2}}-\boldsymbol{\rho}\right)=\mathbf{a}
+\end{equation}
+\begin{tabularx}{\textwidth}{@{}l@{\quad}r@{——}X@{}}
+  式中 & $\boldsymbol{\rho}$        & 追踪飞行器与目标飞行器之间的相对位置矢量； \\
+       & $\boldsymbol{\ddot{\rho}}$ & 追踪飞行器与目标飞行器之间的相对加速度；   \\
+       & $\mathbf{a}$               & 推力所产生的加速度；                       \\
+       & $\mathbf{R_t}$             & 目标飞行器在惯性坐标系中的位置矢量；       \\
+       & $\omega_{t}$               & 目标飞行器的轨道角速度；                   \\
+       & $\mathbf{g}$               & 重力加速度，$=\frac{\mu}{R_{t}^{3}}\left(
+    3\mathbf{R_{t}}\frac{\mathbf{R_{t}\rho}}{R_{t}^{2}}-\boldsymbol{\rho}\right)=\omega_{t}^{2}\frac{R_{t}}{p}\left(
+    3\mathbf{R_{t}}\frac{\mathbf{R_{t}\rho}}{R_{t}^{2}}-\boldsymbol{\rho}\right)$，这里~$p$~是目标飞行器的轨道半通径。
+\end{tabularx}
+\vspace{2em}
+
+其中生成注释部分的代码及其说明如下。
+\vspace{1em}
+\begin{lstlisting}
+\begin{tabularx}{\textwidth}{@{}l@{\quad}r@{— —}X@{}}
+式中 & symbol-1 & symbol-1的注释内容；\\
+     & symbol-2 & symbol-2的注释内容；\\
+     .............................；\\
+     & symbol-m & symbol-m的注释内容。
+\end{tabularx}\vspace{2em}
+\end{lstlisting}
+
+
+tabularx环境的第1个参数~\verb|{\textwidth}|~设置表格宽度为正文宽度，第2个参数里面各个符号的意义为：
+第1个~\verb|@{}l|~表示在“式中”二字左侧不插入任何文本，“式中”二字能够在正文中左对齐，若无此项，则“式中”二字左侧会留出一定的空白；
+~\verb|@{\quad}|~表示在“式中”和物理量符号间插入一个空铅宽度的空白；
+~\verb|@{— — }|~实现插入破折号的功能，它由两个个1/2的中文破折号构成；
+第2个~\verb|@{}|~表示在注释内容靠近正文右边界的地方能够实现右对齐。
+
+
+由此方法生成的注释内容应紧邻待注释公式并置于其下方，因此不能将代码放入\verb|table|浮动环境中。
+但此方法不能实现自动转页接排，可能会在当前页剩余空间不够时，全部移动到下一页而导致当前页出现很大空白。
+因此在需要转页处理时，需要手动将将原来的一个\verb|tabularx|环境拆分为两个\verb|tabularx|环境。
+
+\subsubsection{排版横版表格的举例}[An example of landscape table]
+由于版面设置方向调整，使用横版排版的表格必须另起一页，例如表~\ref{table4}。
+
+\begin{table}[p]
+  \centering
+  \begin{sideways}
+    \begin{minipage}{\textheight}
+      \bicaption[table4]{}{不在规范中规定的横版表格}{Table$\!$}{A table style which is not stated in the regulation}
+      \vspace{0.5em}\centering\wuhao
+      \begin{tabular}{ccccc}
+        \toprule[1.5pt]
+        $D$(in) & $P_u$(lbs) & $u_u$(in) & $\beta$ & $G_f$(psi.in) \\
+        \midrule[1pt]
+        5       & 269.8      & 0.000674  & 1.79    & 0.04089       \\
+        10      & 421.0      & 0.001035  & 3.59    & 0.04089       \\
+        20      & 640.2      & 0.001565  & 7.18    & 0.04089       \\
+        \bottomrule[1.5pt]
+      \end{tabular}
+    \end{minipage}
+  \end{sideways}
+\end{table}
+
+\section{罗列}[Enumitem]
+学位论文一般可采用两种罗列环境：一种是并列条目有同样标签的~\verb|itemize|~罗列环境，
+另一种是具有自动排序编号符号的~\verb|enumerate|~罗列环境。这两种罗列环境的样式参数可参考图~\ref{list}。
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = 0.6\textwidth]{list}
+  \bicaption[list]{}{罗列环境参数示意图}{Fig.$\!$}{Schematic diagram of list environments}\vspace{-1em}
+\end{figure}
+
+通过调用~enumitem~宏包可以很方便地控制罗列环境的布局，
+其~format.tex~文件中的~\verb|\setitemize|~和~\verb|\setenumerate|~命令分别用来设置~\verb|itemize|~和~\verb|enumerate|~环境的样式参数。
+采用~\verb|itemize|~单层罗列环境的排版形式如下：
+
+\begin{itemize}
+  \item 第一个条目文本内容
+  \item 第二个条目文本内容
+  \item 第三个条目文本内容
+\end{itemize}
+
+其代码如下
+\begin{verbatim}
+\begin{itemize}
+  \item 第一个条目文本内容
+  \item 第二个条目文本内容
+  ...
+  \item 第三个条目文本内容
+\end{itemize}
+\end{verbatim}
+
+采用~\verb|enumerate|~单层罗列环境的排版形式如下：
+\begin{enumerate}
+  \item 第一个条目文本内容
+  \item 第二个条目文本内容
+  \item 第三个条目文本内容
+\end{enumerate}
+
+其代码如下
+\begin{verbatim}
+\begin{enumerate}
+  \item 第一个条目文本内容
+  \item 第二个条目文本内容
+  ...
+  \item 第三个条目文本内容
+\end{enumerate}
+\end{verbatim}
+
+例如：
+
+\begin{enumerate}
+  \item 鉴定袋蛾———二十分
+  \item 给斯拉瓦写信———二小时四十五分
+  \item 植物保护小组开会———二小时二十五分
+\end{enumerate}
+
+上述是默认的列表样式。源代码如下：
+\begin{lstlisting}
+  \begin{enumerate}
+  \item 鉴定袋蛾———二十分
+  \item 给斯拉瓦写信———二小时四十五分
+  \item 植物保护小组开会———二小时二十五分
+  \end{enumerate}
+\end{lstlisting}
+
+\texttt{emumerate}环境就是罗列环境。每条\verb|\item| 后面
+跟一个空格，然后就是具体的罗列条目。
+
+默认的样式是按照1.、2.、3.、……来排序的，如果想按照英文字母(a),(b),(c)或者罗
+马数字(i),(ii),(iii)这样的顺序呢，只需要
+在 \verb|\item[]| 后面[~]中加入指定的序号。比如:
+\begin{enumerate}
+  \item[(1)] 鉴定袋蛾———二十分
+  \item[(2)] 给斯拉瓦写信———二小时四十五分
+  \item[(3)] 植物保护小组开会———二小时二十五分
+\end{enumerate}
+源代码是：
+\begin{lstlisting}
+  \begin{enumerate}
+  \item[(1)] 鉴定袋蛾———二十分
+  \item[(2)] 给斯拉瓦写信———二小时四十五分
+  \item[(3)] 植物保护小组开会———二小时二十五分
+  \end{enumerate}
+\end{lstlisting}
+
+\section{本章小结}[Brief Summary]
+表格和罗列排版方法介绍。
