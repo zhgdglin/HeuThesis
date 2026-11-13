@@ -2,192 +2,273 @@
 %! TEX root = ../main.tex
 %! TEX encoding = utf-8
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap03.tex
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{基于 SFH-MFSK 的水声通信与测距算法}[Underwater Acoustic Communication and Ranging Algorithms Based on SFH-MFSK]
+\chapter{SFH-MFSK水声通信算法与仿真}[SFH-MFSK Underwater Acoustic Communication Algorithm and Simulation]
 \label{chap03}
 
-本章给出基于 SFH-MFSK 的水声通信与测距算法设计。首先给出通信与测距一体化的总体方案；随后分别阐述 SFH-MFSK 通信算法与往返时延测距算法的关键环节，包括信号模型、跳频序列与帧结构、同步捕获、非相干检测、抗干扰策略、首达径检测、多径抑制与声速修正；最后给出通信与测距一体化的整体处理流程，并分析算法的主要误差来源。
+本章只研究水声通信问题，按照“通信体制设计—接收算法—仿真设置—性能分析”的顺序展开。测距所需的往返时延、首达径和声速修正不在本章展开，以避免通信性能指标与测距误差指标相互混淆。通信算法的目标是在释放器有限频带、有限处理资源和水声信道时变条件下，实现可同步、可解调和可校验的指令传输。
 
-\section{通信与测距一体化总体方案}[Overall Scheme of Integrated Communication and Ranging]
+\section{SFH-MFSK通信系统模型}[SFH-MFSK Communication System Model]
 
-声学释放器通信链路通常由甲板单元下发唤醒或控制指令，水下机完成同步、解调、身份校验和应答反馈。考虑到设备计算能力、功耗预算与深海远距离信道环境，本文采用 SFH-MFSK 作为基础通信体制。该体制的核心思想是在每个跳时隙内发送一个 MFSK 符号，并根据预定跳频序列切换工作频点，从而同时获得频率分集和非相干检测优势\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
+跳频通信系统通过按照预定的跳频序列在多个载频之间切换，实现信息信号的频率变换与传输。发送端根据跳频序列选择各时隙对应的载频，并将调制信号搬移至该频率；接收端则利用与发送端一致的跳频序列和时序基准，依次完成频点跟踪、信号接收和符号解调。相较于固定载频通信，跳频方式能够将通信信号分散到多个频点，从而降低单一频段干扰对连续通信过程的影响；但与此同时，系统性能也受到跳频图案、频点间隔、驻留时间以及收发端同步精度的共同制约。本文采用SFH-MFSK体制，将跳频序列确定的载频变化与MFSK符号确定的时隙内频率变化相结合，并围绕可用频点、跳频图案和帧结构展开设计。
 
-在通信链路的基础上，测距功能复用同一套收发通道与帧结构：甲板单元发送测距请求，水下机在识别请求后经固定处理延时发回应答，甲板单元依据往返时延估计斜距。由此形成“通信主导、测距协同”的一体化方案，其总体结构如图~\ref{fig:overall_scheme} 所示。
+\subsection{跳频通信物理模型}
+
+在跳频通信体制下，水下声学释放器的通信链路由发送端和接收端组成。图~\ref{fig:sfh_mfsk_transmitter}展示了发送端的逐级处理结构。输入数据首先经过信源编码，形成待传输的数据序列；随后，MFSK调制器将符号映射为相应频率。混频器将MFSK基带信号与跳频载波进行混频，频率合成器为混频过程提供可切换的载波，伪码产生器则按照预定规则生成跳频序列。调制信号经滤波和放大后驱动换能器，最终转换为水声信号并发射。其中，MFSK符号映射决定单个跳频时隙内的频率状态，伪码序列决定相邻跳频时隙之间的载频变化。
 
 \begin{figure}[htbp]
   \centering
-  %\includegraphics[width=0.85\textwidth]{overall_scheme.png}
-  \fbox{\parbox[c][4cm][c]{0.85\textwidth}{\centering 图待补充：通信与测距一体化总体方案框图}}
-  \bicaption[fig:overall_scheme]{}{通信与测距一体化总体方案}{Fig.}{Overall scheme of integrated communication and ranging}
+  \includegraphics[width=0.9\textwidth]{sfh_mfsk_transmitter}
+  \bicaption[fig:sfh_mfsk_transmitter]{}{SFH-MFSK通信系统发送端结构}{Fig.}{Transmitter structure of the SFH-MFSK communication system}
 \end{figure}
 
-该方案的设计原则如下：
+图~\ref{fig:sfh_mfsk_receiver}展示了信号接收端的结构。换能器首先将水声信号转换为电信号，随后信号依次经过前置放大、滤波和同步处理，并进入混频器。频率合成器为混频器提供本地载波，伪码发生器为频率合成器提供跳频序列参考，二者共同实现接收频点的切换。混频后的信号经带通滤波后进入MFSK解调器，完成当前跳频时隙内的符号判决。同步系统为接收处理提供时序控制，并协调同步、频率切换、混频和解调等环节的工作过程。
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{sfh_mfsk_receiver}
+  \bicaption[fig:sfh_mfsk_receiver]{}{SFH-MFSK通信系统接收端结构}{Fig.}{Receiver structure of the SFH-MFSK communication system}
+\end{figure}
+
+综上，接收端通过“同步控制—频率变换—带通滤波—MFSK解调”的处理链完成水声信号的恢复，其中频率合成器和伪码发生器负责接收频点的协同控制。该结构将信号处理、跳频控制与时序同步统一到同一接收框架中，为后续信号模型、同步方法和解调算法的设计提供了系统基础。
+
+\subsection{跳频通信数学模型}
+
+为描述跳频通信系统中信息符号、跳频序列和水声信道之间的关系，设发送符号序列为$\{d_k\}$，第$k$个跳频时隙内的MFSK频率索引为$m_k$，其中$m_k\in\{0,1,\ldots,M-1\}$。若$g_h(t)$表示宽度为$T_h$的时隙脉冲，则符号序列的等效基带表示为
+\begin{equation}
+ a(t)=\sum_{k}a_k g_h(t-kT_h),
+ \qquad
+ g_h(t)=
+ \begin{cases}
+ 1, & 0\leq t<T_h,\\
+ 0, & \text{其他}.
+ \end{cases}
+\label{eq:chap03_baseband}
+\end{equation}
+其中，$a_k$表示第$k$个时隙内的符号幅度或能量权重。跳频序列确定该时隙的基准频率$f_h(k)$，MFSK调制确定相对于基准频率的偏移$m_k\Delta f$。因此，联合调制信号可写为
+\begin{equation}
+ s(t)=\sum_{k} A_k g_h(t-kT_h)
+ \cos\!\left(2\pi\left[f_h(k)+m_k\Delta f\right]t+\varphi_k\right),
+\label{eq:chap03_hopping_signal}
+\end{equation}
+其中，$A_k$为第$k$个时隙的信号幅度，$\Delta f$为MFSK子频点间隔，$\varphi_k$为初始相位。式~\eqref{eq:chap03_hopping_signal}表明，跳频序列决定不同驻留时隙之间的载频变化，MFSK符号则决定同一时隙内的频率状态。
+
+考虑水声传播过程中的多径、时变衰落、多普勒频移以及外部干扰，接收信号可表示为
+\begin{equation}
+ r(t)=\sum_{\ell=1}^{L}\alpha_{\ell}(t)
+ s\!\left(t-\tau_{\ell}(t)\right)
+ e^{j2\pi\nu_{\ell}(t)t}
+ +n(t)+J(t),
+\label{eq:chap03_hopping_channel}
+\end{equation}
+其中，$L$为有效路径数，$\alpha_{\ell}(t)$、$\tau_{\ell}(t)$和$\nu_{\ell}(t)$分别表示第$\ell$条路径的时变幅度、传播时延和多普勒频移，$n(t)$为加性噪声，$J(t)$为外部窄带或脉冲干扰。
+
+接收端利用本地跳频序列生成参考频率$f_h'(k)$，并在第$k$个时隙内与本地载波
+\begin{equation}
+ c_k(t)=\cos\!\left(2\pi f_h'(k)t+\phi_k'\right)
+\label{eq:chap03_local_carrier}
+\end{equation}
+进行混频和滤波。当收发端跳频序列已同步时，有$f_h'(k)=f_h(k)$；若存在频率同步误差，则可表示为$f_h'(k)=f_h(k)+\varepsilon_k$。混频后的有用分量主要位于
+\begin{equation}
+ f_{\mathrm{IF},k}=m_k\Delta f-\varepsilon_k
+\label{eq:chap03_intermediate_frequency}
+\end{equation}
+附近，经过带通滤波和MFSK能量判决即可恢复当前时隙的符号。该模型将跳频同步误差直接纳入接收频率位置，为后续同步检测、非相干解调和误码率分析提供统一基础。
+
+设系统可用频带为 $B$，每个跳频时隙的持续时间为 $T_h$。跳频序列决定第 $k$ 个时隙的基准频率 $f_h(k)$，MFSK符号决定该时隙内的频率偏移索引 $m_k\in\{0,1,\ldots,M-1\}$。第 $k$ 个时隙的发送信号表示为
+\begin{equation}
+ s_k(t)=A\cos\left(2\pi[f_h(k)+m_k\Delta f]t+\varphi_k\right),
+ \quad kT_h\leq t<(k+1)T_h ,
+ \label{eq:chap03_signal}
+\end{equation}
+其中，$A$为信号幅度，$\Delta f$为MFSK子频点间隔，$\varphi_k$为相位。多径、频偏和噪声共同作用下，接收信号可表示为
+\begin{equation}
+ r(t)=\sum_{i=1}^{L}\alpha_i(t)s(t-\tau_i(t))
+ e^{j2\pi\nu_i(t)t}+n(t).
+\label{eq:chap03_channel}
+\end{equation}
+
+\section{跳频方案与帧结构设计}[Frequency-Hopping Scheme and Frame Structure]
+
+本文采用慢跳频组织方式，即一个跳频驻留区间内完成一个或多个完整MFSK符号。该方式降低了频率切换与符号判决之间的时序耦合，便于在嵌入式处理器上进行缓存、检测和帧级校验。最终的频点集合、驻留时间和采样配置应以第5章实际平台参数为准。
+
+\subsection{可用频点与跳频图案}
+
+项目资料给出的接收带通范围为$9$--$13\,\mathrm{kHz}$。在此范围内，频点间隔需同时满足滤波器分辨率、最大预期频偏、MFSK正交条件和换能器频响约束。若可用频点集合记为
+\[
+\mathcal{F}=\{f_0,f_1,\ldots,f_{N_f-1}\},
+\]
+则跳频图案可写为
+\[
+ f_h(k)=f_{\pi(k)},
+\]
+其中$\pi(k)$为由固定表或伪随机序列产生的频点索引。频点设计不应只追求较大的跳频点数，还需在相邻频点之间保留足够的频偏和滤波过渡带裕量，使多普勒偏移、滤波器带宽和频率合成误差不致导致相邻支路的能量严重重叠。论文定稿时应报告$\pi(k)$的生成规则、初始状态和周期，使仿真、固件和实验使用同一图案。跳频能够分散局部频带干扰的影响，但其实际收益取决于干扰占用频带、图案、同步准确度和帧级判决，不能仅由跳频点数推断。
+
+\subsection{快跳频与慢跳频的组织方式}
+
+跳频速率由一跳驻留时间与MFSK符号周期的相对关系决定。设跳频驻留时间为$T_h$、MFSK符号周期为$T_s$，则跳频速率和符号速率分别为$R_h=1/T_h$和$R_s=1/T_s$。当$T_h<T_s$时，一个MFSK符号可能跨越多个跳频驻留区间，属于快跳频；当$T_h\geq T_s$时，一跳可以容纳一个或多个完整MFSK符号，属于慢跳频。该划分描述的是频率切换与符号时序的关系，并不直接等同于抗干扰性能或解调性能的优劣。
+
+图~\ref{fig:fast_slow_hopping}以时间—频率网格对两种组织方式作示意。纵向每细格对应一个MFSK子频点，加粗横线划分$N_f$个跳频驻留频带；横向每细列对应$T_s/2$；黑色标记表示该时间段内发送信号占用的频率。子图(a)取$T_h=T_s/2$，一个MFSK符号占据相邻两列，两列分处不同驻留频带而子频点索引相同，即频带切换发生在符号内部；子图(b)取$T_h=2T_s$，一个MFSK符号仅占一跳的一半，同一驻留频带内连续两个符号以不同子频点索引发送，频带切换落在符号边界上。
+
+快跳频能够在单个信息符号的传输过程中引入更多频率变化，但接收端需要同时维护跳频时序、符号边界和频点切换状态。对于本系统，如图~\ref{fig:fast_slow_hopping}(a)所示，若频率切换发生在符号内部，则切换瞬态可能污染符号两端的有效观测区间，并增加嵌入式缓存和同步控制的复杂度。本文因此采用图~\ref{fig:fast_slow_hopping}(b)所示的慢跳频组织方式，使每个跳频驻留区间至少覆盖一个完整MFSK符号；在该结构下，跳频序列负责确定驻留区间的基准载频，MFSK映射负责确定区间内的相对频率状态。这样可以将频点跟踪、符号能量积累和帧级校验按驻留区间分开处理，降低频率切换与符号判决之间的时序耦合。若实际配置在一跳内承载多个符号，还应在参数表中明确符号数及其边界。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+      x=0.58cm, y=0.30cm,
+      gl/.style={draw=black!40, line width=0.25pt},
+      band/.style={draw=black, line width=0.7pt},
+      hit/.style={fill=black},
+      dashbox/.style={draw=black, dashed, line width=0.7pt},
+      lab/.style={font=\scriptsize},
+      blab/.style={font=\scriptsize, anchor=east}
+    ]
+    \foreach \c in {0,...,8}{
+      \draw[gl] (\c,0) -- (\c,16);
+      \draw[gl] (11.5+\c,0) -- (11.5+\c,16);
+    }
+    \foreach \r in {0,...,16}{
+      \draw[gl] (0,\r) -- (8,\r);
+      \draw[gl] (11.5,\r) -- (19.5,\r);
+    }
+    \foreach \r in {0,4,8,12,16}{
+      \draw[band] (0,\r) -- (8,\r);
+      \draw[band] (11.5,\r) -- (19.5,\r);
+    }
+    \foreach \p in {(0,0),(1,8),(2,14),(3,6),(4,3),(5,15),(6,9),(7,1)}{
+      \fill[hit] \p rectangle ++(1,1);
+    }
+    \foreach \p in {(11.5,4),(13.5,7),(15.5,13),(17.5,12)}{
+      \fill[hit] \p rectangle ++(2,1);
+    }
+    \draw[dashbox] (-0.12,-0.12) rectangle (2,16.12);
+    \draw[dashbox] (11.38,-0.12) rectangle (15.62,16.12);
+    \foreach \b in {0,...,3}{
+      \node[blab] at (-0.3,4*\b+2) {$f_{h,\b}$};
+      \node[blab] at (11.2,4*\b+2) {$f_{h,\b}$};
+    }
+    \draw[->, line width=0.6pt] (-2.3,0) -- (-2.3,16.4);
+    \node[lab, rotate=90, anchor=south] at (-2.6,8) {频率};
+    \draw[<->, line width=0.5pt] (0,-1.1) -- (1,-1.1);
+    \node[lab, below] at (0.5,-1.1) {$T_h$};
+    \draw[<->, line width=0.5pt] (0,-2.7) -- (2,-2.7);
+    \node[lab, below] at (1,-2.7) {$T_s$};
+    \draw[<->, line width=0.5pt] (11.5,-1.1) -- (13.5,-1.1);
+    \node[lab, below] at (12.5,-1.1) {$T_s$};
+    \draw[<->, line width=0.5pt] (11.5,-2.7) -- (15.5,-2.7);
+    \node[lab, below] at (13.5,-2.7) {$T_h$};
+    \node at (4,-4.1) {\small (a) 快跳频};
+    \node at (15.5,-4.1) {\small (b) 慢跳频};
+  \end{tikzpicture}
+  \bicaption[fig:fast_slow_hopping]{}{快跳频与慢跳频的时间—频率图案示意}{Fig.}{Time--frequency patterns of fast and slow frequency hopping}
+\end{figure}
+
+\subsection{伪随机跳频序列与符号映射}
+
+为避免跳频图案过于规则而形成固定频率占用，本文采用伪随机序列生成频点索引。设伪随机序列发生器在第$k$个驻留区间的状态为$q_k$，则其状态更新和频点映射可抽象表示为
+\begin{equation}
+ q_{k+1}=G(q_k),\qquad
+ \pi(k)=H(q_k)\bmod N_f ,
+\label{eq:chap03_prn_hopping}
+\end{equation}
+其中$G(\cdot)$为确定性的状态更新函数，$H(\cdot)$为从状态中提取频点索引的映射函数。收发端只需预先约定相同的初始状态、反馈规则、输出位选择和索引映射，即可在不传输完整跳频表的条件下重构相同的跳频图案。工程实现中应避免将零状态作为可能导致序列锁死的初始状态，并对序列周期、重复频点及相邻频点分布进行检查。
+
+在每个驻留区间内，MFSK符号索引$m_k\in\{0,1,\ldots,M-1\}$由待发送比特分组映射得到，实际发送频率为
+\begin{equation}
+ f_k=f_h(k)+m_k\Delta f ,
+\label{eq:chap03_symbol_mapping}
+\end{equation}
+其中$\Delta f$为MFSK子频点间隔。该映射将“跨驻留区间的基准频率变化”和“驻留区间内的信息频移”分离：接收端先依据同步后的$\pi(k)$确定当前跳频基准，再在相对频率集合上进行非相干能量判决。伪随机序列并不能单独消除干扰或频偏，其作用是分散频率占用并为收发端提供可复现的频点先验；抗干扰收益仍需在统一信道和干扰条件下通过误码率及完整帧成功率验证。
+
+\subsection{通信帧结构}
+
+通信帧由线性调频同步头、跳频同步字段、地址、命令或状态、数据和校验字段组成。线性调频同步头采用已知的线性调频（linear frequency modulation, LFM）信号，其瞬时频率随时间连续变化，可表示为
+\begin{equation}
+ p(t)=A_p\cos\left(2\pi\left(f_{p,0}t+\frac{\mu}{2}t^2\right)+\phi_p\right),
+\quad 0\leq t<T_p ,
+\label{eq:chap03_lfm_preamble}
+\end{equation}
+其中$A_p$为同步头幅度，$f_{p,0}$为起始频率，$\mu$为调频率，$T_p$为同步头持续时间。接收端利用本地LFM参考信号进行匹配相关或去斜处理，在背景噪声和多径条件下获得时间聚焦峰，据此完成信号检测和帧起点的粗定位。与直接在多个跳频点上逐点搜索相比，LFM同步头提供了独立于后续跳频图案的时间参考，便于先完成帧捕获，再启动伪随机跳频序列。
+
+同步头之后设置已知跳频同步字段，用于确认跳频序列的初始状态、驻留区间边界或帧计数。地址字段用于设备识别，命令字段用于业务控制，数据字段承载状态或测量信息，校验字段用于阻止错误帧触发执行动作。接收端的处理顺序为“LFM检测与粗同步—跳频同步字段确认—伪随机序列重构—MFSK符号解调—帧校验”。对于释放命令，必须在地址匹配、帧校验和控制互锁均满足后执行，通信成功与机械动作成功应分别统计。同步头的起止频率、持续时间、相关判决门限以及与后续跳频字段的保护间隔，应在仿真参数和第5章固件配置中给出；当前材料未提供这些定值，不能预先声称其同步增益。
+
+\section{同步与非相干解调}[Synchronization and Noncoherent Demodulation]
+
+\subsection{信号检测与同步}
+
+接收序列为$r(n)$时，长度为$N$的滑动能量定义为
+\begin{equation}
+ E(n)=\sum_{i=0}^{N-1}|r(n+i)|^2 .
+\label{eq:chap03_energy}
+\end{equation}
+当$E(n)$超过依据噪声估计得到的门限时，系统进入候选信号区间。随后利用已知前导$p(n)$计算相关量
+\begin{equation}
+ \Lambda(\tau)=\sum_{n=0}^{N_p-1}r(n+\tau)p^*(n),
+\label{eq:chap03_corr}
+\end{equation}
+并结合相关峰、连续能量和跳频图案一致性确定帧起点。同步输出包括帧起始位置、跳时隙边界和后续频点检测的时间参考。同步成功率和同步误差必须按预先给出的判据统计。
+
+\subsection{并行自适应Notch滤波器}
+
+对第$m$个候选频点，构造正交参考信号
+\begin{equation}
+ x_{c,m}(k)=\cos(\omega_m k),\qquad
+ x_{s,m}(k)=\sin(\omega_m k).
+\end{equation}
+并行支路输出和公共误差分别为
+\begin{equation}
+ y(k)=\sum_{m=1}^{N_f}\left[u_{c,m}(k)x_{c,m}(k)+u_{s,m}(k)x_{s,m}(k)\right],
+\qquad e(k)=d(k)-y(k).
+\label{eq:chap03_notch}
+\end{equation}
+采用LMS规则更新权值：
+\begin{equation}
+\begin{aligned}
+u_{c,m}(k+1)&=u_{c,m}(k)+\mu e(k)x_{c,m}(k),\\
+u_{s,m}(k+1)&=u_{s,m}(k)+\mu e(k)x_{s,m}(k).
+\end{aligned}
+\label{eq:chap03_lms}
+\end{equation}
+在一个跳时隙内，以各支路估计分量的能量
+\begin{equation}
+ Z_m=\sum_{k=k_0}^{k_0+N_h-1}|y_m(k)|^2
+\label{eq:chap03_energy_metric}
+\end{equation}
+作为候选频点度量，选择最大且超过判决门限的支路完成非相干判决。实际固件若采用残差、幅值或其他统计量，应以固件输出重新定义$Z_m$，不能将不同输出混用。
+
+\section{通信仿真条件与评价指标}[Communication Simulation Conditions and Metrics]
+
+仿真链路由帧生成、SFH-MFSK调制、信道、同步、Notch支路检测、符号判决和帧校验组成。信道场景至少包括AWGN、多径、多普勒和窄带干扰；每个场景均应给出信噪比、路径幅度与时延、频偏、干扰功率和重复次数。若参数来自假设而非实测，应明确标注为模型参数。
+
+通信性能采用以下指标：
 \begin{enumerate}
-  \item 通信与测距共用跳频波形与同步机制，避免增加额外硬件开销；
-  \item 测距请求与应答复用控制帧格式，通过命令字段区分工作模式；
-  \item 关键控制命令采用重复确认与软件互锁，保证释放动作安全；
-  \item 算法实现以低复杂度、低功耗为目标，适配嵌入式处理器资源约束。
+ \item 误码率：判决比特错误数与发送比特总数之比；
+ \item 同步成功率：满足帧起点误差和跳时隙定位误差判据的试验比例；
+ \item 完整帧通信成功率：正确同步、解调并通过校验的帧数与总帧数之比；
+ \item 抗干扰性能：在相同信号功率和统计口径下，比较不同干扰条件的误码率和帧成功率；
+ \item 处理代价：统计每跳运算量、缓存量和单帧处理时间，为嵌入式实现提供约束。
 \end{enumerate}
 
-\section{SFH-MFSK 通信算法}[SFH-MFSK Communication Algorithm]
+\section{仿真结果与分析}[Simulation Results and Analysis]
 
-\subsection{信号模型}
+本节应根据实际仿真输出填写曲线和表格。当前材料未提供可复核的完整仿真数据，因此不将预期趋势写成实验结论。建议按以下顺序报告结果：首先用AWGN场景检查解调链路和理论非相干MFSK结果的一致性；其次分别加入多径和多普勒，分析同步与频点能量泄漏；最后加入窄带干扰，比较跳频图案和帧级校验对完整帧成功率的影响。
 
-设单帧由前导段、同步段、地址段、命令段、校验段和保护段构成，则典型帧结构可表示为
-
-\begin{equation}
-  \mathcal{F}=\left[\mathcal{P},\mathcal{S},\mathcal{A},\mathcal{C},\mathcal{Q},\mathcal{G}\right].
-  \label{eq:frame_structure}
-\end{equation}
-
-其中 $\mathcal{P}$ 用于粗同步与能量门限触发，$\mathcal{S}$ 用于精同步和频点对齐，$\mathcal{A}$ 表示地址字段，$\mathcal{C}$ 表示控制命令字段，$\mathcal{Q}$ 表示差错校验字段，$\mathcal{G}$ 为保护间隔。
-
-第 $k$ 跳发送信号如式\eqref{eq:fhmfsk_signal}所示，接收信号如式\eqref{eq:channel_model}所示。由于采用慢跳频体制，每跳驻留时间 $T_h$ 远大于信道最大多径时延扩展 $\tau_{\max}$，因此每跳内信道可近似视为时不变，接收端可在每跳内独立完成能量积累与判决。
-
-\subsection{跳频序列与帧结构设计}
-
-跳频序列设计直接影响系统抗干扰能力与多址区分能力。对于单设备控制场景，序列的主要要求是周期足够长、相邻跳间碰撞概率低、频谱占用均匀，并便于嵌入式设备在线生成\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。工程实现中可采用线性反馈移位寄存器生成伪随机序列，再通过模运算映射到可用跳频集合。
-
-帧结构设计遵循“先同步、后识别、再执行”的原则。前导段可选用重复跳频图样，使接收端通过滑动相关或能量突变实现粗捕获；同步段用于完成跳点对齐和符号边界精化；地址段与命令段采用固定长度设计，以降低解析复杂度；校验字段可使用 CRC 或奇偶校验以抑制误触发风险。对于释放命令，系统应增加重复确认机制，避免单次偶发误码导致误释放。
-
-\subsection{同步捕获算法}
-
-同步是 SFH-MFSK 接收机的关键环节，可划分为粗同步与精同步两个阶段。粗同步阶段依据接收带通信号短时能量
-
-\begin{equation}
-  E(n)=\sum_{i=0}^{N-1} \left|r(n+i)\right|^2,
-  \label{eq:energy_det}
-\end{equation}
-
-与门限比较，识别潜在信号到达区间。精同步阶段利用本地已知前导模板计算相关统计量
-
-\begin{equation}
-  \Lambda(\tau)=\sum_{n=0}^{N_p-1} r(n+\tau) p^{\ast}(n),
-  \label{eq:correlation_sync}
-\end{equation}
-
-其中 $p(n)$ 为前导模板，$N_p$ 为相关长度。取 $|\Lambda(\tau)|$ 最大的位置作为同步参考点，并结合相邻跳频能量一致性对异常峰值进行剔除。已有研究表明，在跳频体制下通过同步段与导频段的联合设计，可有效改善低信噪比下的同步稳健性\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,WangDingTiaoPinTongXinXiTongZhongTongBuJiShuDeYanJiuYuFangZhenFenXi2014}。
-
-\subsection{非相干检测与判决}
-
-考虑到声学释放器处理器资源有限且相位跟踪困难，本文采用基于滤波器组和能量积累的非相干检测方法。对每一跳的候选频点建立并行带通滤波器或数字匹配检测支路，计算各支路输出能量
-
-\begin{equation}
-  Z_m(k)=\sum_{n=0}^{N_h-1} \left|y_{m,k}(n)\right|^2,\quad m=0,1,\ldots,M-1,
-  \label{eq:noncoherent_metric}
-\end{equation}
-
-其中 $y_{m,k}(n)$ 为第 $k$ 跳第 $m$ 个候选频点的滤波器输出。取
-
-\begin{equation}
-  \hat{m}_k = \arg\max_m Z_m(k)
-  \label{eq:decision}
-\end{equation}
-
-作为第 $k$ 跳的符号判决结果。若最大能量与次大能量之差小于预设可信度门限，则该跳可标记为低可信度符号，在后续帧级判决或重复发送机制中进一步处理。
-
-\subsection{抗干扰与可靠执行策略}
-
-声学释放器控制命令不同于一般数据通信，其首要目标并非高吞吐率，而是高可靠和低误触发率。基于这一要求，本文采用以下策略：
-
-\begin{enumerate}
-  \item 对关键控制命令采用双重地址校验与重复发送确认；
-  \item 对接收符号设置置信度评价，避免低可信度单帧直接触发动作；
-  \item 通过跳频分散传输降低窄带干扰集中破坏的概率；
-  \item 对释放命令设置软件互锁和机械执行前延时确认流程。
-\end{enumerate}
-
-上述设计可将“通信正确识别”与“执行安全控制”分层处理，使系统既具有抗噪抗干扰能力，又能满足释放类装备对安全性的严格要求。
-
-\section{往返时延测距算法}[Round-Trip Delay Ranging Algorithm]
-
-\subsection{测距任务与技术路线}
-
-在声学释放器作业过程中，测距功能主要服务于两类需求：一是辅助作业人员判断目标方位与距离变化，提升回收作业效率；二是为后续水下定位、设备状态评估或释放后目标搜索提供基础观测量。结合声学释放器通信链路，本文采用“主动询问 + 被动应答”的双向时延测距模式，即甲板单元发送测距请求信号，水下机在识别后经过固定处理延时发回应答信号，甲板单元再根据往返时延估计目标距离\cite{LiangBoZhongChengShuiXiaCeJuJiYaoKongXiTongZhuKongJiSheJi2009,ZhangMeiKaiJiYuSTM32ChuLiQiDeShuiXiaXinBiaoDeZhuDongCeJuSheJi2016}。
-
-\subsection{往返时延测距模型}
-
-设甲板单元发送询问信号时刻为 $t_1$，水下机接收到该信号的时刻为 $t_2$，完成固定处理后在时刻 $t_3$ 发出应答，甲板单元在时刻 $t_4$ 接收到应答，则往返传播关系如式\eqref{eq:rtt_model}所示，距离估计如式\eqref{eq:range_estimation}所示。
-
-式\eqref{eq:range_estimation}表明，测距精度主要受三个因素影响：传播时延估计误差、固定处理延时标定误差以及声速估计误差。其中固定处理延时 $\tau_{\mathrm{proc}}$ 由水下机软件流程决定，需通过标定获得并在实现中保持稳定。
-
-\subsection{首达径检测与时延估计}
-
-多径条件下，最大相关峰值并不一定对应首达径，因此不能简单地把最大峰值位置作为测距时延。本文采用匹配滤波与门限判决相结合的方法进行首达径估计。设发送参考信号为 $s(t)$，接收信号为 $r(t)$，则匹配滤波输出为
-
-\begin{equation}
-  y(\tau) = \int r(t)s(t-\tau)\mathrm{d}t,
-  \label{eq:mf_output}
-\end{equation}
-
-在离散实现中，通过滑动相关计算序列 $y[n]$，并结合噪声统计特性设置门限 $\gamma$。当某一候选峰值同时满足
-
-\begin{equation}
-  |y[n]| > \gamma
-  \label{eq:threshold_decision}
-\end{equation}
-
-且其前方保护区间内不存在更早的高可信峰值时，将其判定为首达径位置。该方法兼顾了对低信噪比条件下弱直达径的敏感性，以及对后续强反射峰值的抑制能力\cite{HaoMengHuaJiYuQianHaiDuoJingShiYanDeFuHeMaShuiShengCeJuYanJiu2020}。
-
-\subsection{多径抑制与异常值剔除}
-
-在连续多次测距过程中，受海面起伏和瞬时干扰影响，个别测距结果可能出现跳变。为提高结果稳定性，可对多次测距结果采用中值滤波或限差判决。若第 $i$ 次测距结果为 $R_i$，窗口长度为 $K$，则平滑结果可表示为
-
-\begin{equation}
-  \tilde{R}_i = \operatorname{median}\left\{R_{i-K+1}, \ldots, R_i\right\}.
-  \label{eq:median_filter}
-\end{equation}
-
-若 $|R_i - \tilde{R}_i|$ 超过异常门限，则可将该次结果标记为异常值，并触发重测。该策略适用于舰船或小型作业平台缓慢运动条件下的近实时距离显示。
-
-\subsection{声速修正方法}
-
-声速变化是测距误差的重要来源。若声速存在偏差 $\Delta c$，传播时延估计为 $\hat{\tau}$，则距离误差近似满足
-
-\begin{equation}
-  \Delta R \approx \hat{\tau} \Delta c,
-  \label{eq:sound_speed_error}
-\end{equation}
-
-当作业海域可提供温盐深数据或经验声速剖面时，可采用平均声速修正或分层积分近似方法提高测距精度\cite{ChenHongXiaLuLianGangHuaFengFanBinLiuNuoFangJunWeiSanZhongChangYongShengSuSuanFaDeBiJiao2005,ZhaoDiNengShengSuPouMianJingJianYunSuanDeGaiJinDPSuanFaJiQiPingGu2014}。若缺少完整剖面信息，可根据历史海区数据、实时温度测量值和作业深度估计得到简化等效声速，用于工程场景下的一阶补偿。
-
-针对深海作业中目标深度先验难以准确获取的问题，本文采用免目标深度的快速声线测距方法：以实测往返时延和已知收发深度为输入，通过快速声线追踪迭代求解水平距离，避免了对目标深度的先验依赖，在保证修正效果的同时满足工程实时性要求。
-
-\section{通信与测距一体化处理流程}[Integrated Processing Flow]
-
-综合上述分析，本文通信与测距一体化处理流程可概括为：
-
-\begin{enumerate}
-  \item 甲板单元按跳频序列组织帧结构，发射唤醒或测距请求信号并记录发送时刻；
-  \item 水下机通过能量门限完成粗同步，通过前导相关完成精同步与跳点对齐；
-  \item 水下机对每跳候选频点进行非相干能量检测与判决，完成地址识别与命令解析；
-  \item 若为测距请求，水下机在固定延时后发射应答信号；若为控制命令，则进入安全校验与执行流程；
-  \item 甲板单元对接收信号进行匹配滤波和首达径检测，扣除固定处理延时并根据等效声速换算斜距；
-  \item 对连续测距结果进行平滑处理和异常值剔除，并将结果提供给上位界面或控制逻辑使用。
-\end{enumerate}
-
-该流程将通信与测距在波形、同步和帧结构三个层面统一，使两类功能共享同一套硬件与软件资源，降低了系统复杂度与功耗。
-
-\section{算法误差来源分析}[Error Analysis]
-
-通信与测距算法的误差主要来源包括：
-
-\begin{enumerate}
-  \item 时延估计误差：由低信噪比、相关峰扩展和多径混叠引起；
-  \item 固定延时误差：由处理器中断抖动、任务调度和串口缓存造成；
-  \item 声速模型误差：由环境参数不准确或声速剖面简化带来；
-  \item 同步误差：由多普勒频移和跳频图样失配引起，会同时影响解调正确性与测距时延估计；
-  \item 几何误差：当收发换能器位置不一致时，显示距离与目标参考点距离存在偏差。
-\end{enumerate}
-
-因此，系统设计中不仅要优化算法本身，还需对硬件时钟、任务优先级和延时标定机制进行协同设计。
+\begin{table}[htbp]
+ \bicaption[tab:chap03_params]{}{通信仿真参数}{Tab.}{Communication simulation parameters}
+ \vspace{0.5em}\centering\wuhao
+ \begin{tabular}{ccc}
+ \toprule[1.5pt]
+ 参数 & 符号 & 取值\\
+ \midrule[1pt]
+ 可用频带 & $B$ & 待填写\\
+ MFSK进制数 & $M$ & 待填写\\
+ 跳频点数 & $N_f$ & 待填写\\
+ 跳频驻留时间 & $T_h$ & 待填写\\
+ 同步门限 & $\gamma$ & 待填写\\
+ 信噪比范围 & $\mathrm{SNR}$ & 待填写\\
+ \bottomrule[1.5pt]
+ \end{tabular}
+\end{table}
 
 \section{本章小结}[Summary]
 
-本章给出了基于 SFH-MFSK 的水声通信与测距算法。首先提出了通信与测距一体化总体方案；随后设计了 SFH-MFSK 通信算法，包括帧结构、跳频序列组织、同步捕获、非相干检测及抗干扰执行策略；进而建立了往返时延测距模型，研究了首达径检测、多径抑制、声速修正和异常值剔除方法；最后给出了通信与测距一体化的整体处理流程，并分析了算法的主要误差来源。相关算法设计以低复杂度、高可靠和工程可实现性为目标，为第 4 章的仿真分析和第 5 章的嵌入式移植提供了算法基础。
+本章建立了面向声学释放器的SFH-MFSK通信模型，给出了跳频图案、帧结构、能量检测、相关同步和并行自适应Notch滤波器非相干解调流程，并定义了误码率、同步成功率和完整帧成功率等评价指标。通信仿真应在统一参数和信道条件下完成，所得参数将作为第5章嵌入式实现和通信实测的对照基准。

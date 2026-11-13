@@ -7,64 +7,42 @@
 
 \section{课题背景与研究意义}[Background and Significance]
 
-声学释放器广泛应用于深海潜标回收、海底设备长期布放和海洋观测任务。与浅海场景相比，深海环境具有传播距离长、环境参数垂向变化明显、作业窗口受限和维护成本高等特点，因此对释放器系统提出了更高的可靠性要求：既要保证远距离声学指令可达并可判，又要在复杂海况下提供稳定、可用的距离信息，以支撑回收决策与作业安全\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017,halonenDevelopmentLargeScaleTesting2024}。
+声学释放器用于水下设备的布放、控制和回收，通常由水面甲板单元与水下机通过水声链路完成指令交互。对于潜标及海底观测设备，释放器需要在水下完成指令接收、状态响应和释放机构控制；甲板端获得的应答及距离信息，则可辅助作业人员判断设备状态和回收进程。因此，通信可靠性、测距可用性与嵌入式系统的长期工作能力共同构成释放器的关键工程需求\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017,halonenDevelopmentLargeScaleTesting2024}。
 
-对于深海回收流程而言，通信算法是系统主体能力，其首要任务是保障远距离指令传输、同步捕获与可靠判决，确保“可控、可达、可执行”。围绕跳频序列设计、帧结构组织和非相干检测策略开展通信算法研究，是声学释放器稳定工作的基础，也是释放控制、状态回传和任务闭环能够可靠运行的前提。
+水声链路的传播损耗、多径、环境噪声和多普勒效应会影响信号检测与同步；声速随环境变化，还会使传播时延与几何距离之间的关系偏离常声速近似。与此同时，水下机受到功耗、处理器资源、模拟前端和换能器频带等硬件条件限制。因而，通信和测距算法的设计不能脱离具体设备条件：通信体制需在抗干扰能力、同步难度和实现复杂度之间折中，测距处理则需说明时延观测、声速模型及几何约束等输入条件\cite{kilfoyleStateArtUnderwater2000,liuProspectsProblemsWireless2008,freitagAnalysisChannelEffects2001,bergerStratificationEffectCompensation2008,sunRelationshipPropagationTime2019}。
 
-在通信链路稳定之后，测距功能作为关键协同能力参与作业闭环：甲板单元可依据实时距离变化判断目标接近趋势，优化船位与作业节奏，降低盲搜时间；当海况恶化或信道波动导致链路质量下降时，稳定的测距结果仍可提供有效态势信息，提升任务连续性与安全冗余。针对深海作业中目标深度先验难以准确获取的问题，采用“免目标深度的快速声线测距法”可在不依赖目标深度输入的条件下完成距离估计，从而降低部署约束并提升现场可操作性。
-
-在此背景下，采用 SFH-MFSK 通信体制与免目标深度的快速声线测距法进行协同设计具有明确工程优势。跳频机制可在时频域分散能量，降低窄带干扰和频率选择性衰落带来的链路失效风险；MFSK 在非相干检测条件下实现复杂度较低，适合功耗受限的水下终端；快速声线测距法则在保留工程实现效率的同时增强了测距链路对先验条件不完备场景的适应性。围绕“通信主导、测距协同”的技术路线开展研究，有助于提升深海声学释放器的可用性与工程实装能力\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021,ShiYangShenHaiShengXueShiFangQiYuanJuChiTongXinJiShu2018}。
+本文以声学释放器为应用背景，研究基于慢跳频多进制频移键控（Slow Frequency-Hopping M-ary Frequency-Shift Keying, SFH-MFSK）的水声通信算法和快速声线测距方法，并围绕软硬件平台开展仿真与功能验证。通信部分重点考察跳频方案、同步处理和基于并行自适应 Notch 滤波器的非相干检测；测距部分以请求—应答往返时延为观测基础，结合声速剖面及已知几何约束求解距离，目标是避免将目标深度作为直接输入。本文的研究意义在于形成与释放器应用条件相衔接的算法描述和验证流程；具体性能优势需由后续仿真及实测数据支持。
 
 \section{国内外研究现状}[Related Work]
 
 \subsection{声学释放器研制现状}
 
-声学释放器在海洋工程和军事任务中得到了广泛的应用。在海事监测和工程领域，不同类型的声学释放器已被应用于高架海事测量系统、水下应答器和潜标等设备中；在军事任务中，海上试验靶场的建设需要声学释放器，声学释放器是水下通信网络和水下网络中心战( NCW )中不可或缺的模块。声学释放器部分地决定了海事调查设备和实验数据能否收回投资数百万美元。尽管如此，中国目前仍是声学释放器的净进口国。 随着逆全球化浪潮的兴起和全球超级大国对中国的技术封锁，研制具有自主知识产权的高可靠声学释放器成为一项紧迫的任务。\cite{ohDevelopmentReliableDeep2000,morrisSelectingAcousticRelease2017,halonenDevelopmentLargeScaleTesting2024}。\cite{QiuJianJunShengXueShiFangQiYanZhi2006,WangQiShengXueShiFangXiTongShuZiPingTaiSheJiJiZaiTongBuDingWeiXiTongZhongYingYong2009,DengChaoDuoGongNengShengXueShiFangQiRuanYingJianPingTaiSheJiYuShiXian2016}。西方国家在声学释放器的研究方面领先于中国，在该领域处于世界领先地位。许多公司都有能力设计和制造声学释放器，在市场上竞争激烈。法国的iXblue、美国的海底生物、英国的Sonardyne、日本的NGK、美国的InterOcean等传统的声学脱扣器生产厂家都生产出了一系列性能稳定的声学脱扣器。在过去的二十年中，声学系统开发商的崛起，他们已经生产出了更多独特的水下脱扣器，如美国的Edegtech，英国的Applied Acoustic Engineering和美国的ORE离岸脱扣器。
+声学释放器的技术发展涉及水声指令链路、状态反馈、耐压封装和机械释放机构等环节。相关研究和工程报告分别从设备研制、数字通信平台及同步定位等方面讨论了释放器系统设计\cite{QiuJianJunShengXueShiFangQiYanZhi2006,WangQiShengXueShiFangXiTongShuZiPingTaiSheJiJiZaiTongBuDingWeiXiTongZhongYingYong2009,DengChaoDuoGongNengShengXueShiFangQiRuanYingJianPingTaiSheJiYuShiXian2016}。已有工作说明，释放器不是单一通信算法，而是由甲板端、水下机、换能器和执行机构构成的应用系统；因此，算法选择需结合工作频段、接收前端、功耗和控制流程考量。具体设备指标应以可核验的产品资料或项目数据为依据，本文仅采用本项目材料中能够确认的参数。
 
-Edgetech公司的声学释放器工作在7 ~ 20 k Hz之间；深海模型工作深度为6 000 m，有效载荷为5 500 kg，采用BACS编码系统，电池充电一次可持续9年/ 500万次响应。工作深度为3 500 m的声学释放器PORT模型采用电机驱动的旋转正推式释放机构，8242模型采用弹簧驱动的电机驱动式释放机构。配备的甲板单元可以显示倾斜状态，解决了仪器舱被淹没时释放物姿态无反馈的问题。 此外，发送错误的释放命令会将用于绑扎水下仪器舱的安全绳解绑到船舶上，依靠浮力无法返回水面的仪器舱很有可能沉入大海。配备的甲板单元将降低这种风险[ 2 ]。
+\subsection{跳频水声通信与非相干检测研究现状}
 
-美国海底生物公司是世界领先的海洋工程设备制造商。其生产的声波脱扣器主要工作在7 ~ 15 k Hz范围内，采用大扭矩电机驱动脱扣机构，最大脱扣载荷为5 000 kg，使用寿命为2年。水面单元不仅可以助推或停止释放器，接收反馈的运动信息，还可以远程勘测距离信息，斜距可达10 km。Sonadyne公司开发的声学释放器有的采用电机驱动机构，有的采用弹簧助压式释放机构(与i Xblue的海洋学模型相似)，有的采用主动分离释放机构。 Sonydyne脱扣器的工作深度为6 000 m，使用寿命为2 ~ 3年。
+跳频通信通过按序列切换载频提供频率分集，其应用研究涉及跳频图案、同步捕获、帧结构及抗干扰设计\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024,liuProspectsProblemsWireless2008}。针对水声遥控与释放器应用，已有工作讨论了 FH-FSK 通信理论与实现方案\cite{LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。另一方面，MFSK 的非相干检测不要求载波相位同步，但候选频点的能量区分仍会受到频偏、多径和噪声影响。多通道自适应陷波滤波器组也被用于多频点通信信号处理\cite{FuJinDuoTongDaoZiGuaYingXianBoLuBoQiZuSheJiJiXingNengFenXi2007,ZhuFengYiZhongJiYuDuoTongDaoNotchLuBoQiDeTongXinFangFa2019}。这些研究为本文的滤波器组方案提供方法背景；本文是否优于其他检测方法，仍需在一致的信道条件和指标下通过仿真与实验比较。
 
-我国研制的声学释放器在可靠性、电机伺服分离、灵敏度、水下工作寿命等技术指标上无法与西方声学释放器相媲美。国内多家单位在声学释放器研发方面投入较大，包括国家863项目资助的中船重工第710研究所和哈尔滨工程大学，以及国家863项目资助的不断引进吸收先进技术的国家海洋技术中心。 中国科学院海洋研究所、中船重工第715研究所、南京大学、厦门大学等单位，以及一些新兴的声学测量设备生产商，都对该领域进行了大量的研究工作。
+\subsection{水声测距与声线修正研究现状}
 
-2007年，中船重工第710研究所为解决深水水下仪器平台与锚的分离问题，研制了可在1 000 m水深作业的定时气动分离释放器模型。该发布器的工作流程如下。首先，点火器通过气动定时电路启动，产生的高压气体推动连接销使装置解锁，从而将系泊水雷与锚分开。它可以在1000米的深度下工作，在水下最长可持续30天。随后，第710研究所进一步探索，采用带宽编码技术，研制了可在水下4 000 m深度、双释放机构工作的脱扣器。
-
-\subsection{SFH-MFSK 通信技术研究现状}
-
-SFH-MFSK 通信技术结合了慢跳频抗干扰与 MFSK 非相干检测复杂度低的特点，已成为远距离低速率高可靠水声通信的重要技术路线之一。现有研究主要聚焦于跳频序列设计、同步捕获、帧结构优化、误码性能提升和抗窄带干扰能力增强等方向\cite{ZhaoXiangWuTiaoPinTongXinTongBuJiShuFaZhanZongShu2018,SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024,LiBoDuoYongHuShuiShengFHMFSKTongXinJiShuLiLunYuShiXianYanJiu2018,liuFHFSKRemoteControl2021}。
-
-从工程应用角度看，相关成果已在水下控制、远程唤醒和状态回传等任务中体现出较高实用性；但在深海长程链路下，仍面临多径扩展、频率选择性衰落和时变信道导致的同步鲁棒性下降等问题。因此，围绕 SFH-MFSK 体制开展面向深海场景的参数协同优化与接收机鲁棒设计，仍是提升释放器通信主链路性能的关键。
-
-\subsection{声线修正技术研究现状}
-
-在测距技术方面，声线修正是提升深海距离估计精度与稳定性的核心环节。现有研究通常基于往返时延模型，结合首达径检测、多径抑制、声速剖面修正和异常值抑制等方法，降低传播路径弯曲及环境不确定性对测距结果的影响\cite{HuAnPingShuiShengCeJuJiShuYanJiu2014,YuYanTingDanXinBiaoShuiShengDingWeiJiShuYanJiuXianZhuangJiYingYongZhanWang2022}。
-
-近年来，面向工程实时性的快速声线方法受到关注，其优势在于兼顾计算效率与修正效果。特别是对于深海作业中目标深度先验难以准确获取的场景，免目标深度的快速声线测距思路可减少先验依赖、提升现场适配性。总体而言，将声线修正技术与通信链路状态联合设计并在同一释放器平台完成系统级验证，仍是当前研究与工程应用中的薄弱环节。
+传播时延是水声测距的重要观测量。往返时延方法可避免水面端与水下端严格共享时钟，但实际距离估计仍需补偿设备处理延时，并处理首达径检测、多径和声速变化带来的误差。已有研究讨论了水声测距、单信标定位及声速分层对传播时间的影响\cite{HuAnPingShuiShengCeJuJiShuYanJiu2014,YuYanTingDanXinBiaoShuiShengDingWeiJiShuYanJiuXianZhuangJiYingYongZhanWang2022,bergerStratificationEffectCompensation2008,sunRelationshipPropagationTime2019}。对于声速随深度变化的环境，声线模型能够描述传播时间与路径几何之间的关系，但反演通常还依赖端点或其他几何条件。本文所讨论的“不依赖目标深度”方法，应结合其已知几何约束明确数学输入与可解条件，再据此评价其计算量和测距误差。
 
 \section{论文主要研究内容}[Main Work]
 
-本文围绕“基于 SFH-MFSK 的水声通信与测距算法研究”开展研究，以声学释放器为应用背景，重点工作如下：
+本文围绕题目所述的 SFH-MFSK 水声通信与测距算法展开研究，并以声学释放器作为系统应用背景。全文技术路线为“系统条件分析—通信与测距算法设计—仿真评估—软硬件平台搭建与功能验证”，主要工作如下：
 
 \begin{enumerate}
-  \item 分析水声信道传播特性及其对 SFH-MFSK 体制参数的约束关系，明确慢跳频体制的适用条件。
-  \item 研究并设计基于 SFH-MFSK 的水声通信与测距算法，包括帧结构、跳频序列、同步捕获、非相干判决、首达径检测、多径抑制和声速修正。
-  \item 开展不同信道条件下的算法仿真，分析误码率、通信成功率、测距误差及抗干扰性能。
-  \item 完成算法的嵌入式移植与实验验证，将实测结果与仿真结果进行对比分析。
+  \item 分析水声信道特性及声学释放器的工作条件和硬件约束，说明所选通信体制与接收处理方案的设计依据。
+  \item 设计 SFH-MFSK 通信方案，说明跳频图案及快、慢跳频组织方式，研究同步方法和基于并行自适应 Notch 滤波器的非相干解调流程。
+  \item 建立往返时延测距模型，结合快速声线传播计算和已知几何约束，给出不将目标深度作为直接输入的距离估计步骤及适用条件。
+  \item 对通信与测距算法开展仿真，在不同信道条件下依据误码率、通信成功率、抗干扰性能及测距误差等指标进行评估。
+  \item 搭建声学释放器软硬件平台，将算法部署至目标嵌入式处理器，并通过功能测试和实测数据检查系统流程；在数据条件允许时，对照仿真与实测结果。
 \end{enumerate}
 
 \section{论文结构安排}[Organization of the Thesis]
 
-全文共分为六章，结构安排如下：
-
-\begin{enumerate}
-  \item 第一章为绪论，介绍课题背景、研究现状、研究内容与论文结构。
-  \item 第二章介绍水声通信与测距技术基础，包括水声信道特性、SFH-MFSK 调制原理、数字通信基础和水声测距基本方法。
-  \item 第三章给出基于 SFH-MFSK 的水声通信与测距算法，包括跳频通信方案、调制解调算法、同步算法、测距算法及整体处理流程。
-  \item 第四章开展通信与测距算法仿真及性能分析，分析误码率、通信成功率、测距误差及抗干扰性能。
-  \item 第五章介绍通信与测距算法的嵌入式移植与实验验证，给出实测结果并与仿真结果进行对比。
-  \item 第六章总结全文工作，分析不足并展望后续优化方向。
-\end{enumerate}
+全文共分为六章。第一章为绪论，介绍声学释放器应用背景、跳频通信及水声测距相关研究、本文研究内容和章节安排。第二章介绍水声信道特性、声学释放器工作条件与硬件约束、水声通信和测距的基本方法，以及 SFH-MFSK 通信体制和快速测距方法的选择依据。第三章专门研究 SFH-MFSK 水声通信算法，依次介绍通信系统模型、跳频图案、快慢跳频组织、同步方法和 Notch 滤波器非相干解调，并开展通信算法仿真，分析误码率、同步成功率、通信成功率和抗干扰性能。第四章专门研究水声测距算法，依次介绍往返时延测量、处理延时补偿、声速剖面和快速声线测距方法，并开展测距算法仿真，分析不同条件下的测距误差和计算性能。第五章介绍声学释放器软硬件平台搭建、算法嵌入式实现、参数配置和实验环境，分别完成通信功能和测距功能验证，并将实测结果与第 3 章和第 4 章的仿真结果进行对比。第六章总结全文工作，分析研究限制并展望后续工作。
 
 \section{本章小结}[Summary]
 
-本章明确了本文面向声学释放器应用的研究定位，凝练出通信算法与测距算法两条核心研究主线，并给出了全文的技术路线与章节组织。
+本章明确了以声学释放器为应用背景、以 SFH-MFSK 通信和快速声线测距为算法主线的研究范围，并将软硬件平台搭建与功能验证纳入整体技术路线。

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<svg width="1120" height="310" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <style>.box { fill: #fff; stroke: #000; stroke-width: 1.2; }
+    .line { fill: none; stroke: #000; stroke-width: 1.4; }
+    .dash { fill: none; stroke: #000; stroke-width: 1.1; stroke-dasharray: 4 3; }
+    .arrow { fill: #000; stroke: none; }
+    .text { font-family: &quot;SimSun&quot;, &quot;Songti SC&quot;, &quot;Noto Serif CJK SC&quot;, serif; font-size: 18px; fill: #000; text-anchor: middle; dominant-baseline: middle; }
+    .math { font-family: &quot;Times New Roman&quot;, &quot;Cambria Math&quot;, serif; font-size: 20px; font-style: italic; fill: #000; text-anchor: middle; dominant-baseline: middle; }
+    .small { font-size: 16px; }</style>
+ <g class="layer">
+  <title>Layer 1</title>
+  <text class="text" font-size="18" id="svg_1" x="214" y="64">发射端</text>
+  <path class="dash" d="m33,135c16,-26 32,-26 52,-26l268,0c24,0 40,7 56,26" id="svg_2"/>
+  <line class="line" id="svg_3" x1="210" x2="210" y1="81" y2="109"/>
+  <text class="text" font-size="18" id="svg_4" x="873" y="51">接收端</text>
+  <path class="dash" d="m571,130c20.15,-26 40.3,-26 70.53,-26l387.93,0c30.23,0 50.38,7 70.53,26" id="svg_5"/>
+  <line class="line" id="svg_6" transform="matrix(1 0 0 1 0 0)" x1="870" x2="870" y1="73" y2="101"/>
+  <rect class="box" height="58" id="svg_7" width="115" x="45" y="140"/>
+  <text class="text" font-size="18" id="svg_8" transform="matrix(1 0 0 1 0 0)" x="82" y="173">信息序列</text>
+  <text class="math small" font-size="16" id="svg_9" x="139" y="173">m(k)</text>
+  <text class="text small" id="svg_10" x="180" y="122">FSK</text>
+  <text class="text small" id="svg_11" x="180" y="144">调制</text>
+  <rect class="box" height="58" id="svg_12" width="50" x="210" y="140"/>
+  <text class="math" id="svg_13" x="235" y="169">x(t)</text>
+  <circle class="box" cx="365" cy="169" id="svg_14" r="22"/>
+  <line class="line" id="svg_15" x1="350" x2="380" y1="154" y2="184"/>
+  <line class="line" id="svg_16" x1="380" x2="350" y1="154" y2="184"/>
+  <circle class="box" cx="484" cy="170" id="svg_17" r="28"/>
+  <line class="line" id="svg_18" x1="484" x2="484" y1="145" y2="195"/>
+  <line class="line" id="svg_19" x1="459" x2="509" y1="169.5" y2="169.5"/>
+  <circle class="box" cx="610" cy="169" id="svg_20" r="22"/>
+  <line class="line" id="svg_21" x1="595" x2="625" y1="154" y2="184"/>
+  <line class="line" id="svg_22" x1="625" x2="595" y1="154" y2="184"/>
+  <rect class="box" height="58" id="svg_23" width="70" x="700" y="140"/>
+  <text class="text" id="svg_24" x="735" y="159">带通</text>
+  <text class="text" id="svg_25" x="735" y="181">滤波器</text>
+  <rect class="box" height="58" id="svg_26" width="72" x="845" y="140"/>
+  <text class="text" id="svg_27" x="881" y="169">解调</text>
+  <rect class="box" height="58" id="svg_28" width="115" x="960" y="140"/>
+  <text class="text" font-size="18" id="svg_29" x="1000.5" y="170">信息序列</text>
+  <text class="math small" id="svg_30" x="1058" y="169">m̂(k)</text>
+  <line class="line" id="svg_31" x1="160" x2="205" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_32" points="205,169 195,163 195,175"/>
+  <line class="line" id="svg_33" x1="260" x2="340" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_34" points="340,169 330,163 330,175"/>
+  <line class="line" id="svg_35" transform="matrix(1 0 0 1 0 0)" x1="388" x2="454.5" y1="170" y2="170"/>
+  <polygon class="arrow" id="svg_36" points="454.5,170 444.5,164 444.5,176" transform="matrix(1 0 0 1 0 0)"/>
+  <line class="line" id="svg_37" transform="matrix(1 0 0 1 0 0)" x1="518" x2="585" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_38" points="585,169 575,163 575,175"/>
+  <line class="line" id="svg_39" x1="632" x2="695" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_40" points="695,169 685,163 685,175"/>
+  <line class="line" id="svg_41" x1="770" x2="840" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_42" points="840,169 830,163 830,175"/>
+  <line class="line" id="svg_43" x1="917" x2="955" y1="169" y2="169"/>
+  <polygon class="arrow" id="svg_44" points="955,169 945,163 945,175"/>
+  <text class="math" id="svg_45" x="300" y="147">S(t)</text>
+  <text class="math" font-size="20" id="svg_46" x="560.5" y="149.5">R(t)</text>
+  <text class="math" id="svg_47" x="670" y="147">R′(t)</text>
+  <text class="math" id="svg_48" x="813" y="147">R″(t)</text>
+  <text class="math small" font-size="16" id="svg_49" x="442" y="87">Σ Sᵢ(t)</text>
+  <line class="line" id="svg_51" x1="461" x2="474" y1="102" y2="136"/>
+  <polygon class="arrow" id="svg_52" points="474,136 466,127 478,124"/>
+  <text class="math" font-size="20" id="svg_53" x="498" y="75">N(t)</text>
+  <line class="line" id="svg_54" x1="487" x2="487" y1="103" y2="138"/>
+  <polygon class="arrow" id="svg_55" points="487,138 481,128 493,128"/>
+  <text class="math" font-size="20" id="svg_56" x="550" y="90">I(t)</text>
+  <line class="line" id="svg_57" x1="531" x2="501" y1="102" y2="138"/>
+  <polygon class="arrow" id="svg_58" points="501,138 505,126 514,134"/>
+  <line class="line" id="svg_59" x1="365" x2="365" y1="236" y2="195"/>
+  <polygon class="arrow" id="svg_60" points="365,195 359,205 371,205"/>
+  <text class="math" id="svg_61" x="300" y="250">h(t)=cos[2π(f₀+n·Δf)t+φₙ]</text>
+  <line class="line" id="svg_62" x1="610" x2="610" y1="236" y2="195"/>
+  <polygon class="arrow" id="svg_63" points="610,195 604,205 616,205"/>
+  <text class="math" id="svg_64" x="612" y="250">hᵣ(t)=cos[2π(fᵣ+n·Δf)t+φᵣ]</text>
+ </g>
+</svg>

@@ -1,0 +1,1846 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="793.76001"
+   height="1122.5601"
+   viewBox="0 0 793.76001 1122.5601"
+   sodipodi:docname="sfq_logic.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2">
+      <path
+         d="m -1029.19,85.344002 h 595.32002 V -756.57602 H -1029.19 Z"
+         clip-rule="evenodd"
+         id="path2" />
+    </clipPath>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask4">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAArCAAAAABj65jnAAAAAXNCSVQI5gpbmQAAABxJREFUWIXtwQENAAAAwqD3T20ON6AAAAAAgB8DE9IAAfTIO7sAAAAASUVORK5CYII="
+         id="image4" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask9">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOoAAAArCAAAAABTS0uDAAAAAXNCSVQI5gpbmQAAACFJREFUaIHtwYEAAAAAw6D5U1/hAFUBAAAAAAAAAAAAtwEneQABa3vZCgAAAABJRU5ErkJggg=="
+         id="image9" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask14">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAAAAACoHL5cAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwYEAAAAAw6D5U1/hAFUBAAAAAADAbRpfAAEy8sgAAAAAAElFTkSuQmCC"
+         id="image14" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask17">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALkAAAArCAAAAAABaHbIAAAAAXNCSVQI5gpbmQAAAB5JREFUWIXtwQEBAAAAgiD/r25IQAEAAAAAAADAuwEfPgAByh8d4wAAAABJRU5ErkJggg=="
+         id="image17" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask22">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAAAAADwT+8AAAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYOgAACLwAATdD64AAAAAASUVORK5CYII="
+         id="image22" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask25">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAAAAAASk/R5AAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYlgAACOcAAdehk8sAAAAASUVORK5CYII="
+         id="image25" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask29">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAAArCAAAAADz+OEoAAAAAXNCSVQI5gpbmQAAABpJREFUSIntwYEAAAAAw6D5U1/hAFUBAABwGw1FAAHbj1pHAAAAAElFTkSuQmCC"
+         id="image29" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask35">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJkAAAArCAAAAABONXUYAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwQENAAAAwqD3T20ON6AAAAAAAAD4MRneAAHA+8EbAAAAAElFTkSuQmCC"
+         id="image35" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask39">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAArCAAAAACmmQJ2AAAAAXNCSVQI5gpbmQAAABtJREFUWIXtwTEBAAAAwqD1T20MH6AAAAAAzgYQoQABFI1DIAAAAABJRU5ErkJggg=="
+         id="image39" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask43">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJkAAAArCAAAAABONXUYAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwQENAAAAwqD3T20ON6AAAAAAAAD4MRneAAHA+8EbAAAAAElFTkSuQmCC"
+         id="image43" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask47">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAArCAAAAACmmQJ2AAAAAXNCSVQI5gpbmQAAABtJREFUWIXtwTEBAAAAwqD1T20MH6AAAAAAzgYQoQABFI1DIAAAAABJRU5ErkJggg=="
+         id="image47" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask53">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAAAAADwT+8AAAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYOgAACLwAATdD64AAAAAASUVORK5CYII="
+         id="image53" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask56">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAAAAADwT+8AAAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYOgAACLwAATdD64AAAAAASUVORK5CYII="
+         id="image56" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask60">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATIAAAArCAAAAADeA1v+AAAAAXNCSVQI5gpbmQAAACRJREFUaIHtwYEAAAAAw6D5U1/hAFUBAAAAAAAAAAAAAAAAtwEzkQABSDikmgAAAABJRU5ErkJggg=="
+         id="image60" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask71">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAAAAACoHL5cAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwYEAAAAAw6D5U1/hAFUBAAAAAADAbRpfAAEy8sgAAAAAAElFTkSuQmCC"
+         id="image71" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask76">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPEAAAArCAAAAACMBTGcAAAAAXNCSVQI5gpbmQAAACFJREFUaIHtwTEBAAAAwqD1T20KP6AAAAAAAAAAAAAAHgYopgAB99OVuAAAAABJRU5ErkJggg=="
+         id="image76" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask85">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAAAAADwT+8AAAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYOgAACLwAATdD64AAAAAASUVORK5CYII="
+         id="image85" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask88">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAAAAAASk/R5AAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYlgAACOcAAdehk8sAAAAASUVORK5CYII="
+         id="image88" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask92">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAAAAACoHL5cAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwYEAAAAAw6D5U1/hAFUBAAAAAADAbRpfAAEy8sgAAAAAAElFTkSuQmCC"
+         id="image92" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask97">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKUAAAArCAAAAAA8+heuAAAAAXNCSVQI5gpbmQAAAB5JREFUWIXtwQENAAAAwqD3T20ON6AAAAAAAACAHwMb4gABFT+zpAAAAABJRU5ErkJggg=="
+         id="image97" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask102">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAAAAADwT+8AAAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYOgAACLwAATdD64AAAAAASUVORK5CYII="
+         id="image102" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask106">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAAAAAASk/R5AAAAAXNCSVQI5gpbmQAAABlJREFUSIljYBgFo2AUjIJRMApGwSgYlgAACOcAAdehk8sAAAAASUVORK5CYII="
+         id="image106" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask110">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAAAAACoHL5cAAAAAXNCSVQI5gpbmQAAAB1JREFUWIXtwYEAAAAAw6D5U1/hAFUBAAAAAADAbRpfAAEy8sgAAAAAAElFTkSuQmCC"
+         id="image110" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask113">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO0AAAArCAAAAACxl1D6AAAAAXNCSVQI5gpbmQAAACFJREFUaIHtwQENAAAAwqD3T20ON6AAAAAAAAAAAACAHwMn+gAByoUDoQAAAABJRU5ErkJggg=="
+         id="image113" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask121">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAArCAAAAAD9fV0CAAAAAXNCSVQI5gpbmQAAAB5JREFUWIXtwTEBAAAAwqD1T20MH6AAAAAAAAAAOBsduwAB138ZdgAAAABJRU5ErkJggg=="
+         id="image121" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       id="mask128">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAArCAAAAABj65jnAAAAAXNCSVQI5gpbmQAAABxJREFUWIXtwQENAAAAwqD3T20ON6AAAAAAgB8DE9IAAfTIO7sAAAAASUVORK5CYII="
+         id="image128" />
+    </mask>
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.71889252"
+     inkscape:cx="397.13864"
+     inkscape:cy="561.28001"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1">
+    <inkscape:page
+       x="0"
+       y="0"
+       inkscape:label="1"
+       id="page1"
+       width="793.76001"
+       height="1122.5601"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <g
+     id="g1"
+     inkscape:groupmode="layer"
+     inkscape:label="1">
+    <g
+       id="g2">
+      <text
+         id="text2"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,1372.2533,1008.768)"
+         clip-path="url(#clipPath2)"><tspan
+           id="tspan2"
+           style="font-variant:normal;font-weight:normal;font-size:10.56px;font-family:DengXian;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g3">
+      <path
+         id="path3"
+         d="m 297.15,767.34 c 5.74,0 10.38,0 10.38,0 v -20.77 c 0,0 -4.64,0 -10.38,0 h -68.23 c -5.73,0 -10.38,0 -10.38,0 v 20.77 c 0,0 4.65,0 10.38,0 z"
+         style="fill:#eff6ff;fill-opacity:1;fill-rule:evenodd;stroke:#2563eb;stroke-width:0.88874;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g4">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAArCAYAAABGgMc7AAAABHNCSVQICAgIfAhkiAAAAH9JREFUeJzt0QEJACAQwMDX/p21hCCMuwSDrZk5Q8r+HcB7pgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgZdA9UBVdwodwMAAAAASUVORK5CYII="
+         mask="url(#mask4)"
+         id="image5"
+         transform="matrix(56.48,0,0,20.8,322.72,103.36)" />
+    </g>
+    <g
+       id="g5">
+      <text
+         id="text5"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,332.38667,117.46667)"><tspan
+           id="tspan5"
+           style="font-variant:normal;font-weight:700;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#1d4ed8;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">系统启动</tspan></text>
+    </g>
+    <g
+       id="g6">
+      <text
+         id="text6"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,369.66667,117.46667)"><tspan
+           id="tspan6"
+           style="font-variant:normal;font-weight:700;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#1d4ed8;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g7">
+      <path
+         id="path7"
+         d="M 263.04,746.57 V 733.72"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g8">
+      <path
+         id="path8"
+         d="m 330.28,732.73 c 1.09,0 1.97,0 1.97,0 v -22.74 c 0,0 -0.88,0 -1.97,0 H 195.8 c -1.09,0 -1.98,0 -1.98,0 v 22.74 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g9">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOoAAAArCAYAAAB2IBRfAAAABHNCSVQICAgIfAhkiAAAAJxJREFUeJzt08ENwCAQwLCj++8MI/AskewJ8smamT3A076/A4A7o0KAUSHAqBBgVAgwKgQYFQKMCgFGhQCjQoBRIcCoEGBUCDAqBBgVAowKAUaFAKNCgFEhwKgQYFQIMCoEGBUCjAoBRoUAo0KAUSHAqBBgVAgwKgQYFQKMCgFGhQCjQoBRIcCoEGBUCDAqBBgVAowKAUaFAKNCwAHZXgFVtSiVfQAAAABJRU5ErkJggg=="
+         mask="url(#mask9)"
+         id="image10"
+         transform="matrix(112.64,0,0,20.8,295.04,150.24)" />
+    </g>
+    <g
+       id="g10">
+      <text
+         id="text10"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,304.70667,164.34667)"><tspan
+           id="tspan10"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136 0 0 0.11136"
+           y="0">驱动程序配置、初始化</tspan></text>
+    </g>
+    <g
+       id="g11">
+      <text
+         id="text11"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,397.98667,164.34667)"><tspan
+           id="tspan11"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g12">
+      <path
+         id="path12"
+         d="M 263.04,709.99 V 696.14"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g13">
+      <path
+         id="path13"
+         d="m 263.04,695.16 61.8,-18.3 -61.8,-18.29 -61.8,18.29 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g14">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAYAAACNd+GAAAAABHNCSVQICAgIfAhkiAAAAIlJREFUeJzt0jEBACAMwLCBf8/gohwkCnp0zcwZiOzXAfzFcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkLqBTAVVL/UWsAAAAAElFTkSuQmCC"
+         mask="url(#mask14)"
+         id="image15"
+         transform="matrix(75.2,0,0,20.8,313.44,203.68)" />
+    </g>
+    <g
+       id="g15">
+      <text
+         id="text15"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,323.10667,217.62667)"><tspan
+           id="tspan15"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">休眠检测电路</tspan></text>
+    </g>
+    <g
+       id="g16">
+      <text
+         id="text16"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,379.10667,217.62667)"><tspan
+           id="tspan16"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g17">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALkAAAArCAYAAAAkAykUAAAABHNCSVQICAgIfAhkiAAAAJBJREFUeJzt0kENACAQwLAD/55BBSFZWgV7bM3MGQjbvwPgNZOTZ3LyTE6eyckzOXkmJ8/k5JmcPJOTZ3LyTE6eyckzOXkmJ8/k5JmcPJOTZ3LyTE6eyckzOXkmJ8/k5JmcPJOTZ3LyTE6eyckzOXkmJ8/k5JmcPJOTZ3LyTE6eyckzOXkmJ8/k5JmcPJOTdwFjgAFVAXhMVQAAAABJRU5ErkJggg=="
+         mask="url(#mask17)"
+         id="image18"
+         transform="matrix(89.12,0,0,20.8,306.56,215.52)" />
+    </g>
+    <g
+       id="g18">
+      <text
+         id="text18"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,316.22667,229.62667)"><tspan
+           id="tspan18"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">检测到唤醒信号</tspan></text>
+    </g>
+    <g
+       id="g19">
+      <text
+         id="text19"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,381.50667,229.62667)"><tspan
+           id="tspan19"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">?</tspan></text>
+    </g>
+    <g
+       id="g20">
+      <text
+         id="text20"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,386.14667,229.62667)"><tspan
+           id="tspan20"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g21">
+      <path
+         id="path21"
+         d="M 263.04,658.57 V 642.75"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g22">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAYAAADVJLDcAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxxbgf8yUyVmSozVWaqzFSZqTJTZabKTJWZKjNVZqrMVJmpMlNlpspMlZkqM1VmqlbNfDYBAVVDCB02AAAAAElFTkSuQmCC"
+         mask="url(#mask22)"
+         id="image23"
+         transform="matrix(24.64,0,0,20.8,346.72,246.4)" />
+    </g>
+    <g
+       id="g23">
+      <text
+         id="text23"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,356.38667,259.70667)"><tspan
+           id="tspan23"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">Y</tspan></text>
+    </g>
+    <g
+       id="g24">
+      <text
+         id="text24"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,361.66667,259.70667)"><tspan
+           id="tspan24"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g25">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAYAAAA3+KulAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxybgf8zVCdoTpDdYbqDNUZqjNUZ6jOUJ2hOkN1huoM1RmqM1RnqM5QnaE6Q3WG6tYNff7lAVVQVtfsAAAAAElFTkSuQmCC"
+         mask="url(#mask25)"
+         id="image26"
+         transform="matrix(24.96,0,0,20.8,434.08,205.6)" />
+    </g>
+    <g
+       id="g26">
+      <text
+         id="text26"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,443.77333,218.90667)"><tspan
+           id="tspan26"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">N</tspan></text>
+    </g>
+    <g
+       id="g27">
+      <text
+         id="text27"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,449.53333,218.90667)"><tspan
+           id="tspan27"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g28">
+      <path
+         id="path28"
+         d="m 315.44,641.76 c 1.1,0 1.98,0 1.98,0 v -22.74 c 0,0 -0.88,0 -1.98,0 H 210.63 c -1.09,0 -1.98,0 -1.98,0 v 22.74 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g29">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAE4AAAArCAYAAADWk770AAAABHNCSVQICAgIfAhkiAAAAHdJREFUaIHt0MENwCAQwLCD/XduZyAfhGRPEGXNzDcc27cDXmVcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFxkXGRcZFz0A2dIAVVqEPUcAAAAAElFTkSuQmCC"
+         mask="url(#mask29)"
+         id="image30"
+         transform="matrix(37.92,0,0,20.8,331.84,271.52)" />
+    </g>
+    <g
+       id="g30">
+      <text
+         id="text30"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,341.50667,285.62667)"><tspan
+           id="tspan30"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">采样</tspan></text>
+    </g>
+    <g
+       id="g31">
+      <text
+         id="text31"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,360.22667,285.62667)"><tspan
+           id="tspan31"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g32">
+      <path
+         id="path32"
+         d="m 263.04,619.02 v -9.89 h -59.33 v -6.43"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g33">
+      <path
+         id="path33"
+         d="m 263.04,609.13 h 59.33 v -6.43"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g34">
+      <path
+         id="path34"
+         d="m 203.71,601.71 37.08,-17.3 -37.08,-17.31 -37.08,17.31 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g35">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJkAAAArCAYAAABrXirEAAAABHNCSVQICAgIfAhkiAAAAIpJREFUeJzt0kENACAQwLAD/55BxUJCWgV7bM3MGQjt1wH8z2TkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5C5FiQFVT8/GvQAAAABJRU5ErkJggg=="
+         mask="url(#mask35)"
+         id="image36"
+         transform="matrix(73.76,0,0,20.8,236.32,328.16)" />
+    </g>
+    <g
+       id="g36">
+      <text
+         id="text36"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,245.94667,342.26667)"><tspan
+           id="tspan36"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">数据缓冲区</tspan></text>
+    </g>
+    <g
+       id="g37">
+      <text
+         id="text37"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,294.78667,342.26667)"><tspan
+           id="tspan37"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">1</tspan></text>
+    </g>
+    <g
+       id="g38">
+      <text
+         id="text38"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,300.38667,342.26667)"><tspan
+           id="tspan38"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g39">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAArCAYAAACD8l2qAAAABHNCSVQICAgIfAhkiAAAAIBJREFUeJzt0UENACAQwLAD/57hgQj2aBUs2ZqZM3y3fwfwGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFxARoIAVXTyspiAAAAAElFTkSuQmCC"
+         mask="url(#mask39)"
+         id="image40"
+         transform="matrix(47.36,0,0,20.8,248.16,340)" />
+    </g>
+    <g
+       id="g40">
+      <text
+         id="text40"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,257.82667,354.14667)"><tspan
+           id="tspan40"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">已存满</tspan></text>
+    </g>
+    <g
+       id="g41">
+      <text
+         id="text41"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,285.82667,354.14667)"><tspan
+           id="tspan41"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g42">
+      <path
+         id="path42"
+         d="m 322.37,601.71 37.08,-17.3 -37.08,-17.31 -37.08,17.31 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g43">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJkAAAArCAYAAABrXirEAAAABHNCSVQICAgIfAhkiAAAAIpJREFUeJzt0kENACAQwLAD/55BxUJCWgV7bM3MGQjt1wH8z2TkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5ExGzmTkTEbOZORMRs5k5C5FiQFVT8/GvQAAAABJRU5ErkJggg=="
+         mask="url(#mask43)"
+         id="image44"
+         transform="matrix(73.76,0,0,20.8,394.56,328.16)" />
+    </g>
+    <g
+       id="g44">
+      <text
+         id="text44"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,404.22667,342.26667)"><tspan
+           id="tspan44"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 -0.024 -0.024 -0.024 -0.024"
+           y="0">数据缓冲区</tspan></text>
+    </g>
+    <g
+       id="g45">
+      <text
+         id="text45"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,453.05333,342.26667)"><tspan
+           id="tspan45"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">2</tspan></text>
+    </g>
+    <g
+       id="g46">
+      <text
+         id="text46"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,458.65333,342.26667)"><tspan
+           id="tspan46"
+           style="font-variant:normal;font-weight:normal;font-size:6.984px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g47">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAArCAYAAACD8l2qAAAABHNCSVQICAgIfAhkiAAAAIBJREFUeJzt0UENACAQwLAD/57hgQj2aBUs2ZqZM3y3fwfwGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFhRIQREUZEGBFxARoIAVXTyspiAAAAAElFTkSuQmCC"
+         mask="url(#mask47)"
+         id="image48"
+         transform="matrix(47.2,0,0,20.8,406.4,340)" />
+    </g>
+    <g
+       id="g48">
+      <text
+         id="text48"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,416.06667,354.14667)"><tspan
+           id="tspan48"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0.024 0.024"
+           y="0">已存满</tspan></text>
+    </g>
+    <g
+       id="g49">
+      <text
+         id="text49"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,444.09333,354.14667)"><tspan
+           id="tspan49"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g50">
+      <path
+         id="path50"
+         d="m 203.71,567.1 v -10.87 h 59.33"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g51">
+      <path
+         id="path51"
+         d="M 322.37,567.1 V 556.23 H 263.04"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g52">
+      <path
+         id="path52"
+         d="M 263.04,556.23 V 543.87"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g53">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAYAAADVJLDcAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxxbgf8yUyVmSozVWaqzFSZqTJTZabKTJWZKjNVZqrMVJmpMlNlpspMlZkqM1VmqlbNfDYBAVVDCB02AAAAAElFTkSuQmCC"
+         mask="url(#mask53)"
+         id="image54"
+         transform="matrix(24.48,0,0,20.8,268.32,365.12)" />
+    </g>
+    <g
+       id="g54">
+      <text
+         id="text54"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,277.98667,378.46667)"><tspan
+           id="tspan54"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">Y</tspan></text>
+    </g>
+    <g
+       id="g55">
+      <text
+         id="text55"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,283.26667,378.46667)"><tspan
+           id="tspan55"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g56">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAYAAADVJLDcAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxxbgf8yUyVmSozVWaqzFSZqTJTZabKTJWZKjNVZqrMVJmpMlNlpspMlZkqM1VmqlbNfDYBAVVDCB02AAAAAElFTkSuQmCC"
+         mask="url(#mask56)"
+         id="image57"
+         transform="matrix(24.64,0,0,20.8,409.28,365.12)" />
+    </g>
+    <g
+       id="g57">
+      <text
+         id="text57"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,418.97333,378.46667)"><tspan
+           id="tspan57"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">Y</tspan></text>
+    </g>
+    <g
+       id="g58">
+      <text
+         id="text58"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,424.25333,378.46667)"><tspan
+           id="tspan58"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g59">
+      <path
+         id="path59"
+         d="m 330.28,542.88 c 1.09,0 1.97,0 1.97,0 v -22.75 c 0,0 -0.88,0 -1.97,0 H 195.8 c -1.09,0 -1.98,0 -1.98,0 v 22.75 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#f0f9ff;fill-opacity:1;fill-rule:evenodd;stroke:#0284c7;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g60">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATIAAAArCAYAAAD7aAQiAAAABHNCSVQICAgIfAhkiAAAAKtJREFUeJzt1EENACAQwLAD/55BBA+ypFWw19bMnAEI278DAF4ZGZBnZECekQF5RgbkGRmQZ2RAnpEBeUYG5BkZkGdkQJ6RAXlGBuQZGZBnZECekQF5RgbkGRmQZ2RAnpEBeUYG5BkZkGdkQJ6RAXlGBuQZGZBnZECekQF5RgbkGRmQZ2RAnpEBeUYG5BkZkGdkQJ6RAXlGBuQZGZBnZECekQF5RgbkGRmQdwFc1QFVlplxeAAAAABJRU5ErkJggg=="
+         mask="url(#mask60)"
+         id="image61"
+         transform="matrix(147.04,0,0,20.8,278.88,404)" />
+    </g>
+    <g
+       id="g61">
+      <text
+         id="text61"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,288.54667,417.98667)"><tspan
+           id="tspan61"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">乒乓缓存切换</tspan></text>
+    </g>
+    <g
+       id="g62">
+      <text
+         id="text62"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,340.38667,417.98667)"><tspan
+           id="tspan62"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g63">
+      <text
+         id="text63"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,344.70667,417.98667)"><tspan
+           id="tspan63"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">(</tspan></text>
+    </g>
+    <g
+       id="g64">
+      <text
+         id="text64"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,348.06667,417.98667)"><tspan
+           id="tspan64"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">读</tspan></text>
+    </g>
+    <g
+       id="g65">
+      <text
+         id="text65"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,356.70667,417.98667)"><tspan
+           id="tspan65"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">/</tspan></text>
+    </g>
+    <g
+       id="g66">
+      <text
+         id="text66"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,360.86667,417.98667)"><tspan
+           id="tspan66"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0.11664"
+           y="0">写缓冲区对调</tspan></text>
+    </g>
+    <g
+       id="g67">
+      <text
+         id="text67"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,412.86667,417.98667)"><tspan
+           id="tspan67"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">)</tspan></text>
+    </g>
+    <g
+       id="g68">
+      <text
+         id="text68"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,416.38667,417.98667)"><tspan
+           id="tspan68"
+           style="font-variant:normal;font-weight:700;font-size:6.48px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0369a1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g69">
+      <path
+         id="path69"
+         d="M 263.04,520.13 V 506.29"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g70">
+      <path
+         id="path70"
+         d="m 315.44,505.3 c 1.1,0 1.98,0 1.98,0 v -22.74 c 0,0 -0.88,0 -1.98,0 H 210.63 c -1.09,0 -1.98,0 -1.98,0 v 22.74 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g71">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAYAAACNd+GAAAAABHNCSVQICAgIfAhkiAAAAIlJREFUeJzt0jEBACAMwLCBf8/gohwkCnp0zcwZiOzXAfzFcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkLqBTAVVL/UWsAAAAAElFTkSuQmCC"
+         mask="url(#mask71)"
+         id="image72"
+         transform="matrix(75.2,0,0,20.8,313.44,453.44)" />
+    </g>
+    <g
+       id="g72">
+      <text
+         id="text72"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,323.10667,467.58667)"><tspan
+           id="tspan72"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">同步信号检测</tspan></text>
+    </g>
+    <g
+       id="g73">
+      <text
+         id="text73"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,379.10667,467.58667)"><tspan
+           id="tspan73"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g74">
+      <path
+         id="path74"
+         d="M 263.04,482.56 V 468.71"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g75">
+      <path
+         id="path75"
+         d="m 263.04,467.73 44.49,-17.31 -44.49,-17.3 -44.5,17.3 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g76">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPEAAAArCAYAAACpbm5AAAAABHNCSVQICAgIfAhkiAAAAJtJREFUeJzt00ENACAQwLAD/55BBA+ypFWwz9bMnAGy9u8A4I2JIc7EEGdiiDMxxJkY4kwMcSaGOBNDnIkhzsQQZ2KIMzHEmRjiTAxxJoY4E0OciSHOxBBnYogzMcSZGOJMDHEmhjgTQ5yJIc7EEGdiiDMxxJkY4kwMcSaGOBNDnIkhzsQQZ2KIMzHEmRjiTAxxJoY4E0OciSHuAlf0AVUw6mW6AAAAAElFTkSuQmCC"
+         mask="url(#mask76)"
+         id="image77"
+         transform="matrix(116.16,0,0,20.8,293.92,510.24)" />
+    </g>
+    <g
+       id="g77">
+      <text
+         id="text77"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,303.58667,524.38667)"><tspan
+           id="tspan77"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">同步信号</tspan></text>
+    </g>
+    <g
+       id="g78">
+      <text
+         id="text78"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,340.70667,524.38667)"><tspan
+           id="tspan78"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">在</tspan></text>
+    </g>
+    <g
+       id="g79">
+      <text
+         id="text79"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,352.38667,524.38667)"><tspan
+           id="tspan79"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">5</tspan></text>
+    </g>
+    <g
+       id="g80">
+      <text
+         id="text80"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,357.98667,524.38667)"><tspan
+           id="tspan80"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0.069600001 -0.048719998"
+           y="0">min</tspan></text>
+    </g>
+    <g
+       id="g81">
+      <text
+         id="text81"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,377.34667,524.38667)"><tspan
+           id="tspan81"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">到达</tspan></text>
+    </g>
+    <g
+       id="g82">
+      <text
+         id="text82"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,395.90667,524.38667)"><tspan
+           id="tspan82"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">?</tspan></text>
+    </g>
+    <g
+       id="g83">
+      <text
+         id="text83"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,400.54667,524.38667)"><tspan
+           id="tspan83"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g84">
+      <path
+         id="path84"
+         d="M 263.04,433.12 V 416.8"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g85">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAYAAADVJLDcAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxxbgf8yUyVmSozVWaqzFSZqTJTZabKTJWZKjNVZqrMVJmpMlNlpspMlZkqM1VmqlbNfDYBAVVDCB02AAAAAElFTkSuQmCC"
+         mask="url(#mask85)"
+         id="image86"
+         transform="matrix(24.64,0,0,20.8,346.72,546.4)" />
+    </g>
+    <g
+       id="g86">
+      <text
+         id="text86"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,356.38667,559.74667)"><tspan
+           id="tspan86"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">Y</tspan></text>
+    </g>
+    <g
+       id="g87">
+      <text
+         id="text87"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,361.66667,559.74667)"><tspan
+           id="tspan87"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g88">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAYAAAA3+KulAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxybgf8zVCdoTpDdYbqDNUZqjNUZ6jOUJ2hOkN1huoM1RmqM1RnqM5QnaE6Q3WG6tYNff7lAVVQVtfsAAAAAElFTkSuQmCC"
+         mask="url(#mask88)"
+         id="image89"
+         transform="matrix(24.96,0,0,20.8,249.44,507.52)" />
+    </g>
+    <g
+       id="g89">
+      <text
+         id="text89"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,259.10667,520.86667)"><tspan
+           id="tspan89"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">N</tspan></text>
+    </g>
+    <g
+       id="g90">
+      <text
+         id="text90"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,264.86667,520.86667)"><tspan
+           id="tspan90"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g91">
+      <path
+         id="path91"
+         d="m 315.44,415.81 c 1.1,0 1.98,0 1.98,0 v -22.74 c 0,0 -0.88,0 -1.98,0 H 210.63 c -1.09,0 -1.98,0 -1.98,0 v 22.74 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g92">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAYAAACNd+GAAAAABHNCSVQICAgIfAhkiAAAAIlJREFUeJzt0jEBACAMwLCBf8/gohwkCnp0zcwZiOzXAfzFcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkLqBTAVVL/UWsAAAAAElFTkSuQmCC"
+         mask="url(#mask92)"
+         id="image93"
+         transform="matrix(75.2,0,0,20.8,313.44,572.8)" />
+    </g>
+    <g
+       id="g93">
+      <text
+         id="text93"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,323.10667,586.97333)"><tspan
+           id="tspan93"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">通信信号解码</tspan></text>
+    </g>
+    <g
+       id="g94">
+      <text
+         id="text94"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,379.10667,586.97333)"><tspan
+           id="tspan94"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g95">
+      <path
+         id="path95"
+         d="M 263.04,393.07 V 379.23"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g96">
+      <path
+         id="path96"
+         d="m 263.04,378.24 44.49,-17.31 -44.49,-17.3 -44.5,17.3 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g97">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKUAAAArCAYAAAAZkUhyAAAABHNCSVQICAgIfAhkiAAAAI9JREFUeJzt0jEBACAMwLCBf8/wY4AeiYIeXTNzBkL27wB4mZIcU5JjSnJMSY4pyTElOaYkx5TkmJIcU5JjSnJMSY4pyTElOaYkx5TkmJIcU5JjSnJMSY4pyTElOaYkx5TkmJIcU5JjSnJMSY4pyTElOaYkx5TkmJIcU5JjSnJMSY4pyTElOaYkx5TkmJKcC7DAAVVckjdXAAAAAElFTkSuQmCC"
+         mask="url(#mask97)"
+         id="image98"
+         transform="matrix(79.68,0,0,20.8,311.2,630.72)" />
+    </g>
+    <g
+       id="g98">
+      <text
+         id="text98"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,320.86667,644.89333)"><tspan
+           id="tspan98"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">收到释放指令</tspan></text>
+    </g>
+    <g
+       id="g99">
+      <text
+         id="text99"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,376.70667,644.89333)"><tspan
+           id="tspan99"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">?</tspan></text>
+    </g>
+    <g
+       id="g100">
+      <text
+         id="text100"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,381.34667,644.89333)"><tspan
+           id="tspan100"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g101">
+      <path
+         id="path101"
+         d="M 263.04,343.63 V 327.31"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g102">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAArCAYAAADVJLDcAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxxbgf8yUyVmSozVWaqzFSZqTJTZabKTJWZKjNVZqrMVJmpMlNlpspMlZkqM1VmqlbNfDYBAVVDCB02AAAAAElFTkSuQmCC"
+         mask="url(#mask102)"
+         id="image103"
+         transform="matrix(24.64,0,0,20.8,346.72,665.6)" />
+    </g>
+    <g
+       id="g103">
+      <text
+         id="text103"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,356.38667,678.97333)"><tspan
+           id="tspan103"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">Y</tspan></text>
+    </g>
+    <g
+       id="g104">
+      <text
+         id="text104"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,361.66667,678.97333)"><tspan
+           id="tspan104"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#059669;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g105">
+      <path
+         id="path105"
+         d="M 218.54,360.93 H 178.99"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g106">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAArCAYAAAA3+KulAAAABHNCSVQICAgIfAhkiAAAAFBJREFUaIHtzwENwDAMwLB+/Dn/JC4tqmwEyTMz7yxybgf8zVCdoTpDdYbqDNUZqjNUZ6jOUJ2hOkN1huoM1RmqM1RnqM5QnaE6Q3WG6tYNff7lAVVQVtfsAAAAAElFTkSuQmCC"
+         mask="url(#mask106)"
+         id="image107"
+         transform="matrix(24.96,0,0,20.8,252.8,626.88)" />
+    </g>
+    <g
+       id="g107">
+      <text
+         id="text107"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,262.46667,640.25333)"><tspan
+           id="tspan107"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">N</tspan></text>
+    </g>
+    <g
+       id="g108">
+      <text
+         id="text108"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,268.22667,640.25333)"><tspan
+           id="tspan108"
+           style="font-variant:normal;font-weight:700;font-size:6px;font-family:Arial;writing-mode:lr-tb;fill:#dc2626;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g109">
+      <path
+         id="path109"
+         d="m 177.01,372.3 c 1.1,0 1.98,0 1.98,0 v -22.74 c 0,0 -0.88,0 -1.98,0 H 91.978 c -1.093,0 -1.978,0 -1.978,0 v 22.74 c 0,0 0.885,0 1.978,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g110">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAAArCAYAAACNd+GAAAAABHNCSVQICAgIfAhkiAAAAIlJREFUeJzt0jEBACAMwLCBf8/gohwkCnp0zcwZiOzXAfzFcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkDEfKcKQMR8pwpAxHynCkLqBTAVVL/UWsAAAAAElFTkSuQmCC"
+         mask="url(#mask110)"
+         id="image111"
+         transform="matrix(75.2,0,0,20.8,142.08,624.8)" />
+    </g>
+    <g
+       id="g111">
+      <text
+         id="text111"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,151.70667,638.97333)"><tspan
+           id="tspan111"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0 0 0 0.11136"
+           y="0">执行其他指令</tspan></text>
+    </g>
+    <g
+       id="g112">
+      <text
+         id="text112"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,207.70667,638.97333)"><tspan
+           id="tspan112"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g113">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO0AAAArCAYAAACU/A8mAAAABHNCSVQICAgIfAhkiAAAAJtJREFUeJzt00ENACAQwLAD/55BAy+ypFWwz9bMnAEy9u8A4I1pIca0EGNaiDEtxJgWYkwLMaaFGNNCjGkhxrQQY1qIMS3EmBZiTAsxpoUY00KMaSHGtBBjWogxLcSYFmJMCzGmhRjTQoxpIca0EGNaiDEtxJgWYkwLMaaFGNNCjGkhxrQQY1qIMS3EmBZiTAsxpoUY00KMaSHmAjQ3AVXh8nB+AAAAAElFTkSuQmCC"
+         mask="url(#mask113)"
+         id="image114"
+         transform="matrix(114.08,0,0,20.8,123.68,636.64)" />
+    </g>
+    <g
+       id="g114">
+      <text
+         id="text114"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,133.152,650.81333)"><tspan
+           id="tspan114"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">发送应答</tspan></text>
+    </g>
+    <g
+       id="g115">
+      <text
+         id="text115"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,170.42667,650.81333)"><tspan
+           id="tspan115"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g116">
+      <text
+         id="text116"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,175.06667,650.81333)"><tspan
+           id="tspan116"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">(</tspan></text>
+    </g>
+    <g
+       id="g117">
+      <text
+         id="text117"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,178.10667,650.81333)"><tspan
+           id="tspan117"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           dx="0 0.11136 0 0 0.11136"
+           y="0">重置定时器</tspan></text>
+    </g>
+    <g
+       id="g118">
+      <text
+         id="text118"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,224.82667,650.81333)"><tspan
+           id="tspan118"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">)</tspan></text>
+    </g>
+    <g
+       id="g119">
+      <text
+         id="text119"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,228.02667,650.81333)"><tspan
+           id="tspan119"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g120">
+      <path
+         id="path120"
+         d="m 315.44,326.32 c 1.1,0 1.98,0 1.98,0 v -22.74 c 0,0 -0.88,0 -1.98,0 H 210.63 c -1.09,0 -1.98,0 -1.98,0 v 22.74 c 0,0 0.89,0 1.98,0 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#334155;stroke-width:0.79;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g121">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAArCAYAAADYFgLeAAAABHNCSVQICAgIfAhkiAAAAJBJREFUeJzt0kENACAQwLAD/55BBA+ypFWwx9bMnIGo/TsAXhiYNAOTZmDSDEyagUkzMGkGJs3ApBmYNAOTZmDSDEyagUkzMGkGJs3ApBmYNAOTZmDSDEyagUkzMGkGJs3ApBmYNAOTZmDSDEyagUkzMGkGJs3ApBmYNAOTZmDSDEyagUkzMGkGJs3ApBmYtAtTEwFVFuJRMQAAAABJRU5ErkJggg=="
+         mask="url(#mask121)"
+         id="image122"
+         transform="matrix(84.64,0,0,20.8,313.28,692)" />
+    </g>
+    <g
+       id="g122">
+      <text
+         id="text122"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,322.94667,706.17333)"><tspan
+           id="tspan122"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">释放</tspan></text>
+    </g>
+    <g
+       id="g123">
+      <text
+         id="text123"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,341.50667,706.17333)"><tspan
+           id="tspan123"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">声学</tspan></text>
+    </g>
+    <g
+       id="g124">
+      <text
+         id="text124"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,360.22667,706.17333)"><tspan
+           id="tspan124"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">释放器</tspan></text>
+    </g>
+    <g
+       id="g125">
+      <text
+         id="text125"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,388.22667,706.17333)"><tspan
+           id="tspan125"
+           style="font-variant:normal;font-weight:normal;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#0f172a;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g126">
+      <path
+         id="path126"
+         d="M 263.04,303.58 V 290.73"
+         style="fill:none;stroke:#334155;stroke-width:0.79;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g127">
+      <path
+         id="path127"
+         d="m 297.15,289.74 c 5.74,0 10.38,0 10.38,0 v -20.77 c 0,0 -4.64,0 -10.38,0 h -68.23 c -5.73,0 -10.38,0 -10.38,0 v 20.77 c 0,0 4.65,0 10.38,0 z"
+         style="fill:#eff6ff;fill-opacity:1;fill-rule:evenodd;stroke:#2563eb;stroke-width:0.88874;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g128">
+      <image
+         width="1"
+         height="1"
+         style="image-rendering:optimizeSpeed"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAArCAYAAABGgMc7AAAABHNCSVQICAgIfAhkiAAAAH9JREFUeJzt0QEJACAQwMDX/p21hCCMuwSDrZk5Q8r+HcB7pgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgaZGmRqkKlBpgZdA9UBVdwodwMAAAAASUVORK5CYII="
+         mask="url(#mask128)"
+         id="image129"
+         transform="matrix(56.48,0,0,20.8,322.72,740.16)" />
+    </g>
+    <g
+       id="g129">
+      <text
+         id="text129"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,332.38667,754.33333)"><tspan
+           id="tspan129"
+           style="font-variant:normal;font-weight:700;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#1d4ed8;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0">回收仪器</tspan></text>
+    </g>
+    <g
+       id="g130">
+      <text
+         id="text130"
+         xml:space="preserve"
+         transform="matrix(1.3333333,0,0,1.3333333,369.66667,754.33333)"><tspan
+           id="tspan130"
+           style="font-variant:normal;font-weight:700;font-size:6.96px;font-family:'Microsoft YaHei';writing-mode:lr-tb;fill:#1d4ed8;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           x="0"
+           y="0"> </tspan></text>
+    </g>
+    <g
+       id="g131">
+      <path
+         id="path131"
+         d="m 324.3,677.52 h 27.55 l -0.25,-0.25 v 22.55 l 0.25,-0.25 H 266.7 v 0.5 h 85.4 v -23.05 h -27.8 z m -56.6,19.3 -6,3 6,3 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g132">
+      <path
+         id="path132"
+         d="m 132.1,372.02 h -0.32 l 0.25,-0.25 v 258.55 l -0.25,-0.25 h 71.07 v 0.5 H 131.53 V 371.52 h 0.57 z m 69.75,255.3 6,3 -6,3 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+    <g
+       id="g133">
+      <path
+         id="path133"
+         d="m 217.85,449.17 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -4 v 0.5 h 4 z m -5.5,0 h -3.99 v 0.51 h 0.5 v -0.26 l -0.25,0.25 h 3.74 z m -3.99,2.01 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 0,5.5 v 4 h 0.5 v -4 z m 1.52,4.49 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 5.5,0 h 4 v -0.5 h -4 z m 3.47,2.75 6,-3 -6,-3 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1.3333333,0,0,-1.3333333,0,1122.56)" />
+    </g>
+  </g>
+</svg>

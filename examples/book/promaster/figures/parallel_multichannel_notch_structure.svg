@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<svg width="760" height="620" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <title>Parallel multichannel Notch filter structure</title>
+ <desc>Editable SVG corresponding to parallel_multichannel_notch_structure.pdf.</desc>
+
+ <style>.line { fill: none; stroke: #000000; stroke-width: 1.3; marker-end: url(#arrow-end); }
+    .plain { fill: none; stroke: #000000; stroke-width: 1.3; }
+    .node { fill: #ffffff; stroke: #000000; stroke-width: 1.3; }
+    .label { fill: #000000; font-family: &quot;Times New Roman&quot;, SimSun, serif; font-size: 18px; text-anchor: middle; dominant-baseline: middle; }
+    .small-label { fill: #000000; font-family: &quot;Times New Roman&quot;, SimSun, serif; font-size: 16px; text-anchor: middle; dominant-baseline: middle; }
+    .sub { font-size: 11px; baseline-shift: sub; }</style>
+ <defs>
+  <marker id="arrow-end" markerHeight="8" markerUnits="strokeWidth" markerWidth="8" orient="auto" refX="7" refY="4">
+   <path d="M0,0 L8,4 L0,8 Z" fill="#000000"/>
+  </marker>
+ </defs>
+ <g class="layer">
+  <title>Layer 1</title>
+  <path class="plain" d="m270,557l-190,0l3.5,-417" id="lms-to-feedback-trunk" transform="matrix(1 0 0 1 0 0)"/>
+  <circle class="node" cx="545" cy="65" id="error-sum" r="24"/>
+  <text class="label" id="error-sum-label" x="545" y="66">Σ</text>
+  <circle class="node" cx="485" cy="305" id="total-output-sum" r="24"/>
+  <text class="label" id="total-output-sum-label" x="485" y="306">Σ</text>
+  <rect class="node" height="44" id="lms-block" width="88" x="270" y="535"/>
+  <text class="label" id="lms-label" x="314" y="557">LMS</text>
+  <g id="channel-1">
+   <circle class="node" cx="160" cy="140" id="us1-node" r="25"/>
+   <text class="small-label" id="us1-label" x="160" y="141">u
+    <tspan class="sub" id="svg_2">s1</tspan></text>
+   <circle class="node" cx="160" cy="205" id="uc1-node" r="25"/>
+   <text class="small-label" id="uc1-label" x="160" y="206">u
+    <tspan class="sub" id="svg_3">c1</tspan></text>
+   <circle class="node" cx="315" cy="172" id="channel-1-sum" r="24"/>
+   <text class="label" id="channel-1-sum-label" x="315" y="173">Σ</text>
+   <line class="line" id="xs1-input" x1="83.8" x2="135" y1="140.4" y2="140.4"/>
+   <text class="small-label" font-size="16" id="xs1-label" x="60.4" y="125.2">x
+    <tspan class="sub" font-size="11" id="svg_4">s1</tspan>(k)</text>
+   <line class="line" id="xc1-input" x1="83.4" x2="135" y1="205" y2="205"/>
+   <text class="small-label" font-size="16" id="xc1-label" x="60.4" y="190.2">x
+    <tspan class="sub" font-size="11" id="svg_5">c1</tspan>(k)</text>
+   <path class="line" d="m185,140l130,0l0,8" id="us1-to-sum"/>
+   <path class="line" d="m185,205l130,0l0,-9" id="uc1-to-sum"/>
+   <line class="line" id="y1-to-total-sum" x1="339" x2="461" y1="172" y2="305"/>
+   <text class="small-label" id="y1-label" x="372" y="235">y
+    <tspan class="sub" id="svg_6">1</tspan>(k)</text>
+  </g>
+  <g id="channel-2">
+   <circle class="node" cx="160" cy="300" id="us2-node" r="25"/>
+   <text class="small-label" id="us2-label" x="160" y="301">u
+    <tspan class="sub" id="svg_7">s2</tspan></text>
+   <circle class="node" cx="160" cy="365" id="uc2-node" r="25"/>
+   <text class="small-label" id="uc2-label" x="160" y="366">u
+    <tspan class="sub" id="svg_8">c2</tspan></text>
+   <circle class="node" cx="315" cy="332" id="channel-2-sum" r="24"/>
+   <text class="label" id="channel-2-sum-label" x="315" y="333">Σ</text>
+   <line class="line" id="xs2-input" x1="81.8" x2="134.2" y1="299.6" y2="299.6"/>
+   <text class="small-label" font-size="16" id="xs2-label" x="60.4" y="280.4">x
+    <tspan class="sub" font-size="11" id="svg_9">s2</tspan>(k)</text>
+   <line class="line" id="xc2-input" transform="matrix(1 0 0 1 0 0)" x1="82.6" x2="135" y1="365" y2="365"/>
+   <text class="small-label" font-size="16" id="xc2-label" x="60.4" y="345.4">x
+    <tspan class="sub" font-size="11" id="svg_10">c2</tspan>(k)</text>
+   <path class="line" d="m185,300l130,0l0,8" id="us2-to-sum"/>
+   <path class="line" d="m185,365l130,0l0,-9" id="uc2-to-sum"/>
+   <line class="line" id="y2-to-total-sum" x1="338.5" x2="460.5" y1="340" y2="313"/>
+   <text class="small-label" id="y2-label" x="380" y="310">y
+    <tspan class="sub" id="svg_11">2</tspan>(k)</text>
+  </g>
+  <g id="channel-3">
+   <circle class="node" cx="160" cy="460" id="us3-node" r="25"/>
+   <text class="small-label" id="us3-label" x="160" y="461">u
+    <tspan class="sub" id="svg_12">s3</tspan></text>
+   <circle class="node" cx="160" cy="525" id="uc3-node" r="25"/>
+   <text class="small-label" id="uc3-label" x="160" y="526">u
+    <tspan class="sub" id="svg_13">c3</tspan></text>
+   <circle class="node" cx="315" cy="492" id="channel-3-sum" r="24"/>
+   <text class="label" id="channel-3-sum-label" x="315" y="493">Σ</text>
+   <line class="line" id="xs3-input" x1="81" x2="135" y1="460" y2="460"/>
+   <text class="small-label" font-size="16" id="xs3-label" transform="matrix(1 0 0 1 0 0)" x="57" y="442">x
+    <tspan class="sub" font-size="11" id="svg_14">s3</tspan>(k)</text>
+   <line class="line" id="xc3-input" x1="80.6" x2="135" y1="525" y2="525"/>
+   <text class="small-label" font-size="16" id="xc3-label" x="58.8" y="509.4">x
+    <tspan class="sub" font-size="11" id="svg_15">c3</tspan>(k)</text>
+   <path class="line" d="m185,460l130,0l0,8" id="us3-to-sum"/>
+   <path class="line" d="m185,525l130,0l0,-9" id="uc3-to-sum"/>
+   <line class="line" id="y3-to-total-sum" x1="339" x2="463" y1="492" y2="320.5"/>
+   <text class="small-label" id="y3-label" x="382" y="390">y
+    <tspan class="sub" id="svg_16">3</tspan>(k)</text>
+  </g>
+  <line class="line" id="desired-input" x1="45" x2="521" y1="65" y2="65"/>
+  <text class="small-label" id="desired-input-label" x="270" y="45">d(k) = s(k) + n(k)</text>
+  <line class="line" id="total-output-line" x1="509" x2="665" y1="305" y2="305"/>
+  <text class="small-label" id="total-output-label" x="575" y="286">y(k)</text>
+  <path class="plain" d="m610,305l0,-215" id="output-feedback-up"/>
+  <line class="line" id="output-feedback-to-error-sum" x1="610" x2="569" y1="90" y2="72"/>
+  <text class="small-label" id="error-plus-label" x="510" y="34">+</text>
+  <text class="small-label" id="error-minus-label" x="510" y="92">-</text>
+  <line class="line" id="error-output" x1="569.8" x2="665.8" y1="65" y2="65"/>
+  <text class="small-label" id="error-output-label" x="614" y="45">e(k)</text>
+  <path class="line" d="m625,65l0,492l-267,0" id="error-feedback-to-lms"/>
+ </g>
+</svg>

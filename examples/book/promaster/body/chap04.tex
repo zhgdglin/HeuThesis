@@ -2,209 +2,112 @@
 %! TEX root = ../main.tex
 %! TEX encoding = utf-8
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  哈尔滨工程大学学位论文 XeLaTeX 模版 —— 正文文件 chap04.tex
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{通信与测距算法仿真及性能分析}[Simulation and Performance Analysis of Communication and Ranging Algorithms]
+\chapter{水下快速测距算法研究与仿真}[Fast Underwater Ranging Algorithm and Simulation]
 \label{chap04}
 
-本章针对第 3 章提出的 SFH-MFSK 通信算法与往返时延测距算法开展仿真研究。首先给出仿真平台、信道模型与参数配置；随后从误码率、通信成功率、同步性能和抗干扰能力四个方面评估通信算法性能；进而从测距误差、时延估计精度和声速修正效果三个方面评估测距算法性能；最后分析关键参数对系统性能的影响规律，为第 5 章的嵌入式移植提供参数依据。
+本章只讨论测距问题，形成“往返时延模型—时间戳提取—声速与声线模型—快速距离反演—误差分析”的独立证据链。通信算法仅作为请求和应答的承载方式，不在本章重复讨论SFH-MFSK调制与解调。
 
-\section{仿真平台与参数配置}[Simulation Platform and Parameter Configuration]
+\section{往返时延测量模型}[Round-Trip Delay Measurement Model]
 
-\subsection{仿真平台}
+设甲板单元发射请求的时刻为$t_1$，水下机检测到请求首达径的时刻为$t_2$，水下机完成处理并发射应答的时刻为$t_3$，甲板单元检测到应答首达径的时刻为$t_4$。则
+\begin{equation}
+ \Delta t_{\rm meas}=t_4-t_1
+ =\tau_{\rm up}+\tau_{\rm proc}+\tau_{\rm down},
+\label{eq:chap04_rtt}
+\end{equation}
+其中$\tau_{\rm proc}=t_3-t_2$为水下机固定处理延时。经标定得到$\hat{\tau}_{\rm proc}$后，若上下行传播路径可视为互易，则单程传播时延估计为
+\begin{equation}
+ \hat{\tau}_{\rm prop}
+ =\frac{\Delta t_{\rm meas}-\hat{\tau}_{\rm proc}}{2}.
+\label{eq:chap04_prop}
+\end{equation}
+式\eqref{eq:chap04_prop}是声线反演的时间输入，不等同于距离。处理延时标定误差、时间戳量化误差和上下行传播不对称均会进入最终测距误差。
 
-仿真在 MATLAB 环境下实现，主要包括信号生成、信道模拟、接收处理和性能统计四个模块。信号生成模块按式\eqref{eq:fhmfsk_signal}产生 SFH-MFSK 跳频波形；信道模拟模块按式\eqref{eq:channel_model}叠加多径、多普勒和噪声；接收处理模块实现同步捕获、非相干检测与判决；性能统计模块统计误码率、通信成功率和测距误差。
+\section{首达径检测与时间戳提取}[First-Arrival Detection and Timestamp Extraction]
 
-\subsection{信道模型}
+多径条件下，最大相关峰可能属于后续反射路径，因此采用匹配滤波和首达径门限联合判决。设发送参考信号为$s(t)$，接收信号为$r(t)$，匹配滤波输出为
+\begin{equation}
+ y(\tau)=\int r(t)s(t-\tau)\mathrm{d}t .
+\label{eq:chap04_match}
+\end{equation}
+离散实现中，在噪声估计基础上设置门限$\gamma$。候选峰$y[n]$满足
+\begin{equation}
+ |y[n]|>\gamma
+\label{eq:chap04_threshold}
+\end{equation}
+且其前方保护区间不存在更早的高可信峰时，记录其位置为首达径时间戳。门限、保护区间和最小峰间隔必须在仿真与平台测试中保持一致。
 
-仿真采用两类信道模型：
+\section{声速剖面与声线传播模型}[Sound-Speed Profile and Ray Model]
 
-\begin{enumerate}
-  \item 加性高斯白噪声（AWGN）信道：用于验证算法在理想条件下的性能上界；
-  \item 多径时变信道：按式\eqref{eq:channel_ir}设置 $L$ 条路径，路径幅度服从瑞利分布，时延按指数分布生成，最大时延扩展 $\tau_{\max}$ 可配置，用于模拟深海多径环境。
-\end{enumerate}
+声速由温度、盐度和深度共同决定，可采用
+\begin{equation}
+ c(T,S,z)=1449.2+4.6T-0.055T^2+2.9\times10^{-4}T^3
+ +(1.34-0.01T)(S-35)+0.016z
+\label{eq:chap04_sound_speed}
+\end{equation}
+进行工程估计。对于水平分层介质，设声线与水平面的夹角为$\theta(z)$，Snell定律写为
+\begin{equation}
+ \frac{\cos\theta(z)}{c(z)}=p,
+\label{eq:chap04_snell}
+\end{equation}
+其中$p$为水平慢度。无转向点时，候选慢度对应的水平距离和传播时间为
+\begin{equation}
+\begin{aligned}
+ X(p)&=\int_{z_1}^{z_2}
+ \frac{pc(z)}{\sqrt{1-p^2c^2(z)}}\,\mathrm dz,\\
+ T(p)&=\int_{z_1}^{z_2}
+ \frac{1}{c(z)\sqrt{1-p^2c^2(z)}}\,\mathrm dz.
+\end{aligned}
+\label{eq:chap04_ray}
+\end{equation}
+存在转向点时，应按传播段分别计算并累加。
 
-同时设置窄带干扰源与脉冲干扰源，用于评估算法的抗干扰能力。
+\section{不依赖目标深度的快速距离反演}[Depth-Independent Fast Distance Inversion]
 
-\subsection{仿真参数}
+仅凭单次传播时延和声速剖面，通常不能同时唯一确定距离和未知端点深度。因此，本文所称“不依赖目标深度”不是删除所有几何信息，而是不将目标深度作为独立人工输入；算法必须使用项目中已知的几何约束或其他可观测量。定稿时应明确列出约束量、未知量和可解条件。
 
-仿真主要参数如表~\ref{tab:sim_params} 所示。
+在约束关系已确定后，构造时间残差
+\begin{equation}
+ e(p)=T(p)-\hat{\tau}_{\rm prop}.
+\label{eq:chap04_residual}
+\end{equation}
+在有效慢度区间$[p_{\rm L},p_{\rm U}]$内，若残差连续且端点异号，可采用二分搜索：
+\begin{equation}
+ p_j=\frac{p_{{\rm L},j}+p_{{\rm U},j}}{2}.
+\label{eq:chap04_bisection}
+\end{equation}
+根据$e(p_j)$的符号更新区间，直至$|e(p_j)|<\varepsilon_t$或达到最大迭代次数。收敛后由$X(p_j)$输出距离。若存在多个声线分支，应根据首达径和已知几何约束选取解，并输出残差、迭代次数和失败标志。若约束不足以保证唯一解，则应将该工况标记为不可解，而不是输出成功形态的距离。
 
-\begin{table}[htbp]
-  \bicaption[tab:sim_params]{}{仿真参数配置}{Tab.}{Simulation parameters}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{ccc}
-    \toprule[1.5pt]
-    参数 & 符号 & 取值 \\
-    \midrule[1pt]
-    载波频率 & $f_c$ & 待填写 \\
-    系统带宽 & $B$ & 待填写 \\
-    MFSK 进制数 & $M$ & 待填写 \\
-    跳频点数 & $N_f$ & 待填写 \\
-    跳频驻留时间 & $T_h$ & 待填写 \\
-    最大多径时延扩展 & $\tau_{\max}$ & 待填写 \\
-    最大多普勒频移 & $\Delta f_{\max}$ & 待填写 \\
-    信噪比范围 & $E_b/N_0$ & 待填写 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
+\section{测距仿真条件与评价指标}[Ranging Simulation Conditions and Metrics]
 
-\section{通信算法仿真与性能分析}[Simulation and Performance Analysis of Communication Algorithm]
-
-\subsection{误码率性能}
-
-在不同信噪比条件下统计 SFH-MFSK 系统的误码率，并与理论值式\eqref{eq:mfsk_ser}进行对比，结果如图~\ref{fig:ber_curve} 所示。
-
-\begin{figure}[htbp]
-  \centering
-  %\includegraphics[width=0.7\textwidth]{ber_curve.png}
-  \fbox{\parbox[c][4cm][c]{0.7\textwidth}{\centering 图待补充：不同信噪比下的误码率曲线}}
-  \bicaption[fig:ber_curve]{}{不同信噪比下的误码率曲线}{Fig.}{Bit error rate versus SNR}
-\end{figure}
-
-分析要点：
-
-\begin{enumerate}
-  \item 在 AWGN 信道下，仿真误码率与理论曲线吻合，验证了仿真平台与检测算法的正确性；
-  \item 在多径信道下，误码率曲线出现平台效应，说明多径引起的码间干扰是性能下降的主要原因；
-  \item 增大 $M$ 可提高频谱效率，但在相同信噪比下误码率上升，需结合链路预算折中选取。
-\end{enumerate}
-
-\subsection{通信成功率}
-
-通信成功率定义为接收端正确解析完整帧的比例。在不同距离与信噪比条件下统计通信成功率，结果如表~\ref{tab:success_rate} 所示。
-
-\begin{table}[htbp]
-  \bicaption[tab:success_rate]{}{不同条件下的通信成功率}{Tab.}{Communication success rate under different conditions}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{cccc}
-    \toprule[1.5pt]
-    距离/km & 信噪比/dB & 通信成功率/\% & 备注 \\
-    \midrule[1pt]
-    待填写 & 待填写 & 待填写 & AWGN 信道 \\
-    待填写 & 待填写 & 待填写 & 多径信道 \\
-    待填写 & 待填写 & 待填写 & 含窄带干扰 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
-
-\subsection{同步性能}
-
-同步性能以同步成功率和同步误差两个指标衡量。在不同信噪比与多普勒频移条件下统计同步成功率，结果如图~\ref{fig:sync_perf} 所示。
-
-\begin{figure}[htbp]
-  \centering
-  %\includegraphics[width=0.7\textwidth]{sync_perf.png}
-  \fbox{\parbox[c][4cm][c]{0.7\textwidth}{\centering 图待补充：同步成功率随信噪比变化曲线}}
-  \bicaption[fig:sync_perf]{}{同步成功率随信噪比变化曲线}{Fig.}{Synchronization success rate versus SNR}
-\end{figure}
-
-分析要点：
-
-\begin{enumerate}
-  \item 粗同步门限设置过低会引入虚警，过高则导致漏检，需根据噪声统计特性自适应调整；
-  \item 多普勒频移超过频点间隔的一半时，同步成功率明显下降，验证了式\eqref{eq:doppler}对参数设计的约束；
-  \item 采用相邻跳能量一致性校验可有效剔除异常峰值，提升精同步稳健性。
-\end{enumerate}
-
-\subsection{抗干扰性能}
-
-设置窄带干扰与脉冲干扰两类场景，统计不同干扰强度下的误码率与通信成功率，结果如表~\ref{tab:anti_jamming} 所示。
+测距仿真应分别设置不同真实距离、信噪比、多径强度、声速剖面和首达径检测误差。主要指标包括平均误差、偏差、均方根误差、最大绝对误差、不可解比例和单次计算时间：
+\begin{equation}
+ {\rm RMSE}=\sqrt{\frac{1}{N}\sum_{i=1}^{N}(\hat R_i-R_i)^2}.
+\label{eq:chap04_rmse}
+\end{equation}
+对比方案至少应包含常声速模型、等效声速修正和快速声线修正，并报告每种方案使用的输入信息，确保“不依赖目标深度”的比较成立。
 
 \begin{table}[htbp]
-  \bicaption[tab:anti_jamming]{}{抗干扰性能统计}{Tab.}{Anti-interference performance}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{cccc}
-    \toprule[1.5pt]
-    干扰类型 & 干扰强度 & 误码率 & 通信成功率/\% \\
-    \midrule[1pt]
-    窄带干扰 & 待填写 & 待填写 & 待填写 \\
-    脉冲干扰 & 待填写 & 待填写 & 待填写 \\
-    部分频带干扰 & 待填写 & 待填写 & 待填写 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
+ \bicaption[tab:chap04_params]{}{测距仿真参数}{Tab.}{Ranging simulation parameters}
+ \vspace{0.5em}\centering\wuhao
+ \begin{tabular}{ccc}
+ \toprule[1.5pt]
+ 参数 & 符号 & 取值\\
+ \midrule[1pt]
+ 真实距离范围 & $R$ & 待填写\\
+ 信噪比范围 & $\mathrm{SNR}$ & 待填写\\
+ 声速剖面 & $c(z)$ & 待填写\\
+ 首达径误差 & $\delta t$ & 待填写\\
+ 慢度搜索容差 & $\varepsilon_t$ & 待填写\\
+ 最大迭代次数 & $J_{\max}$ & 待填写\\
+ \bottomrule[1.5pt]
+ \end{tabular}
 \end{table}
 
-分析要点：跳频点数越多，干扰在时频域被分散的程度越高，抗部分频带干扰能力越强；但跳频点数增加会压缩单频点带宽，降低单跳检测增益，因此存在最优取值。
+\section{仿真结果与误差分析}[Simulation Results and Error Analysis]
 
-\section{测距算法仿真与性能分析}[Simulation and Performance Analysis of Ranging Algorithm]
-
-\subsection{测距误差统计}
-
-在不同信噪比与多径条件下统计测距误差，结果如表~\ref{tab:ranging_error} 所示。
-
-\begin{table}[htbp]
-  \bicaption[tab:ranging_error]{}{不同条件下的测距误差统计}{Tab.}{Ranging error under different conditions}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{ccccc}
-    \toprule[1.5pt]
-    真实距离/m & 信噪比/dB & 测量均值/m & 均方根误差/m & 最大误差/m \\
-    \midrule[1pt]
-    待填写 & 待填写 & 待填写 & 待填写 & 待填写 \\
-    待填写 & 待填写 & 待填写 & 待填写 & 待填写 \\
-    待填写 & 待填写 & 待填写 & 待填写 & 待填写 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
-
-\subsection{首达径检测性能}
-
-对比“最大峰值法”与本文“门限 + 首达径判决法”在不同多径强度下的时延估计误差，结果如图~\ref{fig:first_arrival} 所示。
-
-\begin{figure}[htbp]
-  \centering
-  %\includegraphics[width=0.7\textwidth]{first_arrival.png}
-  \fbox{\parbox[c][4cm][c]{0.7\textwidth}{\centering 图待补充：首达径检测误差对比}}
-  \bicaption[fig:first_arrival]{}{首达径检测误差对比}{Fig.}{Comparison of first-arrival detection error}
-\end{figure}
-
-分析要点：当直达径较弱而反射径较强时，最大峰值法会产生正偏差（测距偏大），本文方法通过门限判决与保护区间约束可有效抑制该偏差。
-
-\subsection{声速修正效果}
-
-对比未修正、等效声速修正和快速声线修正三种方案在不同距离下的测距误差，结果如表~\ref{tab:sound_speed_correction} 所示。
-
-\begin{table}[htbp]
-  \bicaption[tab:sound_speed_correction]{}{不同声速修正方案的测距误差对比}{Tab.}{Ranging error with different sound-speed correction schemes}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{cccc}
-    \toprule[1.5pt]
-    距离/m & 未修正误差/m & 等效声速修正误差/m & 快速声线修正误差/m \\
-    \midrule[1pt]
-    待填写 & 待填写 & 待填写 & 待填写 \\
-    待填写 & 待填写 & 待填写 & 待填写 \\
-    待填写 & 待填写 & 待填写 & 待填写 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
-
-分析要点：随着距离增加，声线弯曲引起的系统性误差逐渐增大，未修正方案的误差随距离近似线性增长；快速声线修正方法在不需要目标深度先验的条件下即可显著降低误差，且计算量满足工程实时性要求。
-
-\section{关键参数影响分析}[Influence of Key Parameters]
-
-为给嵌入式实现提供参数选取依据，本节分析跳频点数、MFSK 进制数、跳频驻留时间和同步门限四类参数对系统性能的影响，结果汇总于表~\ref{tab:param_influence}。
-
-\begin{table}[htbp]
-  \bicaption[tab:param_influence]{}{关键参数对系统性能的影响}{Tab.}{Influence of key parameters on system performance}
-  \vspace{0.5em}\centering\wuhao
-  \begin{tabular}{ccc}
-    \toprule[1.5pt]
-    参数 & 增大时的收益 & 增大时的代价 \\
-    \midrule[1pt]
-    跳频点数 $N_f$ & 抗干扰能力增强 & 单频点带宽减小，检测增益下降 \\
-    MFSK 进制数 $M$ & 频谱效率提高 & 误码率上升，检测复杂度增加 \\
-    跳频驻留时间 $T_h$ & 能量积累充分，检测概率提高 & 帧时长增加，时变失配风险上升 \\
-    同步门限 $\gamma$ & 虚警率下降 & 漏检率上升，弱信号同步困难 \\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
-
-综合仿真结果，本文推荐的参数配置为：跳频点数 $N_f$ 取待填写，MFSK 进制数 $M$ 取待填写，跳频驻留时间 $T_h$ 取待填写，同步门限 $\gamma$ 按噪声功率的待填写倍设置。该配置在通信成功率、测距精度与实现复杂度之间取得较好平衡。
+当前材料未提供完整测距仿真输出，故本节保留结果填写边界。定稿时应先报告处理延时已补偿条件下的基准结果，再分别改变首达径误差、声速剖面和多径条件，最后给出计算效率。误差分析应区分首达径检测误差、处理延时标定误差、声速模型误差、声线分支选择错误和几何约束误差；不能将所有误差归因于声速修正。
 
 \section{本章小结}[Summary]
 
-本章搭建了 SFH-MFSK 通信与测距算法仿真平台，给出了信道模型与参数配置，并从误码率、通信成功率、同步性能、抗干扰能力、测距误差、首达径检测和声速修正等方面对算法性能进行了系统分析，最后讨论了关键参数的影响规律并给出了推荐配置。仿真结果表明，本文算法在低信噪比和多径条件下具有较好的鲁棒性，为第 5 章的嵌入式移植与实验验证提供了参数依据。
+本章建立了基于请求—应答往返时延的测距模型，给出了处理延时补偿、首达径检测、声速剖面建模和声线距离反演方法，并明确了不依赖目标深度算法必须满足的几何约束与可解条件。后续仿真将以误差统计和计算效率为核心，所得基准结果作为第5章平台测距验证的对照。

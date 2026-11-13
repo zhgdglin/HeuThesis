@@ -41,15 +41,15 @@
    <rect class="box" height="40" id="svg_9" width="80" x="530" y="20"/>
    <text class="label" id="svg_10" x="570" y="40">换能器</text>
    <path class="line" d="m100,40l30,0" id="svg_11"/>
-   <polygon class="arrow" id="svg_12" points="130,40 122,35 122,45"/>
+   <polygon class="arrow" id="svg_12" points="134.82758617401123,40.344827592372894 126.82758617401123,35.344827592372894 126.82758617401123,45.344827592372894"/>
    <path class="line" d="m235,40l30,0" id="svg_13"/>
-   <polygon class="arrow" id="svg_14" points="265,40 257,35 257,45"/>
+   <polygon class="arrow" id="svg_14" points="270.17241382598877,39.655172407627106 262.17241382598877,34.655172407627106 262.17241382598877,44.655172407627106"/>
    <path class="line" d="m370,40l30,0" id="svg_15"/>
-   <polygon class="arrow" id="svg_16" points="400,40 392,35 392,45"/>
+   <polygon class="arrow" id="svg_16" points="405.17241382598877,40 397.17241382598877,35 397.17241382598877,45"/>
    <path class="line" d="m495,40l30,0" id="svg_17"/>
-   <polygon class="arrow" id="svg_18" points="525,40 517,35 517,45"/>
+   <polygon class="arrow" id="svg_18" points="529.1379308700562,40 521.1379308700562,35 521.1379308700562,45"/>
    <path class="dash" d="m610,40l40,0" id="svg_19"/>
-   <polygon class="arrow" id="svg_20" points="650,40 642,35 642,45"/>
+   <polygon class="arrow" id="svg_20" points="653.1034483909607,40 645.1034483909607,35 645.1034483909607,45"/>
    <path class="dash" d="m320,139.5l35.5,0" id="svg_38"/>
   </g>
   <g id="frequency-control">
@@ -58,14 +58,16 @@
    <rect class="box" height="40" id="svg_23" width="100" x="270" y="150"/>
    <text class="label" id="svg_24" x="320" y="170">伪码产生器</text>
    <path class="line" d="m320,86l0,-22" id="svg_25"/>
-   <polygon class="arrow" id="svg_26" points="320,64 315,72 325,72"/>
-   <path class="line" d="m294,150l0,-20" id="svg_27"/>
-   <polygon class="arrow" id="svg_28" points="294.5,125 289.5,133 299.5,133"/>
+   <polygon class="arrow" id="svg_26" points="320,59.86206912994385 315,67.86206912994385 325,67.86206912994385"/>
+   <path class="line" d="m284.69,150.34l0,-20" id="svg_27"/>
+   <polygon class="arrow" id="svg_28" points="285.1896553039551,125.3448275923729 280.1896553039551,133.3448275923729 290.1896553039551,133.3448275923729"/>
    <path class="line" d="m320,150l0,-20" id="svg_29"/>
    <polygon class="arrow" id="svg_30" points="320,124.5 315,132.5 325,132.5"/>
    <path class="line" d="m356,150l0,-20" id="svg_36"/>
    <polygon class="arrow" id="svg_35" points="356.5,125 351.5,133 361.5,133"/>
    <line fill="none" id="svg_37" x1="320" x2="353.5" y1="143.5" y2="139.5"/>
+   <path class="line" d="m301.74,150.09l0,-20" id="svg_32"/>
+   <polygon class="arrow" id="svg_31" points="302.2414026260376,125.0862045288086 297.2414026260376,133.08621215820312 307.2414026260376,133.08621215820312"/>
   </g>
  </g>
 </svg>

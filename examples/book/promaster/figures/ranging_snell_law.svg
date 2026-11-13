@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <title>Refraction diagram</title>
+ <desc>Editable Snell refraction diagram with independent lines, arcs, and text labels.</desc>
+ <defs>
+  <marker id="arrow" markerHeight="7" markerWidth="7" orient="auto-start-reverse" refX="8" refY="5" viewBox="0 0 10 10">
+   <path d="m0,0l10,5l-10,5l0,-10z" fill="#000000" id="arrow-shape"/>
+  </marker>
+ </defs>
+ <g class="layer">
+  <title>Layer 1</title>
+  <line id="interface" stroke="#000000" stroke-width="2" x1="80" x2="720" y1="300" y2="300"/>
+  <line id="normal" stroke="#000000" stroke-dasharray="9 7" stroke-width="1.5" x1="400" x2="400" y1="70" y2="530"/>
+  <line id="incident-ray" marker-end="url(#arrow)" stroke="#000000" stroke-width="3" x1="240" x2="400" y1="140" y2="300"/>
+  <line id="refracted-ray-ci-lt-ci1" marker-end="url(#arrow)" stroke="#000000" stroke-width="3" x1="400" x2="500" y1="300" y2="475"/>
+  <line id="refracted-ray-ci-gt-ci1" marker-end="url(#arrow)" stroke="#000000" stroke-width="3" x1="400" x2="610" y1="300" y2="420"/>
+  <path d="m400,230a70,70 0 0 0 -50,21" fill="none" id="incident-angle-arc" stroke="#000000" stroke-width="1.5"/>
+  <path d="m400.14,370.31a61.94,58.61 0 0 1 30.97,-7.54" fill="none" id="refracted-small-angle-arc" stroke="#000000" stroke-width="1.5" transform="rotate(170.921 415.625 366.54)"/>
+  <path d="m400,405a105,100.87 0 0 1 91,-50.92" fill="none" id="refracted-large-angle-arc" stroke="#000000" stroke-width="1.5" transform="matrix(1 0 0 1 0 0) rotate(178.526 445.5 379.542)"/>
+  <text font-family="Times New Roman, SimSun, serif" font-size="30" id="medium-ci-label" x="150" y="255">C
+   <tspan font-size="18" id="svg_1">i</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="30" id="medium-ci1-label" x="150" y="355">C
+   <tspan font-size="18" id="svg_2">i+1</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="24" id="condition-ci-lt-ci1-label" x="597.92" y="448.75">C
+   <tspan font-size="14" id="svg_3">i</tspan>&lt; C
+   <tspan font-size="14" id="svg_4">i+1</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="24" id="condition-ci-gt-ci1-label" x="475.83" y="504.17">C
+   <tspan font-size="14" id="svg_5">i</tspan>&gt; C
+   <tspan font-size="14" id="svg_6">i+1</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="28" id="incident-angle-label" x="335" y="220">θ
+   <tspan font-size="17" id="svg_7">i</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="28" id="small-refracted-angle-label" x="409.17" y="391.83">θ
+   <tspan font-size="17" id="svg_8">i+1</tspan></text>
+  <text font-family="Times New Roman, SimSun, serif" font-size="28" id="large-refracted-angle-label" x="483.75" y="393.75">θ
+   <tspan font-size="17" id="svg_9">i+1</tspan></text>
+  <line id="svg_11" stroke="#000000" stroke-dasharray="9 7" stroke-width="1.5" transform="rotate(-45 454.892 354.904)" x1="454.89" x2="454.89" y1="141.28" y2="568.52"/>
+ </g>
+</svg>

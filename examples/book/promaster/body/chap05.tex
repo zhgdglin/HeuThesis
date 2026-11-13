@@ -8,10 +8,10 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{通信与测距算法的嵌入式移植与实验验证}[Embedded Implementation and Experimental Verification of Communication and Ranging Algorithms]
+\chapter{声学释放器的软硬件平台搭建与功能验证}[Hardware and Software Platform Development and Functional Verification of an Acoustic Release System]
 \label{chap05}
 
-本章介绍第 3 章算法的嵌入式移植过程与实验验证结果。首先给出系统总体方案与软硬件平台；随后阐述算法在嵌入式处理器上的移植方法与参数配置；进而介绍实验环境与测试方案；最后给出实测结果，并与第 4 章的仿真结果进行对比分析。
+本章依据论文思路介绍声学释放器软硬件平台搭建和功能验证。首先说明系统组成与硬件方案，再介绍软件模块和通信、测距算法的部署关系；随后给出参数配置、实验环境及测试方法。仿真与实测结果目前尚未提供，因此相关结果位置保留为待补内容，不将计划中的测试写作已完成结论。
 
 \section{系统总体方案}[Overall Architecture]
 
@@ -28,9 +28,9 @@
 
 \subsection{水下机硬件设计}
 
-水下机硬件可划分为电源管理模块、主控处理模块、接收前端、发射驱动模块、传感与状态检测模块以及机械释放执行模块。主控处理器负责运行同步解调、命令判决和测距应答程序；接收前端完成信号调理、放大与模数转换；发射驱动模块根据数字基带控制换能器输出指定频点信号；机械释放执行模块通过电机、电磁或其他执行机构完成最终动作\cite{XiaDongShengXueShiFangQiShuZiDianLuSheJiYuShiXian2011,XieShuangWenXinXingShengXueShiFangQiKongZhiDianLuDeSheJiYuZhiZuo2018,ChenKaiYunShengXueShiFangQiJiJieShiFangDanYuanDuoYuWuLiJianMoYuShiYanYanJiu2024}。
+项目材料给出的接收链路包括 $9$--$13\,\mathrm{kHz}$ 四阶有源带通滤波器，以及总增益最高约 $84\,\mathrm{dB}$ 的前置放大链路，其中包含固定增益和由 MCU 控制的分档可变增益。材料还给出 $12\,\mathrm{kHz}$ 附近的换能器接收灵敏度约为 $-177.2\,\mathrm{dB}$，发射声源级不低于约 $190\,\mathrm{dB}$ 的项目指标。上述单位基准、测量条件及其与最终硬件版本的对应关系应在定稿前依据原始规格书和测量记录复核；若无法核验，不将其作为精确链路预算输入。
 
-考虑到系统长期水下部署需求，电源管理设计应支持低静态功耗、欠压保护和关键动作期间的瞬态大电流供给；结构设计应兼顾密封、耐压和电磁兼容要求。
+项目技术材料还记载算法移植目标平台为 STM32H750VBT6。正文应按实物原理图和固件确认换能器接口、ADC/DAC 或外部采集器件、时钟、功率放大和收发切换电路。当前材料未充分说明完整硬件链路，故本节仅保留已识别的主控与接收前端信息，其余模块型号和参数待实物资料补充。
 
 \subsection{甲板单元硬件设计}
 
@@ -43,49 +43,25 @@
   \item 向上位机输出设备编号、距离和状态信息。
 \end{enumerate}
 
-已有便携式甲板单元研究表明，采用 MCU 或 MCU+FPGA 结构可较好兼顾运算能力、接口扩展性和整机功耗\cite{zhangDesignImplementationPortable2018,CaoMingChengJiYuSTM32H7DeDuoGongNengBianXiShiJiaBanDanYuanYanJiuSheJi2021}。对于本文场景，若频点数量和实时性需求较高，可将波形生成和高速采样处理交由专用外设或协处理单元完成。
+已有便携式甲板单元研究表明，采用 MCU 或 MCU+FPGA 结构可较好兼顾运算能力、接口扩展性和整机功耗\cite{zhangDesignImplementationPortable2018,CaoMingChengJiYuSTM32H7DeDuoGongNengBianXiShiJiaBanDanYuanYanJiuSheJi2021}。对于本文场景，若频点数量和实时性需求较高，可将波形生成和高速采样处理交由专用外设或协处理单元完成。此类资源划分属于本文的工程实现建议，具体硬件选型仍需依据目标处理器的算力、功耗和接口需求确定。
 
-\section{算法嵌入式移植}[Embedded Implementation of Algorithms]
+\section{软件方案与算法实现}[Software Design and Algorithm Implementation]
 
 \subsection{软件架构}
 
-系统软件采用分层架构，包括驱动层、服务层和应用层。驱动层完成 ADC、DAC、定时器、串口、GPIO 等外设操作；服务层实现帧组装、缓存管理、测距时戳记录、故障检测与日志输出；应用层负责通信流程控制、命令解释、测距任务调度和释放逻辑管理。水下机侧核心任务流程为：休眠等待、信号唤醒、同步捕获、地址识别、命令执行、应答发射和低功耗回退。
+软件说明应依据实际固件组织。结合声学释放器任务流程，可按采集与外设驱动、信号检测与帧处理、通信协议、测距计算和设备控制等功能划分模块；水下机接收请求后完成检测、同步与解调，在帧校验通过时按控制逻辑处理并发送应答。甲板端负责请求发送、应答记录、测距计算和结果显示。当前未提供软件流程图、固件模块清单及任务调度配置，以上仅作为章节组织框架，定稿时需与实际代码核对。
 
-\subsection{通信算法的移植}
+\subsection{通信算法实现}
 
-通信算法的移植重点在于同步捕获与非相干检测的定点化实现：
+通信实现按信号采集、跳频/符号时序控制、同步和 Notch 支路解调描述。对每个处理模块需报告输入数据格式、采样率、缓存长度、计算精度和输出判据。项目材料记载目标主控器为 STM32H750VBT6，并给出自适应 Notch 滤波的理论及 MATLAB 示例；但当前未附完整固件、采样率和实际运行记录，因此不预设算法已完成定点化、DMA 流水处理或满足实时性。相关实现细节应据代码、编译配置和实测时序补充。
 
-\begin{enumerate}
-  \item 同步捕获：将式\eqref{eq:energy_det}的短时能量计算与式\eqref{eq:correlation_sync}的相关运算映射为滑动窗口累加结构，采用整型运算替代浮点运算，降低单次运算开销；
-  \item 非相干检测：将式\eqref{eq:noncoherent_metric}的滤波器组能量积累实现为多支路并行累加，利用 DMA 与定时器触发实现采样与处理的流水化；
-  \item 判决与校验：将式\eqref{eq:decision}的最大值搜索与 CRC 校验合并到同一处理周期内完成，减少中间数据搬运。
-\end{enumerate}
+\subsection{测距与控制流程实现}
 
-定点化过程中需重点控制能量累加的字长，避免长时间累加导致溢出；同时需保证判决门限的量化误差不超过预设容限。
-
-\subsection{测距算法的移植}
-
-测距算法的移植重点在于时延估计精度与固定处理延时稳定性：
-
-\begin{enumerate}
-  \item 时延估计：将式\eqref{eq:mf_output}的匹配滤波实现为滑动相关，采用定时器捕获记录收发时戳，时戳分辨率由定时器计数频率决定；
-  \item 首达径判决：按式\eqref{eq:threshold_decision}实现门限比较与保护区间检查，门限值由噪声功率估计在线更新；
-  \item 异常值剔除：按式\eqref{eq:median_filter}实现长度为 $K$ 的中值滤波，采用插入排序实现小窗口中值计算，避免排序开销过大；
-  \item 声速修正：将快速声线修正算法实现为迭代查表结构，预先计算声速剖面查找表，运行时仅需少量迭代即可收敛。
-\end{enumerate}
-
-为保证释放动作安全，软件需设置多级防护：
-
-\begin{enumerate}
-  \item 非本机地址或校验失败命令直接丢弃；
-  \item 关键控制命令需满足重复确认条件；
-  \item 释放动作执行前检查电压、执行机构状态和互锁标志；
-  \item 动作完成后回传状态并记录故障码。
-\end{enumerate}
+测距模块应记录请求发送和应答接收的时间标记，扣除经标定的水下处理延时，再执行首达径判定和声线距离反演。本文算法所需的已知几何约束必须与实现输入对应说明。控制模块则应依据实际协议说明地址检查、帧校验、命令确认及执行互锁；仅列出设计建议不能替代对实际固件行为的验证。
 
 \subsection{参数配置}
 
-嵌入式实现中的主要参数配置如表~\ref{tab:embedded_params} 所示，参数取值依据第 4 章的仿真结论确定。
+嵌入式实现中的主要参数配置如表~\ref{tab:embedded_params} 所示，通信参数依据第 3 章仿真结论确定，测距参数依据第 4 章仿真结论确定；若相应仿真尚未完成，应标注为待填写而不预设取值。
 
 \begin{table}[htbp]
   \bicaption[tab:embedded_params]{}{嵌入式实现的参数配置}{Tab.}{Parameter configuration of embedded implementation}
@@ -106,23 +82,22 @@
 
 \section{实验环境与测试方案}[Experimental Environment and Test Scheme]
 
-系统测试覆盖实验室功能验证、水池试验和外场试验三个层次。实验室阶段主要验证收发链路、频点切换、同步与延时标定功能；水池试验侧重验证近距离测距、指令识别与功耗控制；外场试验则重点考察复杂环境下的通信成功率和测距稳定性\cite{HuangDongYiZhongQianHaiXingShengXueYingDaShiFangQiShuiXiaDanYuanDeSheJiYuShiXian2022}。
+实验环境应据实际记录填写地点类型、收发距离、换能器布放方式、水深、声速/温盐深条件、噪声或干扰条件及设备版本。每种条件需记录试验次数和成功判据，以支持通信成功率、时延和测距误差统计。项目材料可确认已有 STM32H750VBT6 平台及 MATLAB 仿真工作，但本文所需完整实验配置及原始结果尚未提供；故不把未经核实的水池或外场测试写成已完成事实。
 
-测试指标包括：
-
+功能验证可按以下项目组织，并逐项注明实际执行情况：
 \begin{enumerate}
-  \item 指令识别成功率；
-  \item 测距均方误差与最大绝对误差；
-  \item 水下机固定处理延时稳定度；
-  \item 平均功耗与待机时长；
-  \item 释放动作成功率与重复动作一致性。
+  \item 接收频带及各跳频点的信号检测与频点切换；
+  \item 同步、解调、帧校验和应答流程；
+  \item 请求—应答时间戳与处理延时标定；
+  \item 在已知几何条件下的测距输出及其与基准距离的偏差；
+  \item 若研究范围包含执行机构，则提供其独立安全测试记录。
 \end{enumerate}
 
 \section{实验结果与分析}[Experimental Results and Analysis]
 
 \subsection{通信性能实测结果}
 
-在不同距离条件下统计指令识别成功率，结果如表~\ref{tab:exp_comm} 所示。
+表~\ref{tab:exp_comm} 用于汇总实际执行的通信功能测试。表中场景、距离、发送次数和成功率均待填入试验记录；若尚未进行某类试验，应删除该行或注明“未测试”，不得将计划条件作为实测结果。
 
 \begin{table}[htbp]
   \bicaption[tab:exp_comm]{}{通信性能实测结果}{Tab.}{Measured communication performance}
@@ -140,7 +115,7 @@
 
 \subsection{测距性能实测结果}
 
-在不同距离条件下统计测距误差，结果如表~\ref{tab:exp_ranging} 所示。
+表~\ref{tab:exp_ranging} 用于报告已执行测试中的基准距离、估计均值、误差统计量和环境条件。原始测量数据尚未提供，现阶段不推断测距误差或不同试验场景的性能差异。
 
 \begin{table}[htbp]
   \bicaption[tab:exp_ranging]{}{测距性能实测结果}{Tab.}{Measured ranging performance}
@@ -158,7 +133,7 @@
 
 \subsection{固定处理延时标定结果}
 
-固定处理延时 $\tau_{\mathrm{proc}}$ 的稳定性直接影响测距精度。采用示波器或逻辑分析仪对水下机收发时戳进行多次测量，统计结果如表~\ref{tab:proc_delay} 所示。
+固定处理延时 $\tau_{\mathrm{proc}}$ 的标定方法及重复测量结果应记录于表~\ref{tab:proc_delay}。表中次数、均值、标准差和最大偏差待填；在记录补齐前，不据此声称该延时已标定或稳定。
 
 \begin{table}[htbp]
   \bicaption[tab:proc_delay]{}{固定处理延时标定结果}{Tab.}{Calibration results of fixed processing delay}
@@ -174,7 +149,7 @@
 
 \subsection{仿真与实测结果对比}
 
-将实测结果与第 4 章仿真结果进行对比，结果如表~\ref{tab:sim_vs_exp} 所示。
+通信实测结果应与第 3 章通信仿真对比，测距实测结果应与第 4 章测距仿真对比。只有在信道、参数和统计口径一致时，比较结果才具有解释意义。
 
 \begin{table}[htbp]
   \bicaption[tab:sim_vs_exp]{}{仿真与实测结果对比}{Tab.}{Comparison between simulation and experimental results}
@@ -190,13 +165,7 @@
   \end{tabular}
 \end{table}
 
-分析要点：
-
-\begin{enumerate}
-  \item 实测通信成功率略低于仿真值，主要原因是实际信道存在仿真模型未完全刻画的环境噪声与平台自噪声；
-  \item 实测测距误差大于仿真值，主要来源为固定处理延时抖动、声速估计偏差和换能器安装位置偏差；
-  \item 在近距离条件下实测与仿真吻合较好，随着距离增加偏差增大，说明声速修正模型的精度对远距离测距影响更为显著。
-\end{enumerate}
+对照分析应只比较条件可对应的仿真和实测指标，并注明信道、频点、收发距离、设备参数及统计口径的差异。若实测与仿真出现偏差，应结合记录的噪声、时延标定、声速剖面和换能器布放信息讨论可能原因；当前数据缺失，因此本节不预设偏差方向或原因。
 
 \subsection{功耗与释放动作测试}
 
@@ -219,4 +188,4 @@
 
 \section{本章小结}[Summary]
 
-本章完成了 SFH-MFSK 通信与测距算法的嵌入式移植与实验验证。首先给出了系统总体方案与软硬件平台设计；随后阐述了通信算法与测距算法的定点化移植方法、关键数据结构与参数配置；进而介绍了实验室、水池和外场三个层次的测试方案；最后给出了通信成功率、测距误差、固定处理延时、功耗与释放动作的实测结果，并与仿真结果进行了对比分析。结果表明，本文算法在嵌入式平台上具备工程可实现性，实测性能与仿真趋势一致，验证了算法设计的有效性。
+本章按声学释放器软硬件平台搭建与功能验证的思路，组织了系统条件、软件模块、通信和测距实现、参数配置及实验记录内容。当前材料能够确认的硬件信息包括 STM32H750VBT6 目标平台及项目资料所述接收频带和放大链路；其余实现参数和功能测试结果仍需以实物、代码及实验记录核验。故本章暂不作工程可实现性、测距精度或仿真一致性的结论。
