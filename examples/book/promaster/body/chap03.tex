@@ -5,7 +5,7 @@
 \chapter{SFH-MFSK水声通信算法与仿真}[SFH-MFSK Underwater Acoustic Communication Algorithm and Simulation]
 \label{chap03}
 
-本章只研究水声通信问题，按照“通信体制设计—接收算法—仿真设置—性能分析”的顺序展开。测距所需的往返时延、首达径和声速修正不在本章展开，以避免通信性能指标与测距误差指标相互混淆。通信算法的目标是在释放器有限频带、有限处理资源和水声信道时变条件下，实现可同步、可解调和可校验的指令传输。
+本章围绕水声通信问题展开，依次讨论通信体制设计、接收算法、仿真设置和性能分析。研究内容聚焦于通信链路中的信号同步、符号解调与指令校验，不涉及测距过程中的往返时延测量、首达径检测和声速修正。通信算法面向释放器有限频带、有限处理资源及水声信道时变等约束，旨在实现指令信号的可靠接收与有效判决。
 
 \section{SFH-MFSK通信系统模型}[SFH-MFSK Communication System Model]
 
@@ -17,16 +17,65 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{sfh_mfsk_transmitter}
-  \bicaption[fig:sfh_mfsk_transmitter]{}{SFH-MFSK通信系统发送端结构}{Fig.}{Transmitter structure of the SFH-MFSK communication system}
+  \begin{tikzpicture}[
+    node distance=7mm and 8mm,
+    process/.style={draw, minimum height=8mm, minimum width=20mm, inner sep=1pt, align=center},
+    control/.style={draw, minimum height=8mm, minimum width=25mm, inner sep=1pt, align=center},
+    signal/.style={-latex, line width=0.4pt},
+    control signal/.style={-latex, line width=0.4pt, dashed}
+  ]
+    \node[process] (tx-source) {信源编码};
+    \node[process, right=of tx-source] (tx-mfsk) {MFSK调制器};
+    \node[process, right=of tx-mfsk] (tx-mixer) {混频器};
+    \node[process, right=of tx-mixer] (tx-filter) {滤波放大};
+    \node[process, right=of tx-filter] (tx-transducer) {换能器};
+    \draw[signal] (tx-source) -- (tx-mfsk);
+    \draw[signal] (tx-mfsk) -- (tx-mixer);
+    \draw[signal] (tx-mixer) -- (tx-filter);
+    \draw[signal] (tx-filter) -- (tx-transducer);
+    \draw[control signal] (tx-transducer.east) -- ++(8mm,0);
+
+    \node[control, below=11mm of tx-mixer] (tx-synth) {频率合成器};
+    \node[control, below=of tx-synth] (tx-code) {伪码产生器};
+    \draw[signal] (tx-synth.north) -- (tx-mixer.south);
+    \draw[signal] (tx-code.north) -- (tx-synth.south);
+  \end{tikzpicture}
+  \caption[SFH-MFSK通信系统发送端结构]{SFH-MFSK通信系统发送端结构}
+  \label{fig:sfh_mfsk_transmitter}
 \end{figure}
 
 图~\ref{fig:sfh_mfsk_receiver}展示了信号接收端的结构。换能器首先将水声信号转换为电信号，随后信号依次经过前置放大、滤波和同步处理，并进入混频器。频率合成器为混频器提供本地载波，伪码发生器为频率合成器提供跳频序列参考，二者共同实现接收频点的切换。混频后的信号经带通滤波后进入MFSK解调器，完成当前跳频时隙内的符号判决。同步系统为接收处理提供时序控制，并协调同步、频率切换、混频和解调等环节的工作过程。
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{sfh_mfsk_receiver}
-  \bicaption[fig:sfh_mfsk_receiver]{}{SFH-MFSK通信系统接收端结构}{Fig.}{Receiver structure of the SFH-MFSK communication system}
+  \begin{tikzpicture}[
+    node distance=7mm and 8mm,
+    process/.style={draw, minimum height=8mm, minimum width=20mm, inner sep=1pt, align=center},
+    control/.style={draw, minimum height=8mm, minimum width=22mm, inner sep=1pt, align=center},
+    signal/.style={-latex, line width=0.4pt},
+    control signal/.style={-latex, line width=0.4pt, dashed}
+  ]
+    \node[process] (rx-transducer) {换能器};
+    \node[process, right=of rx-transducer] (rx-front) {前置放大\\滤波};
+    \node[control, right=of rx-front] (rx-sync) {同步系统};
+    \node[process, right=of rx-sync] (rx-mixer) {混频器};
+    \node[process, right=of rx-mixer] (rx-bandpass) {带通滤波};
+    \node[process, right=of rx-bandpass] (rx-mfsk) {MFSK解调};
+    \draw[signal] (rx-transducer) -- (rx-front);
+    \draw[signal] (rx-front) -- (rx-sync);
+    \draw[signal] (rx-sync) -- (rx-mixer);
+    \draw[signal] (rx-mixer) -- (rx-bandpass);
+    \draw[signal] (rx-bandpass) -- (rx-mfsk);
+    \draw[control signal] (rx-mfsk.east) -- ++(8mm,0);
+
+    \node[control, below=11mm of rx-mixer] (rx-synth) {频率合成器};
+    \node[control, below=of rx-synth] (rx-code) {伪码发生器};
+    \draw[signal] (rx-synth.north) -- (rx-mixer.south);
+    \draw[signal] (rx-code.north) -- (rx-synth.south);
+    \draw[control signal] (rx-sync.south) |- (rx-synth.west);
+  \end{tikzpicture}
+  \caption[SFH-MFSK通信系统接收端结构]{SFH-MFSK通信系统接收端结构}
+  \label{fig:sfh_mfsk_receiver}
 \end{figure}
 
 综上，接收端通过“同步控制—频率变换—带通滤波—MFSK解调”的处理链完成水声信号的恢复，其中频率合成器和伪码发生器负责接收频点的协同控制。该结构将信号处理、跳频控制与时序同步统一到同一接收框架中，为后续信号模型、同步方法和解调算法的设计提供了系统基础。
@@ -87,9 +136,9 @@
 \label{eq:chap03_channel}
 \end{equation}
 
-\section{跳频方案与帧结构设计}[Frequency-Hopping Scheme and Frame Structure]
+\section{跳频序列设计}[Frequency-Hopping Sequence Design]
 
-本文采用慢跳频组织方式，即一个跳频驻留区间内完成一个或多个完整MFSK符号。该方式降低了频率切换与符号判决之间的时序耦合，便于在嵌入式处理器上进行缓存、检测和帧级校验。最终的频点集合、驻留时间和采样配置应以第5章实际平台参数为准。
+本文采用慢跳频组织方式，即一个跳频驻留区间内完成一个或多个完整MFSK符号。跳频序列的设计不只决定载频的切换顺序，还决定信号在可用频带内的时间—频率占用特征。因此，本节按照“频带约束—序列性质—状态生成—频点映射—同步实现”的顺序给出设计方法。设计目标是：在$9$--$13\,\mathrm{kHz}$接收通带内形成可复现的频点图案，尽量分散窄带干扰的影响，同时控制频点间隔、重复使用和收发端同步所需的实现代价。最终的频点集合、驻留时间和采样配置仍应以第5章实际平台参数为准。
 
 \subsection{可用频点与跳频图案}
 
@@ -97,11 +146,35 @@
 \[
 \mathcal{F}=\{f_0,f_1,\ldots,f_{N_f-1}\},
 \]
-则跳频图案可写为
+则第$k$个驻留区间的跳频图案可写为
+
 \[
  f_h(k)=f_{\pi(k)},
 \]
-其中$\pi(k)$为由固定表或伪随机序列产生的频点索引。频点设计不应只追求较大的跳频点数，还需在相邻频点之间保留足够的频偏和滤波过渡带裕量，使多普勒偏移、滤波器带宽和频率合成误差不致导致相邻支路的能量严重重叠。论文定稿时应报告$\pi(k)$的生成规则、初始状态和周期，使仿真、固件和实验使用同一图案。跳频能够分散局部频带干扰的影响，但其实际收益取决于干扰占用频带、图案、同步准确度和帧级判决，不能仅由跳频点数推断。
+其中$\pi(k)\in\{0,1,\ldots,N_f-1\}$为频点索引。频点设计不应只追求较大的跳频点数，还需在相邻候选频点之间保留足够的频偏和滤波过渡带裕量，使多普勒偏移、滤波器带宽和频率合成误差不致导致相邻支路的能量严重重叠。可将频点间最小间隔写成
+\begin{equation}
+ d_f=\min_{i\ne j}|f_i-f_j|,
+\label{eq:chap03_min_frequency_spacing}
+\end{equation}
+并要求$d_f$根据最大预期频偏、检测带宽和实现误差联合确定，而不是仅由通带宽度平均分配得到。跳频能够分散局部频带干扰的影响，但其实际收益取决于干扰占用频带、图案、同步准确度和帧级判决，不能仅由跳频点数推断。论文定稿时应报告频点表、$\pi(k)$的生成规则、初始状态和周期，使仿真、固件和实验使用同一图案。
+
+\subsection{跳频序列的设计目标与评价指标}
+
+跳频序列通常在频率间隔性质和不同序列间的碰撞性质两个层面进行评价。已有研究将宽间隔跳频序列用于提高对窄带干扰的分散能力，将低碰撞区或无碰撞区跳频序列用于多用户组网中的频率冲突控制\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。本文首先面向单个释放器与甲板单元之间的单链路通信，因此低碰撞区和无碰撞区不作为已经完成的多址性能结论，而作为序列可扩展性和后续组网设计的评价维度。
+
+对于长度为$L$的序列$\boldsymbol{\pi}=(\pi(0),\ldots,\pi(L-1))$，定义相邻跳变的频率间隔为
+\begin{equation}
+ d_k=|f_{\pi(k+1)}-f_{\pi(k)}|,\qquad k=0,\ldots,L-2 .
+\label{eq:chap03_adjacent_spacing}
+\end{equation}
+序列的最小跳变间隔$d_{\min}=\min_k d_k$用于检查相邻驻留区间是否过于接近；频点占用统计$C_i=\sum_{k=0}^{L-1}\mathbb{I}(\pi(k)=i)$用于检查各频点的使用是否过度集中。对两个用户序列$\boldsymbol{\pi}^{(u)}$和$\boldsymbol{\pi}^{(v)}$，在相同时间索引下的碰撞数可定义为
+\begin{equation}
+ C_{uv}=\sum_{k=0}^{L-1}\mathbb{I}\!\left(\pi^{(u)}(k)=\pi^{(v)}(k)\right),
+\label{eq:chap03_collision_count}
+\end{equation}
+其中$\mathbb{I}(\cdot)$为示性函数。单链路设计至少应检查$d_{\min}$、$C_i$、序列周期和重复图案；若系统扩展到多收发对，则还应在规定的相对时延和观测窗口内统计$C_{uv}$。这些指标是序列筛选条件，不能直接替代误码率、同步成功率或完整帧成功率测试。
+
+在工程约束下，序列选择可表述为一个有限候选集上的筛选问题：先剔除超出通带或频率合成器分辨率的频点，再剔除$d_{\min}$小于设计裕量的候选图案，随后检查频点占用均衡性、周期和同步可重构性。只有通过上述检查的序列才进入第3章后续信道仿真，并在第5章固件中使用相同的参数和初始状态。
 
 \subsection{快跳频与慢跳频的组织方式}
 
@@ -164,13 +237,15 @@
 
 \subsection{伪随机跳频序列与符号映射}
 
-为避免跳频图案过于规则而形成固定频率占用，本文采用伪随机序列生成频点索引。设伪随机序列发生器在第$k$个驻留区间的状态为$q_k$，则其状态更新和频点映射可抽象表示为
+在候选序列中，本文采用确定性的伪随机状态机生成频点索引，以避免固定顺序造成明显的周期性频率占用。设伪随机序列发生器在第$k$个驻留区间的状态为$q_k$，则其状态更新和频点映射可抽象表示为
 \begin{equation}
  q_{k+1}=G(q_k),\qquad
  \pi(k)=H(q_k)\bmod N_f ,
 \label{eq:chap03_prn_hopping}
 \end{equation}
-其中$G(\cdot)$为确定性的状态更新函数，$H(\cdot)$为从状态中提取频点索引的映射函数。收发端只需预先约定相同的初始状态、反馈规则、输出位选择和索引映射，即可在不传输完整跳频表的条件下重构相同的跳频图案。工程实现中应避免将零状态作为可能导致序列锁死的初始状态，并对序列周期、重复频点及相邻频点分布进行检查。
+其中$G(\cdot)$为确定性的状态更新函数，$H(\cdot)$为从状态中提取索引的映射函数。若采用线性反馈移位寄存器实现$G(\cdot)$，还应明确寄存器阶数、反馈抽头、移位方向和输出位；若采用查表方式，则应直接保存并校验完整序列。收发端必须预先约定相同的初始状态、反馈规则、输出位选择、频点映射和序列周期，才能在不传输完整跳频表的条件下重构相同图案。工程实现中应避免将零状态作为可能导致序列锁死的初始状态，并在装载配置时检查状态合法性。
+
+序列生成后，按照式~\eqref{eq:chap03_min_frequency_spacing}和式~\eqref{eq:chap03_collision_count}逐项检查最小频率间隔、频点占用、周期内重复模式及候选用户间碰撞。若映射采用简单的模$N_f$运算而$N_f$与状态空间不匹配，可能产生频点占用偏置；此时应采用无偏映射或在离线生成阶段固定一张经过统计检查的序列表。该检查应在仿真、固件编译和实验配置中保持一致，避免发送端和接收端因索引约定不同而出现持续失配。
 
 在每个驻留区间内，MFSK符号索引$m_k\in\{0,1,\ldots,M-1\}$由待发送比特分组映射得到，实际发送频率为
 \begin{equation}
