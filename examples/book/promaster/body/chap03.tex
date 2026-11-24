@@ -5,7 +5,8 @@
 \chapter{SFH-MFSK水声通信算法与仿真}[SFH-MFSK Underwater Acoustic Communication Algorithm and Simulation]
 \label{chap03}
 
-本章围绕水声通信问题展开，依次讨论通信体制设计、接收算法、仿真设置和性能分析。研究内容聚焦于通信链路中的信号同步、符号解调与指令校验，不涉及测距过程中的往返时延测量、首达径检测和声速修正。通信算法面向释放器有限频带、有限处理资源及水声信道时变等约束，旨在实现指令信号的可靠接收与有效判决。
+水声遥控算法的稳健性是保障声学释放器可靠工作的重要因素。本章面向浅海水声遥控需求，研究适用于声学释放器的SFH-MFSK水声通信方法。首先，建立SFH-MFSK通信系统模型，分析跳频通信的物理模型与数学模型；其次，结合可用频点、序列评价指标及慢跳频组织方式，阐述基于
+$m$序列、非连续型L-G抽头模型和改进随机平移替代法的宽间隔跳频序列设计，并据此确定通信帧结构；随后，分析接收端的信号检测与同步方法，以及基于并行自适应Notch滤波器的非相干解调方法；其中同步按“重复LFM前导定时—跳频图案相位确认—帧内网格保持”三段组织，以适配水下机休眠唤醒的工作方式；最后，在统一的信道与干扰条件下开展通信仿真，通过误码率、同步成功率和完整帧成功率等指标评估系统性能，并以理想同步、频谱解调、单次前导与无跳频四组对照分离各环节的贡献，为第5章的嵌入式实现提供理论依据，并为通信实测提供对照基准。
 
 \section{SFH-MFSK通信系统模型}[SFH-MFSK Communication System Model]
 
@@ -123,66 +124,24 @@
 \end{equation}
 附近，经过带通滤波和MFSK能量判决即可恢复当前时隙的符号。该模型将跳频同步误差直接纳入接收频率位置，为后续同步检测、非相干解调和误码率分析提供统一基础。
 
-设系统可用频带为 $B$，每个跳频时隙的持续时间为 $T_h$。跳频序列决定第 $k$ 个时隙的基准频率 $f_h(k)$，MFSK符号决定该时隙内的频率偏移索引 $m_k\in\{0,1,\ldots,M-1\}$。第 $k$ 个时隙的发送信号表示为
-\begin{equation}
- s_k(t)=A\cos\left(2\pi[f_h(k)+m_k\Delta f]t+\varphi_k\right),
- \quad kT_h\leq t<(k+1)T_h ,
- \label{eq:chap03_signal}
-\end{equation}
-其中，$A$为信号幅度，$\Delta f$为MFSK子频点间隔，$\varphi_k$为相位。多径、频偏和噪声共同作用下，接收信号可表示为
-\begin{equation}
- r(t)=\sum_{i=1}^{L}\alpha_i(t)s(t-\tau_i(t))
- e^{j2\pi\nu_i(t)t}+n(t).
-\label{eq:chap03_channel}
-\end{equation}
-
-\section{跳频序列设计}[Frequency-Hopping Sequence Design]
-
-本文采用慢跳频组织方式，即一个跳频驻留区间内完成一个或多个完整MFSK符号。跳频序列的设计不只决定载频的切换顺序，还决定信号在可用频带内的时间—频率占用特征。因此，本节按照“频带约束—序列性质—状态生成—频点映射—同步实现”的顺序给出设计方法。设计目标是：在$9$--$13\,\mathrm{kHz}$接收通带内形成可复现的频点图案，尽量分散窄带干扰的影响，同时控制频点间隔、重复使用和收发端同步所需的实现代价。最终的频点集合、驻留时间和采样配置仍应以第5章实际平台参数为准。
-
-\subsection{可用频点与跳频图案}
-
-项目资料给出的接收带通范围为$9$--$13\,\mathrm{kHz}$。在此范围内，频点间隔需同时满足滤波器分辨率、最大预期频偏、MFSK正交条件和换能器频响约束。若可用频点集合记为
+上述各式中的基准频率$f_h(k)$与驻留时间$T_h$并非可任意取值，二者分别由可用频点划分和跳频时序组织确定。项目资料给出的接收带通范围为$9$--$13\,\mathrm{kHz}$。在此范围内，频点间隔需同时满足滤波器分辨率、最大预期频偏、MFSK正交条件和换能器频响约束。若可用频点集合记为
 \[
 \mathcal{F}=\{f_0,f_1,\ldots,f_{N_f-1}\},
 \]
-则第$k$个驻留区间的跳频图案可写为
-
+则第$k$个驻留区间的基准频率可取为
 \[
  f_h(k)=f_{\pi(k)},
 \]
-其中$\pi(k)\in\{0,1,\ldots,N_f-1\}$为频点索引。频点设计不应只追求较大的跳频点数，还需在相邻候选频点之间保留足够的频偏和滤波过渡带裕量，使多普勒偏移、滤波器带宽和频率合成误差不致导致相邻支路的能量严重重叠。可将频点间最小间隔写成
+其中$\pi(k)\in\{0,1,\ldots,N_f-1\}$为频点索引，跳频图案即由索引序列$\{\pi(k)\}$描述。频点设计不应只追求较大的跳频点数，还需在相邻候选频点之间保留足够的频偏和滤波过渡带裕量，使多普勒偏移、滤波器带宽和频率合成误差不致导致相邻支路的能量严重重叠。记频点间最小间隔为
 \begin{equation}
  d_f=\min_{i\ne j}|f_i-f_j|,
 \label{eq:chap03_min_frequency_spacing}
 \end{equation}
-并要求$d_f$根据最大预期频偏、检测带宽和实现误差联合确定，而不是仅由通带宽度平均分配得到。跳频能够分散局部频带干扰的影响，但其实际收益取决于干扰占用频带、图案、同步准确度和帧级判决，不能仅由跳频点数推断。论文定稿时应报告频点表、$\pi(k)$的生成规则、初始状态和周期，使仿真、固件和实验使用同一图案。
+则该间隔应根据最大预期频偏、检测带宽和实现误差联合确定，而不是仅由通带宽度平均分配得到。跳频能够分散局部频带干扰的影响，但其实际收益取决于干扰占用频带、图案、同步准确度和帧级判决，不能仅由跳频点数推断。频点表、$\pi(k)$的生成规则、初始状态和周期应在仿真、固件和实验之间保持一致，使三者使用同一图案。
 
-\subsection{跳频序列的设计目标与评价指标}
-
-跳频序列通常在频率间隔性质和不同序列间的碰撞性质两个层面进行评价。已有研究将宽间隔跳频序列用于提高对窄带干扰的分散能力，将低碰撞区或无碰撞区跳频序列用于多用户组网中的频率冲突控制\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。本文首先面向单个释放器与甲板单元之间的单链路通信，因此低碰撞区和无碰撞区不作为已经完成的多址性能结论，而作为序列可扩展性和后续组网设计的评价维度。
-
-对于长度为$L$的序列$\boldsymbol{\pi}=(\pi(0),\ldots,\pi(L-1))$，定义相邻跳变的频率间隔为
-\begin{equation}
- d_k=|f_{\pi(k+1)}-f_{\pi(k)}|,\qquad k=0,\ldots,L-2 .
-\label{eq:chap03_adjacent_spacing}
-\end{equation}
-序列的最小跳变间隔$d_{\min}=\min_k d_k$用于检查相邻驻留区间是否过于接近；频点占用统计$C_i=\sum_{k=0}^{L-1}\mathbb{I}(\pi(k)=i)$用于检查各频点的使用是否过度集中。对两个用户序列$\boldsymbol{\pi}^{(u)}$和$\boldsymbol{\pi}^{(v)}$，在相同时间索引下的碰撞数可定义为
-\begin{equation}
- C_{uv}=\sum_{k=0}^{L-1}\mathbb{I}\!\left(\pi^{(u)}(k)=\pi^{(v)}(k)\right),
-\label{eq:chap03_collision_count}
-\end{equation}
-其中$\mathbb{I}(\cdot)$为示性函数。单链路设计至少应检查$d_{\min}$、$C_i$、序列周期和重复图案；若系统扩展到多收发对，则还应在规定的相对时延和观测窗口内统计$C_{uv}$。这些指标是序列筛选条件，不能直接替代误码率、同步成功率或完整帧成功率测试。
-
-在工程约束下，序列选择可表述为一个有限候选集上的筛选问题：先剔除超出通带或频率合成器分辨率的频点，再剔除$d_{\min}$小于设计裕量的候选图案，随后检查频点占用均衡性、周期和同步可重构性。只有通过上述检查的序列才进入第3章后续信道仿真，并在第5章固件中使用相同的参数和初始状态。
-
-\subsection{快跳频与慢跳频的组织方式}
-
-跳频速率由一跳驻留时间与MFSK符号周期的相对关系决定。设跳频驻留时间为$T_h$、MFSK符号周期为$T_s$，则跳频速率和符号速率分别为$R_h=1/T_h$和$R_s=1/T_s$。当$T_h<T_s$时，一个MFSK符号可能跨越多个跳频驻留区间，属于快跳频；当$T_h\geq T_s$时，一跳可以容纳一个或多个完整MFSK符号，属于慢跳频。该划分描述的是频率切换与符号时序的关系，并不直接等同于抗干扰性能或解调性能的优劣。
+可用频点确定后，还需规定相邻频点切换的时间尺度，即跳频驻留时间$T_h$与MFSK符号周期$T_s$的相对关系。设跳频速率和符号速率分别为$R_h=1/T_h$和$R_s=1/T_s$。当$T_h<T_s$时，一个MFSK符号可能跨越多个跳频驻留区间，属于快跳频；当$T_h\geq T_s$时，一跳可以容纳一个或多个完整MFSK符号，属于慢跳频。该划分描述的是频率切换与符号时序的关系，并不直接等同于抗干扰性能或解调性能的优劣。
 
 图~\ref{fig:fast_slow_hopping}以时间—频率网格对两种组织方式作示意。纵向每细格对应一个MFSK子频点，加粗横线划分$N_f$个跳频驻留频带；横向每细列对应$T_s/2$；黑色标记表示该时间段内发送信号占用的频率。子图(a)取$T_h=T_s/2$，一个MFSK符号占据相邻两列，两列分处不同驻留频带而子频点索引相同，即频带切换发生在符号内部；子图(b)取$T_h=2T_s$，一个MFSK符号仅占一跳的一半，同一驻留频带内连续两个符号以不同子频点索引发送，频带切换落在符号边界上。
-
-快跳频能够在单个信息符号的传输过程中引入更多频率变化，但接收端需要同时维护跳频时序、符号边界和频点切换状态。对于本系统，如图~\ref{fig:fast_slow_hopping}(a)所示，若频率切换发生在符号内部，则切换瞬态可能污染符号两端的有效观测区间，并增加嵌入式缓存和同步控制的复杂度。本文因此采用图~\ref{fig:fast_slow_hopping}(b)所示的慢跳频组织方式，使每个跳频驻留区间至少覆盖一个完整MFSK符号；在该结构下，跳频序列负责确定驻留区间的基准载频，MFSK映射负责确定区间内的相对频率状态。这样可以将频点跟踪、符号能量积累和帧级校验按驻留区间分开处理，降低频率切换与符号判决之间的时序耦合。若实际配置在一跳内承载多个符号，还应在参数表中明确符号数及其边界。
 
 \begin{figure}[htbp]
   \centering
@@ -235,115 +194,386 @@
   \bicaption[fig:fast_slow_hopping]{}{快跳频与慢跳频的时间—频率图案示意}{Fig.}{Time--frequency patterns of fast and slow frequency hopping}
 \end{figure}
 
-\subsection{伪随机跳频序列与符号映射}
+快跳频能够在单个信息符号的传输过程中引入更多频率变化，但接收端需要同时维护跳频时序、符号边界和频点切换状态。对于本系统，如图~\ref{fig:fast_slow_hopping}(a)所示，若频率切换发生在符号内部，则切换瞬态可能污染符号两端的有效观测区间，并增加嵌入式缓存和同步控制的复杂度。本文因此采用图~\ref{fig:fast_slow_hopping}(b)所示的慢跳频组织方式，使每个跳频驻留区间至少覆盖一个完整MFSK符号；在该结构下，跳频序列负责确定驻留区间的基准载频，MFSK映射负责确定区间内的相对频率状态。这样可以将频点跟踪、符号能量积累和帧级校验按驻留区间分开处理，降低频率切换与符号判决之间的时序耦合。若实际配置在一跳内承载多个符号，还应在参数表中明确符号数及其边界。
 
-在候选序列中，本文采用确定性的伪随机状态机生成频点索引，以避免固定顺序造成明显的周期性频率占用。设伪随机序列发生器在第$k$个驻留区间的状态为$q_k$，则其状态更新和频点映射可抽象表示为
+综合上述关系，式~\eqref{eq:chap03_hopping_signal}中的$f_h(k)$由频点表与图案$\{\pi(k)\}$确定，$T_h$由快慢跳频组织方式确定，$m_k$由MFSK符号映射确定，三者共同构成后续序列设计与接收处理的参数基础。
+
+\section{跳频序列设计}[Frequency-Hopping Sequence Design]
+
+本文采用慢跳频组织方式，即一个跳频驻留区间内完成一个或多个完整MFSK符号。跳频序列采用基于$m$序列、非连续型L-G抽头模型和改进随机平移替代法构造的宽间隔跳频序列\cite{FengJianLiYiLeiGaiJinDeSuiJiPingYiTiDaiFaGouZaoDeKuanJianGeTiaoPinXuLie2013}。构造过程先由有限域上的$m$序列及非连续抽头产生候选频隙序列，再以改进随机平移替代法实施宽间隔处理，获得满足最小频率间隔要求的序列。该方法用于确定频点的跳变顺序，不替代本系统的频带规划、MFSK映射和帧同步设计。本文按照“频带约束—序列性质—状态生成—频点映射—同步实现”的顺序说明设计。系统接收通带为$9$--$13\,\mathrm{kHz}$，最终频点集合、驻留时间和采样配置仍应以第5章实际平台参数为准。
+
+\subsection{跳频序列的设计目标与评价指标}
+
+本文选用的构造方法通过宽间隔处理提高相邻跳变的最小间隔；原研究还分析了该方法的周期性、归一化汉明自相关与互相关、平衡性、频隙数和平均跳频间隔\cite{FengJianLiYiLeiGaiJinDeSuiJiPingYiTiDaiFaGouZaoDeKuanJianGeTiaoPinXuLie2013}。宽间隔有助于分散窄带干扰，但该研究也指出改进处理可能降低序列平衡性，因此不能仅凭最小间隔推断系统误码率或载波泄漏性能。本文面向单个释放器与甲板单元之间的单链路通信，重点检查最小跳变间隔、频点占用均衡性、序列周期和同步可重构性；多用户碰撞性能仅作为后续扩展的评价维度\cite{SongDongPoTiaoPinXuLieSheJiYanJiuXianZhuangYuWeiLaiFaZhan2024}。
+
+对于长度为$L$的序列$\boldsymbol{\pi}=(\pi(0),\ldots,\pi(L-1))$，定义相邻跳变的频率间隔为
 \begin{equation}
- q_{k+1}=G(q_k),\qquad
- \pi(k)=H(q_k)\bmod N_f ,
+ d_k=|f_{\pi(k+1)}-f_{\pi(k)}|,\qquad k=0,\ldots,L-2 .
+\label{eq:chap03_adjacent_spacing}
+\end{equation}
+序列的最小跳变间隔$d_{\min}=\min_k d_k$用于检查相邻驻留区间是否过于接近；频点占用统计$C_i=\sum_{k=0}^{L-1}\mathbb{I}(\pi(k)=i)$用于检查各频点的使用是否过度集中。对两个用户序列$\boldsymbol{\pi}^{(u)}$和$\boldsymbol{\pi}^{(v)}$，在相同时间索引下的碰撞数可定义为
+\begin{equation}
+ C_{uv}=\sum_{k=0}^{L-1}\mathbb{I}\!\left(\pi^{(u)}(k)=\pi^{(v)}(k)\right),
+\label{eq:chap03_collision_count}
+\end{equation}
+其中$\mathbb{I}(\cdot)$为示性函数。单链路设计至少应检查$d_{\min}$、$C_i$、序列周期和重复图案；若系统扩展到多收发对，则还应在规定的相对时延和观测窗口内统计$C_{uv}$。这些指标是序列筛选条件，不能直接替代误码率、同步成功率或完整帧成功率测试。
+
+在工程约束下，序列选择可表述为一个有限候选集上的筛选问题：先剔除超出通带或频率合成器分辨率的频点，再剔除$d_{\min}$小于设计裕量的候选图案，随后检查频点占用均衡性、周期和同步可重构性。只有通过上述检查的序列才进入第3章后续信道仿真，并在第5章固件中使用相同的参数和初始状态。
+
+\subsection{基于$m$序列的宽间隔序列生成与符号映射}
+
+设$n$级线性反馈移位寄存器生成周期为$q$的$m$序列，寄存器状态记为$(a_{n-1},\ldots,a_0)$。采用非连续型L-G抽头模型，从$n$级寄存器中选取$r$个非相邻抽头；以抽头选择向量$\boldsymbol{u}=(u_{r-1},\ldots,u_0)$标识一个候选用户，其有限域频隙序列可抽象写为
+\begin{equation}
+ s_{\boldsymbol{u}}(k)=\sum_{j=0}^{r-1}p^j\bigl(a_{\ell_j}(k)\oplus u_j\bigr),
 \label{eq:chap03_prn_hopping}
 \end{equation}
-其中$G(\cdot)$为确定性的状态更新函数，$H(\cdot)$为从状态中提取索引的映射函数。若采用线性反馈移位寄存器实现$G(\cdot)$，还应明确寄存器阶数、反馈抽头、移位方向和输出位；若采用查表方式，则应直接保存并校验完整序列。收发端必须预先约定相同的初始状态、反馈规则、输出位选择、频点映射和序列周期，才能在不传输完整跳频表的条件下重构相同图案。工程实现中应避免将零状态作为可能导致序列锁死的初始状态，并在装载配置时检查状态合法性。
+其中$p$为有限域$GF(p)$的特征，$\ell_j$为所选非连续抽头位置，$\oplus$表示模2加。随后对候选序列实施改进的随机平移替代宽间隔处理：比较原序列相邻元素与当前处理结果的间隔；间隔已满足设计门限$d$时保留原值，未满足时根据原文给出的分支规则及可复现的替代量进行平移替换\cite{FengJianLiYiLeiGaiJinDeSuiJiPingYiTiDaiFaGouZaoDeKuanJianGeTiaoPinXuLie2013}。替代量、门限$d$和初始序列必须在收发双方一致，实际实现时应按原文算法固定其生成规则，避免采用未约定的运行时随机数。
 
-序列生成后，按照式~\eqref{eq:chap03_min_frequency_spacing}和式~\eqref{eq:chap03_collision_count}逐项检查最小频率间隔、频点占用、周期内重复模式及候选用户间碰撞。若映射采用简单的模$N_f$运算而$N_f$与状态空间不匹配，可能产生频点占用偏置；此时应采用无偏映射或在离线生成阶段固定一张经过统计检查的序列表。该检查应在仿真、固件编译和实验配置中保持一致，避免发送端和接收端因索引约定不同而出现持续失配。
+宽间隔处理后的有限域符号记为$\tilde{s}_{\boldsymbol{u}}(k)$，再依据预先配置的频点表映射至本系统工作频率：
+\begin{equation}
+ \pi(k)=\mathcal{M}\!\left(\tilde{s}_{\boldsymbol{u}}(k)\right),\qquad
+ f_h(k)=f_{\pi(k)} ,
+\end{equation}
+其中$\mathcal{M}(\cdot)$为符号到可用频点索引的确定性映射。生成时应核验序列周期、相邻跳变最小间隔、频点占用均衡性及所有频点均处于接收通带内；宽间隔构造可能影响平衡性，故不能以模$N_f$运算替代针对具体频点表的统计检查。收发端须约定寄存器阶数与反馈多项式、非连续抽头位置、初始状态、宽间隔门限及替代规则、频点映射和序列周期，才能独立重构相同图案。若以查表方式部署，则应存储并校验完整周期序列。
+
+序列生成后，按照式~\eqref{eq:chap03_min_frequency_spacing}和式~\eqref{eq:chap03_collision_count}检查最小频率间隔、频点占用、周期内重复模式及候选用户间碰撞。将有限域频隙映射到实际频点时，需针对映射后的序列重新统计间隔与频点占用，避免映射压缩或频点分布不均破坏宽间隔性质。该检查应在仿真、固件编译和实验配置中保持一致，避免发送端和接收端因索引约定不同而出现持续失配。
 
 在每个驻留区间内，MFSK符号索引$m_k\in\{0,1,\ldots,M-1\}$由待发送比特分组映射得到，实际发送频率为
 \begin{equation}
  f_k=f_h(k)+m_k\Delta f ,
 \label{eq:chap03_symbol_mapping}
 \end{equation}
-其中$\Delta f$为MFSK子频点间隔。该映射将“跨驻留区间的基准频率变化”和“驻留区间内的信息频移”分离：接收端先依据同步后的$\pi(k)$确定当前跳频基准，再在相对频率集合上进行非相干能量判决。伪随机序列并不能单独消除干扰或频偏，其作用是分散频率占用并为收发端提供可复现的频点先验；抗干扰收益仍需在统一信道和干扰条件下通过误码率及完整帧成功率验证。
+其中$\Delta f$为MFSK子频点间隔。该映射将“跨驻留区间的基准频率变化”和“驻留区间内的信息频移”分离：接收端先依据同步后的$\pi(k)$确定当前跳频基准，再在相对频率集合上进行非相干能量判决。宽间隔序列提供频率占用分散和可复现的频点先验，但不能单独消除干扰或频偏；抗干扰收益仍需在统一信道和干扰条件下通过误码率及完整帧成功率验证。
 
 \subsection{通信帧结构}
 
-通信帧由线性调频同步头、跳频同步字段、地址、命令或状态、数据和校验字段组成。线性调频同步头采用已知的线性调频（linear frequency modulation, LFM）信号，其瞬时频率随时间连续变化，可表示为
+通信帧由重复线性调频同步头、跳频同步字段、地址、命令或状态、数据和校验字段组成。线性调频同步头采用已知的线性调频（linear frequency modulation, LFM）信号，其瞬时频率随时间连续变化，可表示为
 \begin{equation}
  p(t)=A_p\cos\left(2\pi\left(f_{p,0}t+\frac{\mu}{2}t^2\right)+\phi_p\right),
 \quad 0\leq t<T_p ,
 \label{eq:chap03_lfm_preamble}
 \end{equation}
-其中$A_p$为同步头幅度，$f_{p,0}$为起始频率，$\mu$为调频率，$T_p$为同步头持续时间。接收端利用本地LFM参考信号进行匹配相关或去斜处理，在背景噪声和多径条件下获得时间聚焦峰，据此完成信号检测和帧起点的粗定位。与直接在多个跳频点上逐点搜索相比，LFM同步头提供了独立于后续跳频图案的时间参考，便于先完成帧捕获，再启动伪随机跳频序列。
+其中$A_p$为同步头幅度，$f_{p,0}$为起始频率，$\mu$为调频率，$T_p$为单个LFM的持续时间。接收端利用本地LFM参考信号进行匹配相关或去斜处理，在背景噪声和多径条件下获得时间聚焦峰，据此完成信号检测和帧起点的粗定位。与直接在多个跳频点上逐点搜索相比，LFM同步头提供了独立于后续跳频图案的时间参考，便于先完成帧捕获，再启动伪随机跳频序列。
 
-同步头之后设置已知跳频同步字段，用于确认跳频序列的初始状态、驻留区间边界或帧计数。地址字段用于设备识别，命令字段用于业务控制，数据字段承载状态或测量信息，校验字段用于阻止错误帧触发执行动作。接收端的处理顺序为“LFM检测与粗同步—跳频同步字段确认—伪随机序列重构—MFSK符号解调—帧校验”。对于释放命令，必须在地址匹配、帧校验和控制互锁均满足后执行，通信成功与机械动作成功应分别统计。同步头的起止频率、持续时间、相关判决门限以及与后续跳频字段的保护间隔，应在仿真参数和第5章固件配置中给出；当前材料未提供这些定值，不能预先声称其同步增益。
+同步头按$R$次重复发送，$R$由水下机的唤醒时延确定，使接收机在任意监听时刻醒来都能捕获到完整前导，具体取值见3.3.1节式~\eqref{eq:chap03_repeat_count}。同步头之后设置已知跳频同步字段，用于确认跳频序列的初始状态、驻留区间边界或帧计数。地址字段用于设备识别，命令字段用于业务控制，数据字段承载状态或测量信息，校验字段用于阻止错误帧触发执行动作。接收端的处理顺序为“重复LFM检测与定时—跳频同步字段确认—伪随机序列重构—MFSK符号解调—帧校验”。对于释放命令，必须在地址匹配、帧校验和控制互锁均满足后执行，通信成功与机械动作成功应分别统计。同步头的起止频率、持续时间、相关判决门限以及与后续跳频字段的保护间隔，应在仿真参数和第5章固件配置中给出；当前材料未提供这些定值，不能预先声称其同步增益。
 
 \section{同步与非相干解调}[Synchronization and Noncoherent Demodulation]
 
 \subsection{信号检测与同步}
 
-接收序列为$r(n)$时，长度为$N$的滑动能量定义为
+\noindent\textbf{同步任务与不确定度分解}\quad 本文的同步需要同时确定三类量：帧起点相对本地时基的偏差$\Delta\tau$、跳频图案的相位（即当前时隙在序列中的索引$k_0$）以及收发时钟的相对漂移$\varepsilon$。其中图案相位必须先行确定：由式~\eqref{eq:chap03_symbol_mapping}，第$k$跳内的MFSK子频点为
 \begin{equation}
- E(n)=\sum_{i=0}^{N-1}|r(n+i)|^2 .
+ f_i(k)=f_h(k)+i\Delta f,\qquad i=0,1,\ldots,M-1,
+\label{eq:chap03_branch_freq}
+\end{equation}
+即3.3.2节Notch支路的参考频率随$f_h(k)$逐跳重配。图~\ref{fig:chap03_four_channel_notch}中以频点表取$9$、$10$、$11$、$12\,\mathrm{kHz}$、$M=4$为例标注了某跳下的支路频率。若图案相位未知，各支路无法配置到当前跳的正确频点，非相干能量判决也无从进行。
+
+反过来，由于本文采用慢跳频组织方式，跳边界落在符号边界上，只要帧起点准确，后续各跳边界均可由一个时隙网格推出，无需逐跳重新捕获。据此把同步组织为“重复LFM前导定时—跳频图案相位确认—帧内网格保持”三个环节，其处理流程如图~\ref{fig:chap03_sync_flow}所示。
+
+\begin{figure}[htbp]
+ \centering
+ \begin{tikzpicture}[x=1cm,y=1cm]
+  \input{figures/sync_flow_structure.tex}
+ \end{tikzpicture}
+ \caption[同步处理流程]{同步处理流程。实线为主链，虚线为失败分支，失败一律返回低占空比监听，避免在错误时间基准上继续解调。}
+ \label{fig:chap03_sync_flow}
+\end{figure}
+
+\noindent\textbf{重复LFM前导与唤醒余量}\quad 帧结构中的同步头采用重复线性调频信号。单个LFM的表达式已由式~\eqref{eq:chap03_lfm_preamble}给出，其匹配滤波输出的时间分辨率与时宽带宽积分别为
+\begin{equation}
+ \tau_c\approx\frac{1}{B_p},\qquad D=B_pT_p,\qquad G_p=10\lg D,
+\label{eq:chap03_lfm_resolution}
+\end{equation}
+其中$B_p$为调频带宽，$T_p$为单个LFM的持续时间，$G_p$（单位dB）为脉冲压缩处理增益。时间分辨率决定定时精度的下限，处理增益决定低信噪比下的峰可检测性，二者共同约束$B_p$与$T_p$的取值：$B_p$越大定时越精细，但要求前端带宽与采样率相应提高；$T_p$越长处理增益越高，但前导占用时间增加。
+
+采用重复结构而非单个LFM，原因在于水下机的休眠—唤醒工作方式。接收机在每个监听周期内只开启短时接收窗口，无法保证在帧到达的瞬间恰好处于可处理状态，因此前导总长度必须覆盖唤醒与检测的不确定区间：
+\begin{equation}
+ R=\left\lceil\frac{T_{\mathrm{wake}}+T_{\mathrm{det}}+T_g}{T_p+T_{gp}}\right\rceil,
+\label{eq:chap03_repeat_count}
+\end{equation}
+其中$T_{\mathrm{wake}}$为从休眠到可处理的唤醒时延，$T_{\mathrm{det}}$为检测环节所需的最短观测长度，$T_{gp}$为相邻LFM之间的保护间隔。按此取$R$时，接收机在任意时刻醒来都能在帧内捕获到至少一个完整LFM。捕获到第$r$个（$1\leq r\leq R$）峰后，由剩余重复数反推帧起点，因此重复结构在不增加单次相关运算量的前提下降低了漏检前导的概率。重复次数由唤醒时延决定而非由信噪比决定，这一点与前导仅用于提高处理增益的常规做法不同。前导、同步字段与数据段的时间关系如图~\ref{fig:chap03_frame_preamble_timing}所示。
+
+\begin{figure}[htbp]
+ \centering
+ \begin{tikzpicture}[x=1cm,y=1cm]
+  \input{figures/frame_preamble_timing.tex}
+ \end{tikzpicture}
+ \caption[前导、同步字段与数据段的时间关系]{前导、同步字段与数据段的时间关系。前导重复$R$次以覆盖唤醒不确定区间，捕获任一LFM峰即可反推帧起点；同步字段用于确认跳频图案相位。}
+ \label{fig:chap03_frame_preamble_timing}
+\end{figure}
+
+\noindent\textbf{二级门限与首达径判决}\quad 检测采用滑动能量与匹配滤波两级门限。第一级沿用滑动能量，接收序列为$r(n)$时，长度为$N$的滑动能量定义为
+\begin{equation}
+ E(n)=\sum_{i=0}^{N-1}|r(n+i)|^2 ,
 \label{eq:chap03_energy}
 \end{equation}
-当$E(n)$超过依据噪声估计得到的门限时，系统进入候选信号区间。随后利用已知前导$p(n)$计算相关量
+将其与由噪声功率估计得到的门限$\gamma_E\sigma_n^2$比较，仅用于把后续运算限制在候选区间内，以降低低占空比监听的平均算力。
+
+第二级对候选区间内的数据与本地LFM参考$p(n)$求相关，相关量为
 \begin{equation}
  \Lambda(\tau)=\sum_{n=0}^{N_p-1}r(n+\tau)p^*(n),
 \label{eq:chap03_corr}
 \end{equation}
-并结合相关峰、连续能量和跳频图案一致性确定帧起点。同步输出包括帧起始位置、跳时隙边界和后续频点检测的时间参考。同步成功率和同步误差必须按预先给出的判据统计。
-
-\subsection{并行自适应Notch滤波器}
-
-对第$m$个候选频点，构造正交参考信号
+并归一化为
 \begin{equation}
- x_{c,m}(k)=\cos(\omega_m k),\qquad
- x_{s,m}(k)=\sin(\omega_m k).
+ \rho(\tau)=\frac{|\Lambda(\tau)|^2}{\sigma_n^2\sum_{n=0}^{N_p-1}|p(n)|^2},
+\label{eq:chap03_norm_corr}
 \end{equation}
-并行支路输出和公共误差分别为
+使判决门限$\gamma_\Lambda$与输入幅度无关，只由虚警概率要求确定；否则前端可变增益分档会改变同一门限的等效值，导致不同档位下的虚警率不一致。
+
+多径条件下最大相关峰可能对应后续反射路径，因此不取全局最大值作为帧起点，而按首达径判据选取
 \begin{equation}
- y(k)=\sum_{m=1}^{N_f}\left[u_{c,m}(k)x_{c,m}(k)+u_{s,m}(k)x_{s,m}(k)\right],
-\qquad e(k)=d(k)-y(k).
-\label{eq:chap03_notch}
+ \hat\tau_p=\min\left\{\tau:\rho(\tau)>\gamma_\Lambda,\ \rho(\tau)\ge\rho(\tau'),\ \forall\,\tau'\in(\tau-T_g,\tau)\right\},
+\label{eq:chap03_first_arrival}
 \end{equation}
-采用LMS规则更新权值：
+即在超过门限的峰中取最早者，并要求其前方$T_g$区间内不存在更强的峰。该判据与第4章测距所用的首达径检测一致，$\hat\tau_p$同时作为帧起点估计与测距时间戳$t_2$，一套相关器服务两项任务。保护间隔$T_g$因此承担两个作用：限制多径引起的峰间误选，以及吸收残余定时误差。
+
+\noindent\textbf{跳频图案相位确认}\quad LFM峰位给出的是时间参考，尚未确定跳频图案的相位。若对全部图案做滑动搜索，运算量为$O(N_fL)$（$N_f$为频点数，$L$为序列周期），在嵌入式平台上代价过高。本文利用收发双方共享的绝对时基压缩搜索范围：以实时时钟（real-time clock, RTC）给出的到达时刻计算跳索引初值
 \begin{equation}
-\begin{aligned}
-u_{c,m}(k+1)&=u_{c,m}(k)+\mu e(k)x_{c,m}(k),\\
-u_{s,m}(k+1)&=u_{s,m}(k)+\mu e(k)x_{s,m}(k).
-\end{aligned}
-\label{eq:chap03_lms}
+ k_{\mathrm{rtc}}=\left\lfloor\frac{t_2-t_{\mathrm{ref}}}{T_h}\right\rfloor,\qquad
+ \mathcal{K}=\{k_{\mathrm{rtc}}-1,\,k_{\mathrm{rtc}},\,k_{\mathrm{rtc}}+1\},
+\label{eq:chap03_rtc_window}
 \end{equation}
-在一个跳时隙内，以各支路估计分量的能量
+其中$t_{\mathrm{ref}}$为收发双方约定的时基零点。搜索窗取$\pm1$跳，其宽度由RTC精度与最大传播时延不确定度决定；只要二者之和小于一跳，正确相位必在窗内。
+
+窗内相位由同步字段判决。同步字段包含$N_s$跳已知图案，接收端对每个候选相位$k\in\mathcal{K}$按该跳应有的子频点配置支路，以各支路包络在跳内的平均值$\bar H_i(k)$（式~\eqref{eq:chap03_notch_envelope}）为观测量，累加后取最大：
 \begin{equation}
- Z_m=\sum_{k=k_0}^{k_0+N_h-1}|y_m(k)|^2
-\label{eq:chap03_energy_metric}
+ \hat k_0=\arg\max_{k\in\mathcal{K}}\sum_{j=0}^{N_s-1}\bar H_{\pi(k+j)}(k+j).
+\label{eq:chap03_pattern_decision}
 \end{equation}
-作为候选频点度量，选择最大且超过判决门限的支路完成非相干判决。实际固件若采用残差、幅值或其他统计量，应以固件输出重新定义$Z_m$，不能将不同输出混用。
+把图案确认放在LFM之后而非与之并行，是因为LFM提供了与图案无关的时间基准，使候选相位只需在$\mathcal{K}$内枚举；若在无时间基准的条件下搜索图案，则需同时枚举时隙边界与相位，搜索空间退化为二者的乘积。
 
-\section{通信仿真条件与评价指标}[Communication Simulation Conditions and Metrics]
+\noindent\textbf{时隙网格生成与帧内保持}\quad 图案相位确定后，同步退化为网格保持。第$k$跳的起始时刻为
+\begin{equation}
+ t_k=\hat\tau+(k-\hat k_0)T_h,
+\label{eq:chap03_slot_grid}
+\end{equation}
+其中$\hat\tau$为经首达径判据修正后的帧起点。帧内不再闭环跟踪，只在每个跳边界按式~\eqref{eq:chap03_branch_freq}重配支路参考频率并启动能量积累。开环保持成立的条件是
+\begin{equation}
+ |\Delta\hat\tau|+\varepsilon T_{\mathrm{frame}}\le\frac{T_g}{2},
+\label{eq:chap03_hold_condition}
+\end{equation}
+其中$\varepsilon$为收发时钟的相对频差，$T_{\mathrm{frame}}$为帧长。式~\eqref{eq:chap03_hold_condition}说明帧长不能任意加长：在给定时钟精度与保护间隔下，它给出一个上限。若该条件无法满足，应在帧内增设第二个LFM或缩短帧长，而不宜依赖频繁的图案重捕。
 
-仿真链路由帧生成、SFH-MFSK调制、信道、同步、Notch支路检测、符号判决和帧校验组成。信道场景至少包括AWGN、多径、多普勒和窄带干扰；每个场景均应给出信噪比、路径幅度与时延、频偏、干扰功率和重复次数。若参数来自假设而非实测，应明确标注为模型参数。
+对匀速相对运动，还可由前后两个LFM的峰位差估计径向速度并作一阶补偿：
+\begin{equation}
+ \hat v=c\,\frac{\Delta\hat\tau_{12}}{T_{12}},\qquad
+ \hat\tau_{\mathrm{corr}}(t)=\hat\tau+\frac{\hat v}{c}\,(t-\hat\tau),
+\label{eq:chap03_doppler_scale}
+\end{equation}
+其中$\Delta\hat\tau_{12}$为两个LFM峰位间隔相对标称值的偏差，$T_{12}$为两峰的标称间隔，$c$为声速。式~\eqref{eq:chap03_doppler_scale}补偿的是时缩效应而非载波频偏：非相干MFSK不要求载波相位同步，但时缩会使后段符号偏离网格，故须按时间比例修正。
 
-通信性能采用以下指标：
-\begin{enumerate}
- \item 误码率：判决比特错误数与发送比特总数之比；
- \item 同步成功率：满足帧起点误差和跳时隙定位误差判据的试验比例；
- \item 完整帧通信成功率：正确同步、解调并通过校验的帧数与总帧数之比；
- \item 抗干扰性能：在相同信号功率和统计口径下，比较不同干扰条件的误码率和帧成功率；
- \item 处理代价：统计每跳运算量、缓存量和单帧处理时间，为嵌入式实现提供约束。
-\end{enumerate}
+\noindent\textbf{同步输出与评价指标}\quad 综上，同步模块输出四元组$(\hat\tau,\hat k_0,\hat v,\text{标志位})$。其中标志位用于区分“同步成功”“相关峰未过门限”与“图案确认失败”三种状态，使上层协议能够区分“无信号”与“有信号但同步失败”，并据此决定重发或转回休眠。
 
-\section{仿真结果与分析}[Simulation Results and Analysis]
-
-本节应根据实际仿真输出填写曲线和表格。当前材料未提供可复核的完整仿真数据，因此不将预期趋势写成实验结论。建议按以下顺序报告结果：首先用AWGN场景检查解调链路和理论非相干MFSK结果的一致性；其次分别加入多径和多普勒，分析同步与频点能量泄漏；最后加入窄带干扰，比较跳频图案和帧级校验对完整帧成功率的影响。
+同步性能采用以下指标：同步成功率，即帧起点误差与跳边界误差均落在判据内的试验比例；虚警概率$P_{fa}$，即无信号时误报帧的比例；定时误差均方根值，以符号周期$T_s$归一；平均捕获时间与唤醒期间的捕获功耗。上述指标与3.4节的误码率、完整帧成功率共同构成通信性能的统计口径，其具体数值须由仿真与平台实测给出。同步参数配置如表~\ref{tab:chap03_sync_params}所示。
 
 \begin{table}[htbp]
- \bicaption[tab:chap03_params]{}{通信仿真参数}{Tab.}{Communication simulation parameters}
+ \bicaption[tab:chap03_sync_params]{}{同步参数配置}{Tab.}{Synchronization parameter configuration}
  \vspace{0.5em}\centering\wuhao
- \begin{tabular}{ccc}
+ \begin{tabular}{cccc}
  \toprule[1.5pt]
- 参数 & 符号 & 取值\\
+ 参数 & 符号 & 取值或约束 & 依据 \\
  \midrule[1pt]
- 可用频带 & $B$ & 待填写\\
- MFSK进制数 & $M$ & 待填写\\
- 跳频点数 & $N_f$ & 待填写\\
- 跳频驻留时间 & $T_h$ & 待填写\\
- 同步门限 & $\gamma$ & 待填写\\
- 信噪比范围 & $\mathrm{SNR}$ & 待填写\\
+ LFM时宽 & $T_p$ & 待填写 & 与$B_p$共同决定处理增益 \\
+ LFM带宽 & $B_p$ & 待填写 & 限于$9$--$13\,\mathrm{kHz}$通带 \\
+ 前导重复次数 & $R$ & 式~\eqref{eq:chap03_repeat_count} & 由唤醒时延决定 \\
+ 同步字段跳数 & $N_s$ & 待填写 & 兼顾虚警率与开销 \\
+ 能量门限系数 & $\gamma_E$ & 待填写 & 按噪声功率自适应 \\
+ 相关门限系数 & $\gamma_\Lambda$ & 待填写 & 按$P_{fa}$要求设定 \\
+ 保护间隔 & $T_g$ & $\ge 0.1T_s$ & 吸收多径与定时误差 \\
+ 时钟相对频差 & $\varepsilon$ & 待填写 & 约束帧长上限 \\
+ 图案搜索窗 & $\mathcal{K}$ & $\pm1$跳 & 由RTC精度决定 \\
  \bottomrule[1.5pt]
  \end{tabular}
 \end{table}
 
+\FloatBarrier
+
+\subsection{并行自适应Notch滤波器}
+
+\noindent\textbf{结构选择与支路频率配置}\quad 非相干MFSK的判决只需回答“当前时隙内信号落在哪一个候选频点上”，并不需要恢复完整的频谱。若对每个时隙先作$N_h$点频谱变换再取峰，则在$N_h$较大时运算量与缓存都偏高，且FFT的频率栅格与实际候选频点往往不重合，需要额外插值。本文改用并行自适应Notch滤波器组：为每个候选频点设置一条自适应支路，各支路独立估计输入在该频点附近的窄带分量，再由支路包络完成判决。由于候选频点数$M$远小于时隙内采样点数，该结构把“宽带频谱分析”置换为“$M$个已知频点的窄带估计”。
+
+每条支路由同相、正交参考信号与一对自适应权值构成，四条支路经求和后与输入相减，得到全系统共享的残差。四路的前向通路彼此独立，仅通过公共残差相互耦合，这正是“共享残差、独立权值”的由来。支路参考频率不是固定值：由式~\eqref{eq:chap03_branch_freq}，第$k$跳的参考频率为当前跳频基准与本跳MFSK偏移的组合，在每个跳边界按图案相位$\hat k_0$重配。文中以频点表取$f_1=9\,\mathrm{kHz}$、$f_2=10\,\mathrm{kHz}$、$f_3=11\,\mathrm{kHz}$、$f_4=12\,\mathrm{kHz}$且$M=4$为例说明，此时某一跳的四条支路即对应该跳的四个子频点。图~\ref{fig:chap03_four_channel_notch}给出了四路估计、公共残差、重构输出及权值反馈关系。
+
+\begin{figure}[htbp]
+ \centering
+ \begin{tikzpicture}[x=1cm,y=1cm]
+  \input{figures/four_channel_adaptive_notch_structure.tex}
+ \end{tikzpicture}
+ \caption[四通道并行自适应Notch滤波器结构]{四路正交参考信号经各自权值加权并在本支路求和后，沿收集总线合成为$y(k)$；$y(k)$在分支点分两路，一路送入求差节点与输入$d(k)$相减得到公共残差$e(k)$，另一路作为重构输出与$e(k)$平行引出；$e(k)$经LMS产生八路权值更新量，由左侧主干分行送入各权值。}
+ \label{fig:chap03_four_channel_notch}
+\end{figure}
+
+\noindent\textbf{信号模型与权值更新}\quad 设输入离散信号为$d(k)$，采样率为$f_s$，第$i$路的参考角频率为$\omega_i=2\pi f_i/f_s$。各路使用如下同相和正交参考信号：
+\begin{equation}
+x_{c,i}(k)=\cos(\omega_i k),\qquad
+x_{s,i}(k)=\sin(\omega_i k),\qquad i=1,2,3,4.
+\label{eq:chap03_notch_references}
+\end{equation}
+两组参考不必逐点调用三角函数，可用递推振荡器生成，每条支路只需保存两组旋转系数，代价为每采样点4次乘加。第$i$路的估计分量、四路合成的重构信号及公共残差分别为
+\begin{equation}
+y_i(k)=u_{c,i}(k)x_{c,i}(k)+u_{s,i}(k)x_{s,i}(k),\quad
+y(k)=\sum_{i=1}^{4}y_i(k),\quad e(k)=d(k)-y(k).
+\label{eq:chap03_notch}
+\end{equation}
+其中$y_i(k)$是第$i$个候选频率上的分量估计，$y(k)$为四路分量的合成，$e(k)$是扣除这些分量后的剩余。二者在本级中的角色不同：$y(k)$是Notch重构后的有效信号，作为本级输出向右引出；$e(k)$反映尚未被四条支路解释的部分，只用于驱动权值更新。四路共享该残差，但各自保留独立的正交权值。
+
+权值按LMS准则沿残差下降方向更新：
+\begin{equation}
+\begin{aligned}
+u_{c,i}(k+1)&=u_{c,i}(k)+\mu e(k)x_{c,i}(k),\\
+u_{s,i}(k+1)&=u_{s,i}(k)+\mu e(k)x_{s,i}(k),\qquad i=1,2,3,4.
+\end{aligned}
+\label{eq:chap03_lms}
+\end{equation}
+与候选频率相符的输入分量在对应支路上形成较大的正交系数估计，四路并行处理使接收端能在同一个符号时隙内比较多个候选频点，且不需要载波相位同步；支路间若存在残余频偏，则表现为权值的缓慢旋转而不是能量判决的失败，这是正交支路相对单路带通滤波的主要优势。
+
+步长$\mu$不能取固定常数。接收前端含可变增益分档，输入功率变化会同时改变参考信号与残差的尺度，固定步长在强信号下易失稳、弱信号下收敛过慢。为此采用归一化步长
+\begin{equation}
+\mu_i(k)=\frac{\tilde\mu}{P_i(k)+\epsilon},\qquad
+P_i(k)=\lambda P_i(k-1)+(1-\lambda)\left[x_{c,i}^{2}(k)+x_{s,i}^{2}(k)\right],
+\label{eq:chap03_lms_norm}
+\end{equation}
+其中$\tilde\mu$为归一化步长，$0<\tilde\mu<2$是保证迭代不发散的稳定条件，$\lambda$为功率遗忘因子，$\epsilon$用于避免除零。归一化后收敛时间常数约为$1/(2\tilde\mu)$个采样点，需满足
+\begin{equation}
+\frac{1}{2\tilde\mu}\ll N_h,
+\label{eq:chap03_notch_convergence}
+\end{equation}
+使权值在一个跳时隙内基本收敛，否则式~\eqref{eq:chap03_notch_envelope}的包络平均会掺入暂态过程，削弱支路间的幅值差异。由于相邻跳的支路频率仅整体搬移，权值可跨跳保持并只作微调，无需每跳从零重新收敛；这一处理与慢跳频的时隙组织方式相对应，也决定了$\tilde\mu$的下界不能过小。
+
+\noindent\textbf{包络估计与符号判决}\quad 由于$d(k)$未知，支路无法直接输出幅度，本文以每路正交权值的合成幅值作为包络估计：
+\begin{equation}
+H_i(k)=\sqrt{u_{c,i}^{2}(k)+u_{s,i}^{2}(k)},\qquad
+\bar H_i=\frac{1}{N_h}\sum_{k=k_0}^{k_0+N_h-1}H_i(k),
+\label{eq:chap03_notch_envelope}
+\end{equation}
+其中$N_h$为时隙内参与统计的样本数，$k_0$为该时隙的起始样点序号。$H_i(k)$的物理含义是该支路对$f_i$处正弦分量的等效增益，权值收敛后与输入在该频点的幅值成正比。符号判决采用幅值门限与最大支路联合判据：
+\begin{equation}
+i^{*}=\arg\max_i\bar H_i,\qquad
+\begin{cases}
+i^{*}, & \max_i\bar H_i>\gamma_H,\\
+\text{未检出}, & \max_i\bar H_i\le\gamma_H,
+\end{cases}
+\label{eq:chap03_notch_decision}
+\end{equation}
+其中$\gamma_H$为判决门限。两级判据的分工是：最大支路判据在四个候选中给出相对最优的频点索引，门限判据则排除“四路都很弱”的情形，避免在噪声区间把偶然的最大值判成有效符号。$\gamma_H$应按噪声功率与虚警率要求整定，其取值与3.3.1节的相关门限$\gamma_\Lambda$属于不同环节，不可相互替代。
+
+\noindent\textbf{运算代价与参数约束}\quad 计入参考递推、支路加权、权值更新与功率递推，单条支路每采样点约需10次实数乘加（参考递推4次、加权求和2次、权值更新2次、功率递推2次），四路共约40次，量级为$O(M)$。以STM32H750的单周期乘加能力计，每跳运算量与时隙长度$N_h$成线性关系，而完整FFT为$O(N_h\log_2 N_h)$，在$N_h$较大时本结构更省。存储方面只需$M$组权值、$M$组参考系数与$M$个功率估计，不必缓存整段时隙数据，适合在中断中流式处理。相应地，三处参数需要在仿真与固件间保持一致：归一化步长$\tilde\mu$受式~\eqref{eq:chap03_notch_convergence}约束，判决门限$\gamma_H$按虚警率整定，统计长度$N_h$需同时满足收敛要求与跳时隙边界对齐。若支路频率随跳重配而$N_h$较大，应在跳边界重置功率估计$P_i$，避免上一跳的功率值影响新频点下的步长。
+
+\section{通信仿真条件与评价指标}[Communication Simulation Conditions and Metrics]
+
+\noindent\textbf{仿真链路与信号流程}\quad 通信仿真按图~\ref{fig:chap03_sim_chain}的链路组织：发送侧由帧生成、SFH-MFSK调制与跳频混频构成，输出$s(t)$；信道模型按“多径—多普勒时缩—噪声与干扰”的顺序依次作用，输出$r(t)$；接收侧由接收前端、同步、Notch解调和判决与帧校验构成，最后将判决比特与发送比特真值一并送入指标统计。链路上有三处接口量需在仿真中显式传递，即波形$s(t)$与$r(t)$、同步输出$(\hat\tau,\hat k_0)$以及解调输出的符号估计$\hat m_k$。把接口量显式化，是为了使同步环节按3.3.1节的实际流程串行执行，而不简化为“已知帧起点与图案”的理想条件；否则同步误差对解调的影响无法在结果中体现。与之对应，仿真只在两处作“估计量—真值”比对：一处在指标统计中比对判决比特与发送比特，得到误码率；另一处在同步环节内比对$\hat\tau$、$\hat k_0$与真值，得到同步成功率。二者不可合并统计。
+
+\begin{figure}[htbp]
+ \centering
+ \begin{tikzpicture}[x=1cm,y=1cm]
+  \input{figures/sim_chain_structure.tex}
+ \end{tikzpicture}
+ \caption[通信仿真链路结构]{通信仿真链路结构。发送链在上排自左向右，接收链在下排自右向左，信道模型以虚线框整体作用；点划线为发送比特真值，与判决比特在指标统计中比对；最左侧虚线为蒙特卡洛控制回流。}
+ \label{fig:chap03_sim_chain}
+\end{figure}
+
+\noindent\textbf{信道与干扰场景}\quad 场景按四种效应逐级叠加，每一级只在前一级基础上新增一种效应，以保证性能变化的归因唯一。S1为加性高斯白噪声信道，仅用于校准解调链路：其结果应与第2章式~\eqref{eq:mfsk_ser}给出的非相干MFSK理论曲线吻合，若出现系统性偏移，应先排查包络统计长度、判决门限与频点间隔，而不应急于叠加其他效应。S2在S1基础上加入多径，多径以路径数$L$、各路相对幅度与时延描述，最大时延扩展$\tau_{\max}$与相干带宽$B_c\approx1/\tau_{\max}$（式~\eqref{eq:coherence_bw}）共同决定频率选择性的强弱，该场景用于检验首达径判据在多峰条件下的选取是否正确。
+
+S3在S2基础上加入多普勒，以时缩因子$\eta=1+v/c$作用于时间轴。其时缩影响有两重：一是子频点整体偏移使正交性变差、能量向相邻支路泄漏，二是后段符号偏离时隙网格。式~\eqref{eq:chap03_doppler_scale}只按时间比例修正后者，不补偿载波相位，故本场景同时考察时缩补偿的残余误差。S4在S3基础上加入窄带或脉冲干扰，以干信比$\mathrm{JSR}=10\lg(P_J/P_s)$、干扰占用带宽比与干扰驻留概率描述，用于检验跳频图案的频率分集与帧级校验对完整帧成功率的作用。四种场景的输入信噪比统一取每符号能量与噪声功率谱密度之比$E_s/N_0$（dB），与式~\eqref{eq:mfsk_ser}的理论曲线保持同一口径。所有场景参数须标注来源：取自项目条件的记为实测参数，取自文献典型值的记为模型参数，尚未确定的记“待填写”；不得以模型参数冒充实测条件。
+
+\noindent\textbf{对比基线与消融设置}\quad 只给出一条误码率曲线不足以说明各环节的必要性。为此设置四组对照，每组只替换一个环节，其余条件与本文方案完全一致，从而把总体性能差异分解到同步、解调、前导与跳频四个环节。对照设置如表~\ref{tab:chap03_sim_baseline}所示。
+
+\begin{table}[htbp]
+ \bicaption[tab:chap03_sim_baseline]{}{通信仿真对比基线}{Tab.}{Baselines for communication simulation}
+ \vspace{0.5em}\centering\wuhao
+ \begin{tabularx}{\linewidth}{@{}c l l X@{}}
+ \toprule[1.5pt]
+ 编号 & 对照设置 & 替换环节 & 用途\\
+ \midrule[1pt]
+ B0 & 理想同步 & 同步 & 直接给定$\tau$与$k_0$，给出同步无误差时的性能上界\\
+ B1 & 频谱解调 & Notch支路 & 以$N_h$点FFT取峰替代并行Notch滤波器\\
+ B2 & 单次前导 & 前导重复 & 取$R=1$，考察唤醒不确定度未被覆盖时的漏检比例\\
+ B3 & 固定载频 & 跳频图案 & 取$N_f=1$，给出无频率分集时的性能下界\\
+ \bottomrule[1.5pt]
+ \end{tabularx}
+\end{table}
+
+对照之间的差异按同一指标逐项作差，例如$\Delta P_b^{(i)}=P_b^{(i)}-P_b^{(\mathrm S)}$，其中上标$(\mathrm S)$表示本文方案。B0与本文方案之差反映同步误差的代价，B1与之差反映解调结构的差异，B2与之差反映前导重复的作用，B3与之差反映跳频本身的净收益。需区分的是：B0给出的是性能上界，B3给出的是性能下界，二者分别回答“同步还有多少改进空间”与“跳频是否值得付出同步代价”，不能互相替代。若某组对照的差异小于式~\eqref{eq:chap03_confidence}给出的置信半径，应判为不显著，不得据此作优劣结论。
+
+\noindent\textbf{评价指标与统计口径}\quad 通信性能由误码率、同步成功率、完整帧成功率、抗干扰性能与处理代价五项指标描述。误码率以判决比特错误数与发送比特总数之比统计；为便于与第2章的理论曲线同图对照，也可由误符号率按Gray映射换算为
+\begin{equation}
+ P_b\approx\frac{M}{2(M-1)}P_s,\qquad M\ge 2,
+\label{eq:chap03_ber_ser}
+\end{equation}
+该式在错误主要落在相邻频点且采用Gray映射时成立，属近似关系，当$M=2$时退化为$P_b=P_s$；仿真结果仍以比特逐一比对为准，式~\eqref{eq:chap03_ber_ser}只用于理论对照，不用于替代统计。
+
+同步成功率按逐帧判据统计：
+\begin{equation}
+ I_{\mathrm{syn},j}=
+ \begin{cases}
+ 1, & |\hat\tau_j-\tau_j|\le T_s/2,\ \ \hat k_{0,j}=k_{0,j},\\
+ 0, & \text{其他},
+ \end{cases}
+\qquad
+ P_{\mathrm{syn}}=\frac{1}{N_{\mathrm{fr}}}\sum_{j=1}^{N_{\mathrm{fr}}}I_{\mathrm{syn},j},
+\label{eq:chap03_sync_success}
+\end{equation}
+其中下标$j$表示第$j$帧，$N_{\mathrm{fr}}$为参与统计的帧数。定时误差容限取$T_s/2$而非$T_s$，是因为此处判定的是“符号落在正确时隙内”而非“落在保护间隔内”；残差同时还须满足式~\eqref{eq:chap03_hold_condition}。两项条件中任一项不成立即判为同步失败，不允许把“定时正确但图案错位”计为成功。
+
+完整帧成功率按“同步成功、判决正确且校验通过”三条件同时成立统计，记为$P_{\mathrm{frame}}$。三者是串联关系，故有$P_{\mathrm{frame}}\le P_{\mathrm{syn}}$；而$P_{\mathrm{frame}}$不能由$P_b$单独推出——帧内任一比特出错即导致校验失败，低$P_b$并不保证高$P_{\mathrm{frame}}$，二者的换算还依赖帧长与校验能力。因此$P_b$用于说明解调误码水平，$P_{\mathrm{frame}}$用于说明指令的可执行性，报告中不应以前者代替后者。
+
+抗干扰性能在固定信号功率、扫变干信比$\mathrm{JSR}$的条件下统计，同时报告$P_b$与$P_{\mathrm{frame}}$。仅报$P_b$不足以体现跳频与帧级校验的作用：干扰未命中当前跳时$P_b$几乎不变，而$P_{\mathrm{frame}}$会把“部分跳被干扰”的累积效果体现出来。比较不同干扰条件时须保持统计口径一致，包括信号功率、噪声功率、帧数与随机种子。
+
+处理代价按每跳实数乘加次数、缓存字节数与单跳处理时间三项统计。其中单跳处理时间与跳时隙长度之比定义为实时率
+\begin{equation}
+ \eta_{\mathrm{rt}}=\frac{T_{\mathrm{proc}}}{T_h}<1,
+\label{eq:chap03_realtime}
+\end{equation}
+$T_{\mathrm{proc}}$为在一个跳时隙内完成“同步量更新—支路重配—包络统计—符号判决”所需的时间。$\eta_{\mathrm{rt}}$须留有余量，因为中断响应、数据搬运与频点切换瞬态都会占用跳时隙；仿真给出的$T_{\mathrm{proc}}$应按无缓存等待的理想情况理解，作为第5章嵌入式实现的上界估计。
+
+为保证指标的统计意义，蒙特卡洛帧数由置信半径反推。设某项指标的估计值为$\hat P$，在置信水平$1-\alpha$下的置信半径与所需帧数满足
+\begin{equation}
+ \delta=z_{1-\alpha/2}\sqrt{\frac{\hat P(1-\hat P)}{N_{\mathrm{fr}}}}
+ \ \Longrightarrow\
+ N_{\mathrm{fr}}\ge\frac{z_{1-\alpha/2}^{2}\hat P(1-\hat P)}{\delta^{2}},
+\label{eq:chap03_confidence}
+\end{equation}
+其中$z_{1-\alpha/2}$为标准正态分布的上侧分位数。若相对精度要求为$\pm10\%$，即$\delta=0.1\hat P$，则$N_{\mathrm{fr}}\ge100z_{1-\alpha/2}^{2}(1-\hat P)/\hat P$；代入$\hat P=10^{-3}$与$\alpha=0.05$时约需$4\times10^{5}$个判决比特，按帧长折算为数千帧以上，且误码率每降低一个数量级，所需帧数约增加十倍。对更低误码率区间，应如实说明统计帧数已不足以给出稳定的误码率点，或采用重要抽样等方法降低仿真代价，不得以少量错误事件外推曲线。
+
+\noindent\textbf{仿真参数配置}\quad 仿真参数分为传输与调制、信道与干扰、统计控制三组，如表~\ref{tab:chap03_sim_params}所示。同步环节的专用参数（前导重复次数$R$、同步字段跳数$N_s$、相关门限$\gamma_\Lambda$等）已在表~\ref{tab:chap03_sync_params}给出，此处不重复列出。表中取值须与第5章固件配置保持同一套符号与口径，若仿真与实现不一致，应在两处分别说明差异来源。
+
+\begin{table}[htbp]
+ \bicaption[tab:chap03_sim_params]{}{通信仿真参数}{Tab.}{Communication simulation parameters}
+ \vspace{0.5em}\centering\wuhao
+ \begin{tabularx}{\linewidth}{@{}l c c X@{}}
+ \toprule[1.5pt]
+ 参数 & 符号 & 取值 & 说明\\
+ \midrule[1pt]
+ \multicolumn{4}{@{}l}{\textbf{（1）传输与调制}}\\
+ 可用频带 & $B$ & 待填写 & 限于$9$--$13\,\mathrm{kHz}$通带\\
+ MFSK进制数 & $M$ & 待填写 & 由带宽与解调复杂度共同确定\\
+ 跳频点数 & $N_f$ & 待填写 & 由宽间隔序列周期与频点表确定\\
+ 跳频驻留时间 & $T_h$ & 待填写 & 满足$T_h\ge T_s$与$T_h\ll T_c$\\
+ MFSK子频点间隔 & $\Delta f$ & 待填写 & 覆盖最大预期频偏与支路带宽\\
+ \midrule[0.5pt]
+ \multicolumn{4}{@{}l}{\textbf{（2）信道与干扰}}\\
+ 有效路径数 & $L$ & 待填写 & 由声线模型或实测冲激响应确定\\
+ 最大时延扩展 & $\tau_{\max}$ & 待填写 & 与相干带宽$B_c$互为倒数\\
+ 径向速度 & $v$ & 待填写 & 对应时缩因子$\eta=1+v/c$\\
+ 信噪比范围 & $E_s/N_0$ & 待填写 & 单位dB，与理论曲线同口径\\
+ 干信比范围 & $\mathrm{JSR}$ & 待填写 & 仅S4场景使用\\
+ \midrule[0.5pt]
+ \multicolumn{4}{@{}l}{\textbf{（3）统计控制}}\\
+ 蒙特卡洛帧数 & $N_{\mathrm{fr}}$ & 式~\eqref{eq:chap03_confidence} & 由目标指标与置信半径反推\\
+ 置信半径 & $\delta$ & 待填写 & 相对精度取$\pm10\%$\\
+ 随机种子 & — & 固定 & 保证结果可复现\\
+ \bottomrule[1.5pt]
+ \end{tabularx}
+\end{table}
+
+\FloatBarrier
+
+\section{仿真结果与分析}[Simulation Results and Analysis]
+
+本节应根据实际仿真输出填写曲线和表格。当前材料未提供可复核的完整仿真数据，因此不将预期趋势写成实验结论。报告顺序与3.4节的场景分级保持一致：首先用S1场景检查解调链路与式~\eqref{eq:mfsk_ser}理论曲线的一致性；其次在S2、S3场景下分别分析多径引起的首达径误选与多普勒时缩引起的频点能量泄漏，并给出式~\eqref{eq:chap03_ber_ser}、式~\eqref{eq:chap03_sync_success}对应的指标；最后在S4场景下比较跳频图案与帧级校验对完整帧成功率的作用。每幅曲线均应标注对应的场景编号、参数来源与表~\ref{tab:chap03_sim_baseline}中参与对照的基线编号，使读者能判断差异来自哪一个环节。仿真条件与参数分别见表~\ref{tab:chap03_sim_params}与表~\ref{tab:chap03_sync_params}。
+
 \section{本章小结}[Summary]
 
-本章建立了面向声学释放器的SFH-MFSK通信模型，给出了跳频图案、帧结构、能量检测、相关同步和并行自适应Notch滤波器非相干解调流程，并定义了误码率、同步成功率和完整帧成功率等评价指标。通信仿真应在统一参数和信道条件下完成，所得参数将作为第5章嵌入式实现和通信实测的对照基准。
+本章建立了面向声学释放器的SFH-MFSK通信模型，给出了跳频图案、帧结构，以及“重复LFM前导定时—跳频图案相位确认—帧内网格保持”的三段式同步方法和并行自适应Notch滤波器非相干解调流程。仿真部分按“仿真链路—信道与干扰场景四级递进—对比基线消融—评价指标与统计口径”组织，明确了同步串行执行、误码率与同步成功率分处统计、完整帧成功率不以前者替代等口径，并以理想同步、频谱解调、单次前导与无跳频四组对照把总体差异分解到各环节。通信仿真应在统一参数和信道条件下完成，所得参数将作为第5章嵌入式实现和通信实测的对照基准。
+

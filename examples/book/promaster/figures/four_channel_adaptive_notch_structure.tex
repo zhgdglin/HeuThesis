@@ -1,0 +1,96 @@
+% 四通道并行自适应 Notch 滤波器结构
+% 由 body/chap03.tex 的 tikzpicture 以 \input 引入，坐标单位为 cm。
+% 走线原则（与正文的递推关系一致）：
+%   1) x_{c,i}、x_{s,i} 是本路候选频率的本地正交参考，与输入 d(k) 无关；
+%   2) 第 i 路只用本路参考和本路权值算出 y_i，四路经收集总线汇合成 y(k)；
+%   3) d(k) 与 y(k) 只在唯一的求差节点相遇，输出全系统共享的 e(k)；
+%   4) e(k) 经 LMS 后沿底部总线回到左侧单根主干，再由八条行间支线分别送入
+%      八路权值；支线电平自上而下单调递减，与参考线和支路输出线互不交叉。
+\tikzset{
+  notch arrow/.style={-latex, line width=0.5pt},
+  notch bus/.style={line width=0.5pt},
+  notch fb/.style={-latex, dashed, line width=0.45pt},
+  notch fbbus/.style={dashed, line width=0.45pt},
+  notch gain/.style={draw, rectangle, minimum width=1.56cm, minimum height=0.36cm,
+    inner sep=0pt, line width=0.5pt, font=\scriptsize},
+  notch sum/.style={draw, circle, minimum size=6.0mm, inner sep=0pt,
+    line width=0.5pt, font=\small, fill=white},
+  notch merge/.style={draw, circle, minimum size=12mm, inner sep=0pt,
+    line width=0.5pt, font=\small, fill=white},
+  notch diff/.style={draw, circle, minimum size=10.5mm, inner sep=0pt,
+    line width=0.5pt, font=\scriptsize, fill=white},
+  notch nco/.style={draw, rectangle, minimum width=1.62cm, minimum height=1.05cm,
+    inner sep=0pt, line width=0.5pt, align=center, font=\scriptsize},
+  notch lms/.style={draw, rectangle, minimum width=2.60cm, minimum height=1.05cm,
+    inner sep=0pt, line width=0.5pt, align=center, font=\scriptsize, fill=white},
+  notch small/.style={font=\scriptsize}
+}
+
+% 收集总线上的四路汇合节点，以及全图唯一的求差节点
+\node[notch merge] (n-merge) at (6.45,0) {$\sum$};
+\node[notch diff]  (n-err)   at (9.30,4.85) {$\sum$};
+
+% 四路 y_i 的收集总线：由上下两端向汇合节点收拢
+\draw[notch arrow] (6.45,3.30) -- (n-merge.north);
+\draw[notch arrow] (6.45,-3.30) -- (n-merge.south);
+
+% 四路参考支路：本地正交参考 → 自适应权值 → 支路求和 → 收集总线
+\foreach \i/\f/\Y in {1/9/3.30,2/10/1.10,3/11/-1.10,4/12/-3.30}{
+  % 本地正交振荡器：频率由本路候选频点决定，不接收 d(k)
+  \node[notch nco] (n-nco\i) at (0.75,\Y) {正交参考\\$f_{\i}=\f$\,kHz};
+  \draw[notch arrow] (1.56,\Y+0.48) -- (2.60,\Y+0.48);
+  \draw[notch arrow] (1.56,\Y-0.48) -- (2.60,\Y-0.48);
+  % 参考信号名以白底压在通道空白处，避免与行间虚线视觉混叠
+  \node[notch small, fill=white, inner sep=1pt, anchor=south] at (2.08,\Y+0.50) {$x_{c,\i}(k)$};
+  \node[notch small, fill=white, inner sep=1pt, anchor=north] at (2.08,\Y-0.50) {$x_{s,\i}(k)$};
+
+  % 正交权值
+  \node[notch gain] (n-wc\i) at (3.40,\Y+0.48) {$u_{c,\i}(k)$};
+  \node[notch gain] (n-ws\i) at (3.40,\Y-0.48) {$u_{s,\i}(k)$};
+
+  % 支路求和：y_i 只包含本路的两路加权分量
+  \node[notch sum] (n-sum\i) at (4.95,\Y) {$\sum$};
+  \draw[notch arrow] (n-wc\i.east) -- (n-sum\i.north west);
+  \draw[notch arrow] (n-ws\i.east) -- (n-sum\i.south west);
+
+  % y_i 汇入收集总线，箭头只在总线进入汇合节点处标注一次
+  \draw[notch bus] (n-sum\i.east) -- (6.45,\Y);
+  \fill (6.45,\Y) circle (1.0pt);
+  \node[notch small, anchor=south west, inner sep=1pt] at (5.30,\Y+0.12) {$y_{\i}(k)$};
+}
+
+% 合成信号 y(k)：在 (9.30,0) 处一次分支——向上送入求差节点的负端，
+% 向右与 e(k) 平行引出，作为 Notch 重构后的有效输出
+\draw[notch bus] (n-merge.east) -- (9.30,0);
+\draw[notch arrow] (9.30,0) -- (n-err.south);
+\draw[notch arrow] (9.30,0) -- (11.55,0);
+\fill (9.30,0) circle (1.1pt);
+\node[notch small, anchor=south] at (10.60,0.10) {$y(k)$};
+
+% 输入 d(k) 只进入求差节点，不参与任何支路运算
+\draw[notch arrow] (1.00,4.85) -- (n-err.west);
+\node[notch small, anchor=south] at (4.50,4.92) {$d(k)=s(k)+n(k)$};
+\node[notch small, anchor=south, inner sep=1pt] at (8.62,5.04) {$+$};
+\node[notch small, anchor=north east, inner sep=1pt] at (9.24,4.26) {$-$};
+
+% 公共残差 e(k)：与 y(k) 平行输出，抽头在其右端之后下引，避免与 y(k) 交叉
+\draw[notch arrow] (n-err.east) -- (12.30,4.85);
+\fill (11.95,4.85) circle (1.1pt);
+\node[notch small, anchor=south] at (11.30,4.92) {$e(k)$};
+
+% 虚线更新回路：e(k) → LMS → 底部总线 → 左侧主干 → 八路权值
+\draw[notch fb] (11.95,4.85) -- (11.95,-5.00) -- (8.72,-5.00);
+\draw[notch fbbus] (6.08,-5.00) -- (-0.90,-5.00) -- (-0.90,4.30);
+\node[notch lms] at (7.40,-5.00) {LMS 权值更新\\步长 $\mu$};
+
+% 八条行间支线：电平自上而下单调递减，分别送入八路权值的上/下端面
+\foreach \lev/\tgt in {%
+  4.30/3.96, 2.45/2.64, 1.95/1.76, 0.22/0.44,
+  -0.22/-0.44, -1.95/-1.76, -2.45/-2.64, -4.30/-3.96}{%
+  \draw[notch fb] (-0.90,\lev) -- (3.40,\lev) -- (3.40,\tgt);
+  \fill (-0.90,\lev) circle (1.0pt);
+}
+
+\node[notch small, anchor=north west, align=left] at (-0.85,-5.72)
+  {虚线：公共残差 $e(k)$ 经 LMS 按 $u_{c,i}(k+1)=u_{c,i}(k)+\mu e(k)x_{c,i}(k)$、
+   $u_{s,i}(k+1)=u_{s,i}(k)+\mu e(k)x_{s,i}(k)$ 更新八路权值};

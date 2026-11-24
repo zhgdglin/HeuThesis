@@ -1,0 +1,85 @@
+% 前导、同步字段与数据段的时间关系（由 body/chap03.tex 以 \input 引入，单位 cm）
+% 布局自上而下：帧段划分 → 唤醒不确定区间 → 跳频图案与 MFSK 偏移 → 时间标注。
+\tikzset{
+  seg/.style={draw, rectangle, minimum height=0.75cm, inner sep=1pt, align=center,
+    font=\scriptsize, line width=0.5pt},
+  segd/.style={draw, rectangle, dashed, minimum height=0.75cm, inner sep=1pt,
+    align=center, font=\scriptsize, line width=0.5pt},
+  mkarr/.style={-latex, line width=0.4pt},
+  diml/.style={latex-latex, line width=0.4pt},
+  tlab/.style={font=\scriptsize},
+  tlabt/.style={font=\scriptsize},
+  sstep/.style={line width=0.9pt},
+  sdrop/.style={line width=0.35pt, dashed, draw=black!55}
+}
+
+% ============ 帧段划分 ============
+\draw[seg] (0.60,0) rectangle (2.10,0.75);
+\node[tlab] at (1.35,0.375) {LFM};
+\draw[seg] (2.25,0) rectangle (3.75,0.75);
+\node[tlab] at (3.00,0.375) {LFM};
+\draw[segd] (3.90,0) rectangle (5.40,0.75);
+\node[tlab] at (4.65,0.375) {$\cdots$};
+\draw[seg] (5.40,0) rectangle (5.75,0.75);
+\node[tlabt, align=center] at (5.575,0.375) {$T_g$};
+\draw[seg] (5.75,0) rectangle (9.75,0.75);
+\node[tlab] at (7.75,0.375) {跳频同步字段（$N_s$ 跳已知图案）};
+\draw[seg] (9.75,0) rectangle (12.75,0.75);
+\node[tlab] at (11.25,0.375) {地址 / 命令 / 数据};
+\draw[seg] (12.75,0) rectangle (13.95,0.75);
+\node[tlab] at (13.35,0.375) {校验};
+
+% 前导重复次数括注
+\draw[line width=0.4pt] (0.60,0.90) -- (0.60,1.05) -- (5.40,1.05) -- (5.40,0.90);
+\node[tlab, anchor=south] at (3.00,1.06)
+  {重复 LFM，共 $R$ 次（式~\eqref{eq:chap03_repeat_count}）};
+
+% ============ 唤醒不确定区间：宽度恰为前导跨距 ============
+\draw[line width=0.4pt, dashed] (0.60,-0.35) -- (5.40,-0.35);
+\draw[line width=0.4pt, dashed] (0.60,-1.15) -- (5.40,-1.15);
+\draw[line width=0.4pt, dashed] (0.60,-0.35) -- (0.60,-1.15);
+\draw[line width=0.4pt, dashed] (5.40,-0.35) -- (5.40,-1.15);
+\draw[diml] (0.60,-0.75) -- (5.40,-0.75);
+\node[tlab, fill=white, inner sep=2pt, anchor=center] at (3.10,-0.75)
+  {$T_{\mathrm{wake}}+T_{\mathrm{det}}\le R\,(T_p+T_{gp})$};
+\node[tlabt, anchor=west, align=left] at (5.58,-0.75)
+  {接收机可在该区间内任一时刻醒来；\\捕获任一重复 LFM 峰即可由剩余重复数反推帧起点};
+
+% ============ 跳频图案与 MFSK 偏移 ============
+% 八跳（同步字段四跳 + 数据段四跳），每跳一段水平线，跳边界虚线落到时间轴
+\foreach \xa/\xb/\lv in {%
+  5.75/6.75/-2.30, 6.75/7.75/-2.95, 7.75/8.75/-2.45, 8.75/9.75/-2.80,
+  9.75/10.75/-2.35, 10.75/11.75/-3.00, 11.75/12.75/-2.50, 12.75/13.75/-2.90}{%
+  \draw[sstep] (\xa,\lv) -- (\xb,\lv);
+}
+\foreach \xa/\lv in {5.75/-2.30,6.75/-2.95,7.75/-2.45,8.75/-2.80,9.75/-2.35,
+  10.75/-3.00,11.75/-2.50,12.75/-2.90,13.75/-2.90}{%
+  \draw[sdrop] (\xa,\lv) -- (\xa,-3.45);
+}
+\node[tlab, anchor=north east] at (5.70,-2.38) {$f_h(k)$};
+
+% 第一跳内的 MFSK 偏移示意：偏移条画在跳-1 上方，尺寸标注放在其右侧
+\draw[sdrop] (6.25,-2.30) -- (6.25,-1.70);
+\draw[sstep, draw=black!45] (5.95,-1.70) -- (6.60,-1.70);
+\foreach \xv in {6.05,6.25,6.45}{%
+  \draw[sdrop] (\xv,-1.70) -- (\xv,-2.15);
+}
+\draw[diml] (6.70,-2.30) -- (6.70,-1.70);
+\node[tlab, anchor=west] at (6.78,-2.00) {$m_k\Delta f$};\node[tlab, anchor=west] at (8.30,-1.70)
+  {同一跳内信号位于 $f_h(k)+m_k\Delta f$，支路参考频率须逐跳重配};
+
+% ============ 时间标注 ============
+\draw[diml] (0.60,-3.95) -- (2.10,-3.95);
+\node[tlab, anchor=north] at (1.35,-3.98) {$T_p$};
+\draw[diml] (2.10,-3.95) -- (2.25,-3.95);
+\node[tlab, anchor=north] at (2.175,-3.98) {$T_{gp}$};
+\draw[diml] (5.75,-3.95) -- (6.75,-3.95);
+\node[tlab, anchor=north] at (6.25,-3.98) {$T_h$};
+\draw[diml] (6.90,-3.95) -- (7.60,-3.95);
+\node[tlab, anchor=north] at (7.25,-3.98) {$T_s\le T_h$};
+\draw[diml] (0.60,-4.65) -- (13.95,-4.65);
+\node[tlab, anchor=north] at (7.275,-4.68) {$T_{\mathrm{frame}}$};
+
+\node[tlab, anchor=north west, align=left] at (0.60,-5.30)
+  {慢跳频下跳边界与符号边界对齐：帧起点一经确定，其余边界由
+   $t_k=\hat\tau+(k-\hat k_0)T_h$ 推出，帧内不必逐跳重捕};

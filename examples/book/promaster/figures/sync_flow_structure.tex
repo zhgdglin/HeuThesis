@@ -1,0 +1,53 @@
+% 同步处理流程（由 body/chap03.tex 的 tikzpicture 以 \input 引入，单位 cm）
+% 走线原则：主链自上而下单列推进，八级节点覆盖"检测—定时—图案—保持—判决"；
+% 任何判决失败一律沿左侧虚线总线返回低占空比监听，不在错误时间基准上继续解调。
+% 右侧括注对应正文的三个环节，便于图与正文互相对照。
+\tikzset{
+  sync flow/.style={draw, rectangle, minimum width=9.60cm, minimum height=0.72cm,
+    inner sep=2pt, align=center, font=\small, line width=0.5pt},
+  sync dec/.style={draw, rectangle, rounded corners=4pt, minimum width=9.60cm,
+    minimum height=0.72cm, inner sep=2pt, align=center, font=\small,
+    line width=0.5pt, fill=black!5},
+  sync term/.style={draw, rounded corners=2pt, rectangle, minimum width=9.60cm,
+    minimum height=0.72cm, inner sep=2pt, align=center, font=\small, line width=0.5pt},
+  sync arr/.style={-latex, line width=0.5pt},
+  sync fail/.style={-latex, dashed, line width=0.45pt},
+  sync tag/.style={font=\small}
+}
+
+% 主链节点：八级，纵向间距 1.30cm
+\node[sync term] (s-listen) at (0,0)     {休眠 / 低占空比监听};
+\node[sync dec]  (s-energy) at (0,-1.30) {滑动能量超过门限 $\gamma_E\sigma_n^2$？};
+\node[sync flow] (s-lfm)    at (0,-2.60) {重复 LFM 匹配滤波，$\rho(\tau)$ 过门限且判为首达径？};
+\node[sync flow] (s-time)   at (0,-3.90) {输出帧起点 $\hat\tau$ 与首达径时间戳 $t_2$};
+\node[sync flow] (s-pat)    at (0,-5.20) {RTC 预置 $\mathcal{K}=\{k_{\mathrm{rtc}}\pm1\}$，由 $N_s$ 跳同步字段得 $\hat k_0$};
+\node[sync flow] (s-grid)   at (0,-6.50) {生成时隙网格 $t_k$，按 $f_h(k)+m\Delta f$ 重配支路};
+\node[sync flow] (s-demod)  at (0,-7.80) {MFSK 能量判决 $\rightarrow$ 帧校验};
+\node[sync dec]  (s-out)    at (0,-9.10) {输出 $(\hat\tau,\hat k_0,\hat v,\text{标志位})$};
+
+% 主链连线
+\foreach \a/\b in {s-listen/s-energy,s-energy/s-lfm,s-lfm/s-time,
+  s-time/s-pat,s-pat/s-grid,s-grid/s-demod,s-demod/s-out}{
+  \draw[sync arr] (\a) -- (\b);
+}
+
+% 失败分支：先汇入左侧竖直总线，再统一返回监听节点
+\draw[sync fail] (s-energy.west) -- (-6.30,-1.30);
+\draw[sync fail] (s-lfm.west)    -- (-6.30,-2.60);
+\draw[sync fail] (s-out.west)    -- (-6.30,-9.10);
+\draw[sync fail] (-6.30,-9.10) -- (-6.30,-0.36);
+\draw[sync fail] (-6.30,-0.36) -- (s-listen.west);
+\foreach \y in {-1.30,-2.60,-9.10}{%
+  \fill (-6.30,\y) circle (0.9pt);
+}
+\node[sync tag, anchor=north] at (-5.50,-1.36) {否};
+\node[sync tag, anchor=north] at (-5.50,-2.66) {否};
+\node[sync tag, anchor=north] at (-5.50,-9.16) {校验失败};
+
+% 环节括注：与正文三个环节对应，标签水平置于括号右侧以免与括号交叠
+\draw[line width=0.4pt] (5.00,-2.20) -- (5.20,-2.20) -- (5.20,-4.30) -- (5.00,-4.30);
+\node[sync tag, anchor=west] at (5.28,-3.25) {前导定时};
+\draw[line width=0.4pt] (5.00,-4.45) -- (5.20,-4.45) -- (5.20,-5.95) -- (5.00,-5.95);
+\node[sync tag, anchor=west] at (5.28,-5.20) {图案确认};
+\draw[line width=0.4pt] (5.00,-6.10) -- (5.20,-6.10) -- (5.20,-8.20) -- (5.00,-8.20);
+\node[sync tag, anchor=west] at (5.28,-7.15) {帧内保持};
