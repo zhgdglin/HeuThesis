@@ -1,0 +1,86 @@
+% 分层声速剖面与声线正演几何（由 body/chap04.tex 的 tikzpicture 以 \input 引入，单位 cm）
+%
+% 走线原则：
+%   1. 三列分区、互不侵入：左列深度轴，中列声线与角度标注，右列声速剖面折线。
+%      四条层界面横贯三列，使"层厚 Δd_i — 界面掠射角 θ_i — 声速折线顶点"逐一横向对齐。
+%   2. θ_0 位于发射端，只有下游一条声线，故取"水平方向与下游声线"所夹的右下楔形；
+%      θ_1–θ_3 位于层界面，取"水平方向与上游声线来向"所夹的左楔形。
+%      四处楔形都做到 30° 以上，标签沿角平分线外移即可落在楔形内，无需引线。
+%   3. 尺寸线分三处：层厚 Δd_i 竖排在声线右侧，水平距离 H(p) 在底边，声速轴在折线下方。
+%
+% 声线构造：线性分层下第 i 层内为圆弧。设该层掠射角自 θ_a 增至 θ_b、层厚为 Δd，则
+%   R = Δd/(cos θ_a - cos θ_b)，Δx = R(sin θ_b - sin θ_a)，
+% 起点极角为 90°-θ_a、终点极角为 90°-θ_b，故相邻圆弧在层界共切线，链式 arc 即为光滑声线。
+% 本例取声速随深度递减（折线随深度下移而左偏），对应掠射角逐层增大、声线逐渐变陡：
+%   θ_i = 32°, 44°, 56°, 68°；Δd_i = 1.20, 1.40, 1.50 cm；
+%   R_i  = 9.3234, 8.7420, 8.1263 cm；Δx_i = 1.5359, 1.1749, 0.7976 cm。
+% 层界横坐标 x = 0.300 / 1.836 / 3.011 / 3.808，与上述解析式逐层一致。
+\tikzset{
+  rng axis/.style={-latex, line width=0.5pt},
+  rng iface/.style={dashed, line width=0.4pt},
+  rng ray/.style={line width=0.9pt},
+  rng arc/.style={line width=0.4pt},
+  rng dim/.style={latex-latex, line width=0.4pt},
+  rng svp/.style={line width=0.7pt},
+  rng tag/.style={font=\small}
+}
+
+% ---------------- 深度轴 ----------------
+\draw[rng axis] (-1.30,-3.95) -- (-1.30,2.20);
+\node[rng tag, anchor=south] at (-1.30,2.24) {深度 $z$};
+
+% ---------------- 层界面与界面标注 ----------------
+\foreach \y in {1.20,0.00,-1.40,-2.90}{%
+  \draw[rng iface] (-1.30,\y) -- (7.72,\y);
+}
+\node[rng tag, anchor=west] at (7.80,1.20)  {$d_0$};
+\node[rng tag, anchor=west] at (7.80,0.00)  {$d_1$};
+\node[rng tag, anchor=west] at (7.80,-1.40) {$d_2$};
+\node[rng tag, anchor=west] at (7.80,-2.90) {$d_3$};
+
+% ---------------- 声线：三段层内圆弧依次相切拼接 ----------------
+\draw[rng ray, -latex] (0.300,1.20)
+  arc[start angle=58, end angle=46, radius=9.3234]
+  arc[start angle=46, end angle=34, radius=8.7420]
+  arc[start angle=34, end angle=22, radius=8.1263];
+
+% ---------------- 界面掠射角 ----------------
+% θ0 位于发射端，只有下游声线，故楔形取"水平方向（下游侧）与声线"所夹：弧自 -θ0 扫至 0°；
+% θ1–θ3 位于层界面，楔形取"水平方向（上游侧）与上游声线来向"所夹：弧自 180°-θ 扫至 180°。
+% 四种情形的楔形都足够开，标签沿角平分线外移到弧外，落在楔形内的空白处，不与声线或虚线相交
+\draw[rng arc] (0.300,1.20) ++(-32:0.62) arc[start angle=-32, end angle=0, radius=0.62];
+\node[rng tag] at ({0.300+1.06*cos(16)},{1.20-1.06*sin(16)}) {$\theta_0$};
+
+\foreach \x/\y/\a/\r in {1.836/0.00/44/0.62, 3.011/-1.40/56/0.62, 3.808/-2.90/68/0.62}{%
+  \draw[rng arc] (\x,\y) ++({180-\a}:\r) arc[start angle={180-\a}, end angle=180, radius=\r];
+}
+\node[rng tag, anchor=east] at ({1.836+0.95*cos(158)},{0.00+0.95*sin(158)}) {$\theta_1$};
+\node[rng tag, anchor=east] at ({3.011+0.95*cos(152)},{-1.40+0.95*sin(152)}) {$\theta_2$};
+\node[rng tag, anchor=east] at ({3.808+0.95*cos(146)},{-2.90+0.95*sin(146)}) {$\theta_3$};
+
+% ---------------- 端点与声线标注 ----------------
+\node[rng tag, anchor=south west] at (0.46,1.30) {发射端 $z_a$};
+\node[rng tag, anchor=north] at (3.808,-3.02) {接收端 $z_b$};
+\node[rng tag, anchor=north] at (2.36,-1.62) {声线};
+
+% ---------------- 层厚尺寸线：三段独立的双向箭头，两端各留 0.09 cm 间隙 ----------------
+\draw[rng dim] (5.30,1.11)  -- (5.30,0.09);
+\draw[rng dim] (5.30,-0.09) -- (5.30,-1.31);
+\draw[rng dim] (5.30,-1.49) -- (5.30,-2.81);
+\node[rng tag, anchor=west] at (5.45,0.60)   {$\Delta d_1$};
+\node[rng tag, anchor=west] at (5.45,-0.70)  {$\Delta d_2$};
+\node[rng tag, anchor=west] at (5.45,-2.15)  {$\Delta d_3$};
+
+% ---------------- 水平传播距离 ----------------
+\draw[rng dim] (0.300,-3.90) -- (3.808,-3.90);
+\node[rng tag, anchor=north] at (2.054,-3.96) {水平距离 $H(p)$};
+
+% ---------------- 声速剖面 ----------------
+\draw[rng svp] (7.55,1.20) -- (7.30,0.00) -- (6.95,-1.40) -- (6.65,-2.90);
+\foreach \x/\y in {7.55/1.20,7.30/0.00,6.95/-1.40,6.65/-2.90}{%
+  \fill (\x,\y) circle (1.1pt);
+}
+\node[rng tag, anchor=south east] at (7.66,1.36) {声速剖面 $s(z)$};
+
+\draw[rng axis] (6.45,-3.90) -- (7.80,-3.90);
+\node[rng tag, anchor=north] at (7.12,-3.96) {声速 $s$};

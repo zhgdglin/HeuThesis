@@ -1,0 +1,60 @@
+% 快速声线测距反演流程（由 body/chap04.tex 的 tikzpicture 以 \input 引入，单位 cm）
+%
+% 走线原则：
+%   1. 主链自上而下单列推进，八级覆盖"输入—离散化—可解性判定—二分迭代—反演—输出"；
+%      节点宽度与 figures/sync_flow_structure.tex 一致，保持两章流程图的版式统一。
+%   2. 可解性判定失败沿左侧虚线总线返回"输出失败标志"，使"不可解"成为一条显式出口，
+%      而不是在主链中静默回退到常声速结果。
+%   3. 二分迭代未收敛时沿右侧实线回路返回迭代节点，回路置于主链之外，不跨越任何节点；
+%      回路上用守卫条件标注 j<J_max，超过最大迭代次数由输出节点的标志位体现。
+%   4. 接口量标注统一放在相邻两级间隙下方，避免压住节点边框。
+\tikzset{
+  rngflow term/.style={draw, rounded corners=2pt, rectangle, minimum width=9.60cm,
+    minimum height=0.72cm, inner sep=2pt, align=center, font=\small, line width=0.5pt},
+  rngflow blk/.style={draw, rectangle, minimum width=9.60cm, minimum height=0.72cm,
+    inner sep=2pt, align=center, font=\small, line width=0.5pt},
+  rngflow dec/.style={draw, rectangle, rounded corners=4pt, minimum width=9.60cm,
+    minimum height=0.72cm, inner sep=2pt, align=center, font=\small,
+    line width=0.5pt, fill=black!5},
+  rngflow arr/.style={-latex, line width=0.5pt},
+  rngflow fail/.style={-latex, dashed, line width=0.45pt},
+  rngflow loop/.style={-latex, line width=0.45pt},
+  rngflow tag/.style={font=\small}
+}
+
+% ---------------- 主链 ----------------
+\node[rngflow term] (f-in)  at (0,0)     {输入：$S=[(s_i,d_i)]_{i=0}^{I}$、$\hat\tau_{\mathrm{prop}}$、$(z_a,z_b)$、$\varepsilon_t$、$J_{\max}$};
+\node[rngflow blk]  (f-svp) at (0,-1.30) {逐层求梯度 $g_i$ 与层厚 $\Delta d_i$，标记零梯度层并改用极限式};
+\node[rngflow blk]  (f-rng) at (0,-2.60) {由 $p=\cos\theta_0/s_0$ 给出可解区间 $[T(\pi/2),\,T(\theta_c)]$};
+\node[rngflow dec]  (f-jud) at (0,-3.90) {$\hat\tau_{\mathrm{prop}}\in[T(\pi/2),\,T(\theta_c)]$？};
+\node[rngflow blk]  (f-bis) at (0,-5.20) {按 $e(\theta_0^{(j)})$ 的符号更新区间，$\theta_0^{(j+1)}$ 取中值};
+\node[rngflow dec]  (f-cvg) at (0,-6.50) {$\lvert T(\theta_0^{(j)})-\hat\tau_{\mathrm{prop}}\rvert<\varepsilon_t$ 或 $j>J_{\max}$？};
+\node[rngflow blk]  (f-inv) at (0,-7.80) {由 $\theta_0^{*}$ 计算 $H(p)$，得 $R=\sqrt{H^{2}+(z_b-z_a)^{2}}$};
+\node[rngflow term] (f-out) at (0,-9.10) {输出：$R$、$\theta_0^{*}$、残差 $e_{\min}$、迭代次数与失败标志};
+
+% 主链连线
+\foreach \a/\b in {f-in/f-svp,f-svp/f-rng,f-rng/f-jud,f-jud/f-bis,
+  f-bis/f-cvg,f-cvg/f-inv,f-inv/f-out}{%
+  \draw[rngflow arr] (\a) -- (\b);
+}
+
+% ---------------- 可解性失败：左侧虚线总线 ----------------
+% 总线在节点外侧竖直下行，绕开主链最后两级，在最底部转为水平并入失败标志框，
+% 使"不可解"成为与正常输出并列的一条出口，而不是静默回退
+\draw[dashed, line width=0.45pt] (f-jud.west) -- (-6.10,-3.90) -- (-6.10,-10.40);
+\draw[rngflow fail] (-6.10,-10.40) -- (-5.55,-10.40);
+\node[rngflow term, minimum width=3.00cm, anchor=west] (f-fail) at (-5.55,-10.40) {标志置“不可解”};
+\node[rngflow tag, anchor=north] at (-5.30,-3.98) {否};
+
+% ---------------- 未收敛：右侧实线回路 ----------------
+\draw[rngflow loop] (f-cvg.east) -- (5.40,-6.50) -- (5.40,-5.20) -- (f-bis.east);
+\node[rngflow tag, anchor=west] at (5.50,-5.85) {$j<J_{\max}$};
+
+% ---------------- 分支标注 ----------------
+% 判决节点的“是/否”一律标在箭头旁或总线旁，不进入节点框内
+\node[rngflow tag, anchor=west] at (0.16,-4.60) {是};
+\node[rngflow tag, anchor=north] at (5.05,-6.62) {否};
+\node[rngflow tag, anchor=west] at (0.16,-7.20) {是};
+
+% ---------------- 失败出口说明 ----------------
+\node[rngflow tag, anchor=west] at (-2.35,-10.40) {越界即判不可解，不回退到常声速结果};
