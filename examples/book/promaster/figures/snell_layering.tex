@@ -1,0 +1,55 @@
+% 分层界面上的 Snell 定律与声线弯曲（由 body/chap02.tex 的 tikzpicture 以 \input 引入，单位 cm）
+%
+% 角度约定：
+%   本文的守恒关系写作 cosθ/c = const，θ 取声线与水平界面的夹角（掠射角），与第 4 章分层
+%   声线推导一致。故三处角弧一律画在声线与水平界面之间，而不画到法线上。若改用相对法线
+%   起算的入射角 φ = 90° − θ，由 cosθ = sinφ 即得经典形式 sinφ/c = const。
+%
+% 版式：
+%   左右两栏共用一套界面对齐方式，但各自独立成图：栏(a) 取 c_{i+1} < c_i，声线向法线靠拢；
+%   栏(b) 取 c_{i+1} > c_i，声线向界面靠拢。两栏分开画，避免四条射线在同一界面上交叉，
+%   也使两种情形的对比直接可读。栏距 7.30 cm，各栏界面向左右各展 2.60 cm。
+%
+% 标签放置：
+%   每处角度标签都落在"水平界面—射线"所夹楔形的角平分线上、角弧之外，不与射线或法线相交。
+\tikzset{
+  snl iface/.style={line width=0.6pt},
+  snl normal/.style={dashed, line width=0.4pt},
+  snl ray/.style={line width=0.7pt},
+  snl arc/.style={line width=0.4pt},
+  snl tag/.style={font=\small}
+}
+
+% ================= 栏 (a)：c_{i+1} < c_i，声线向法线弯曲 =================
+\draw[snl iface] (-2.60,0) -- (2.60,0);
+\draw[snl normal] (0,2.75) -- (0,-3.45);
+
+% 入射声线掠射角 44°，折射声线掠射角 68°
+\draw[snl ray] (-2.52,2.44) -- (0,0);
+\draw[snl ray] (0,0) -- (1.28,-3.16);
+
+\draw[snl arc] (0,0) ++(136:1.00) arc[start angle=136, end angle=180, radius=1.00];
+\node[snl tag] at (-1.261,0.509) {$\theta_i$};
+\draw[snl arc] (0,0) ++(-68:0.92) arc[start angle=-68, end angle=0, radius=0.92];
+\node[snl tag] at (1.144,-0.772) {$\theta_{i+1}$};
+
+\node[snl tag, anchor=east] at (-2.68,1.55) {$c_i$};
+\node[snl tag, anchor=east] at (-2.68,-1.55) {$c_{i+1}$};
+\node[snl tag, anchor=north] at (0,-3.68) {(a) $c_{i+1}<c_i$：向法线弯曲};
+
+% ================= 栏 (b)：c_{i+1} > c_i，声线向界面弯曲 =================
+\draw[snl iface] (4.70,0) -- (9.90,0);
+\draw[snl normal] (7.30,2.75) -- (7.30,-3.45);
+
+% 入射声线掠射角 44°，折射声线掠射角 20°
+\draw[snl ray] (4.78,2.44) -- (7.30,0);
+\draw[snl ray] (7.30,0) -- (10.06,-1.00);
+
+\draw[snl arc] (7.30,0) ++(136:1.00) arc[start angle=136, end angle=180, radius=1.00];
+\node[snl tag] at (6.039,0.509) {$\theta_i$};
+\draw[snl arc] (7.30,0) ++(-20:0.98) arc[start angle=-20, end angle=0, radius=0.98];
+\node[snl tag] at (8.698,-0.247) {$\theta_{i+1}$};
+
+\node[snl tag, anchor=east] at (4.62,1.55) {$c_i$};
+\node[snl tag, anchor=east] at (4.62,-1.55) {$c_{i+1}$};
+\node[snl tag, anchor=north] at (7.30,-3.68) {(b) $c_{i+1}>c_i$：向界面弯曲};

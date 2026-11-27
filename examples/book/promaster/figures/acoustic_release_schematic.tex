@@ -1,0 +1,93 @@
+% 声学释放系统工作原理示意图（由 body/chap02.tex 的 tikzpicture 以 \input 引入，单位 cm）
+%
+% 走线原则：
+%   1. 画面按“上为海面、下为海底”分层，左侧作业船与甲板单元、右侧水下机与沉块各自竖直成列，
+%      两列之间只保留“遥控、测距”一组双向声线，其余构件不越列，避免交叉。
+%   2. 双向声线画成端点上下错开、各自外凸的两条弧：上弧为上行询问、下弧为下行应答；
+%      两弧之间的带宽直接放标注，不必再加引线。声线自换能器指向声学释放器，而不指向
+%      其上方的被释放载荷——与水声换能器发生声学交互的是释放器本体的收发面。
+%   3. 水下机自下而上依次为沉块—声学释放器—海底仪器设备—浮标，与回收动作的受力顺序一致：
+%      释放器脱开后，浮标带动海底仪器设备上浮，沉块留在海底。
+%   4. 海面线与船体、海底线与沉块存在压盖关系，故先画水面与海底、后画不透明填充的构件；
+%      构件之间的连接件同理先画，再被构件覆盖，只露出构件之间的间隙。
+\tikzset{
+  ars line/.style={line width=0.5pt},
+  ars thin/.style={line width=0.4pt},
+  ars hull/.style={line width=0.5pt, fill=white},
+  ars case/.style={line width=0.5pt, fill=white},
+  ars solid/.style={fill=black!12, line width=0.5pt},
+  ars link/.style={-latex, line width=0.6pt},
+  ars wave/.style={line width=0.4pt},
+  ars tag/.style={font=\small, fill=white, inner sep=1.2pt}
+}
+
+% ---------------- 海面与海底 ----------------
+\draw[ars line] plot[domain=0.20:13.00,samples=170] (\x,{7.10+0.04*sin(90*\x)});
+\node[ars tag, anchor=south east] at (12.92,7.16) {海面};
+
+\draw[ars line] plot[domain=0.20:13.00,samples=210]
+  (\x,{1.05+0.05*sin(150*\x+40)+0.03*sin(320*\x)});
+% 海底沉积层用短线示意，短线起点逐点落在实际起伏曲线上，避免与曲线脱开
+\foreach \sx in {0.30,0.66,...,12.90}{%
+  \pgfmathsetmacro{\syb}{1.05+0.05*sin(150*\sx+40)+0.03*sin(320*\sx)}%
+  \draw[ars thin] (\sx,\syb) -- ++(-0.12,-0.11);
+}
+\node[ars tag, anchor=south east] at (12.92,1.30) {海底};
+
+% ---------------- 作业船、甲板单元与吊放电缆 ----------------
+\draw[ars hull] (0.80,7.32) -- (4.20,7.32) -- (3.90,6.80) -- (1.20,6.80) -- cycle;
+\draw[ars hull] (1.25,7.32) rectangle (1.90,7.70);
+\draw[ars line] (1.575,7.70) -- (1.575,7.92);
+\draw[ars case] (2.50,7.32) rectangle (3.45,7.74);
+\node[ars tag, anchor=south] at (2.98,7.78) {甲板单元};
+
+% 电缆自甲板单元右缘越出舷外后垂直下垂，控制点落在船体上缘之外，不与船体相交
+\draw[ars line] (3.45,7.46) .. controls (4.40,7.44) and (4.95,7.06) .. (4.95,6.14);
+
+% ---------------- 水声换能器 ----------------
+\draw[ars case] (4.75,5.72) rectangle (5.15,6.12);
+\draw[ars line] (4.95,6.12) ellipse (0.20 and 0.055);
+\draw[ars line] (4.95,5.72) arc[start angle=180,end angle=360,x radius=0.20,y radius=0.06];
+\node[ars tag, anchor=south east] at (4.70,6.17) {水声换能器};
+
+% 声波指向：在换能器底面下方画一段向下的小扇形，表示声能向水下辐射；
+% 弧段取 -118° 至 -62°，完全落在圆柱正下方，与右侧两条链路声线的起点保持间隔
+\foreach \r in {0.14,0.26,0.38}{%
+  \draw[ars wave] (4.95,5.70) ++(-118:\r) arc[start angle=-118, end angle=-62, radius=\r];
+}
+
+% ---------------- 连接件（先画，随后被不透明构件覆盖） ----------------
+\draw[ars line] (9.28,3.60) -- (9.28,3.92);   % 释放器上端与海底仪器设备之间
+\draw[ars line] (9.52,3.60) -- (9.52,3.92);
+\draw[ars line] (9.40,1.40) -- (9.40,2.36);   % 吊杆：沉块至释放器
+\draw[ars line] (9.40,4.58) -- (9.40,5.06);   % 系绳：海底仪器设备至浮标
+
+% ---------------- 浮标 ----------------
+\fill (9.40,5.20) circle (0.13);
+
+% ---------------- 海底仪器设备 ----------------
+\draw[ars case] (9.12,3.90) rectangle (9.68,4.58);
+\draw[ars line] (9.40,4.58) ellipse (0.28 and 0.07);
+\draw[ars line] (9.12,3.90) arc[start angle=180,end angle=360,x radius=0.28,y radius=0.06];
+
+% ---------------- 声学释放器 ----------------
+\draw[ars solid] (9.18,2.36) rectangle (9.62,3.60);
+\draw[ars solid] (9.40,3.60) ellipse (0.22 and 0.065);
+\draw[ars solid] (9.18,2.36) arc[start angle=180,end angle=360,x radius=0.22,y radius=0.06];
+
+% ---------------- 沉块（底边压在海底起伏之下，表示坐底） ----------------
+\draw[ars hull] (8.70,1.10) -- (10.10,1.10) -- (9.78,1.70) -- (9.02,1.70) -- cycle;
+
+% ---------------- 遥控与测距声线 ----------------
+% 上弧为上行询问、下弧为下行应答，两端口均取换能器右缘与声学释放器左缘（x=9.18、y 落在
+% 释放器本体 2.36–3.60 的高度内），使“遥控、测距”指向释放器而非其上方载荷；
+% 两弧向外凸出，中间带宽用于标注，无需引线。
+\draw[ars link] (5.22,6.02) to[bend left=5] (9.18,3.34);
+\draw[ars link] (9.18,2.66) to[bend left=5] (5.22,5.42);
+\node[ars tag] at (7.16,4.34) {遥控、测距};
+
+% ---------------- 构件标注 ----------------
+\node[ars tag, anchor=west] at (9.58,5.20) {浮标};
+\node[ars tag, anchor=west] at (9.80,4.24) {海底仪器设备};
+\node[ars tag, anchor=west] at (9.80,2.98) {声学释放器};
+\node[ars tag, anchor=west] at (10.18,1.40) {沉块};

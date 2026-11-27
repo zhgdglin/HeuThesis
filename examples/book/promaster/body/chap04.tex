@@ -5,15 +5,18 @@
 \chapter{水下快速测距算法研究与仿真}[Fast Underwater Ranging Algorithm and Simulation]
 \label{chap04}
 
-本章只讨论测距问题，形成“往返时延模型—时间戳提取—声线正演—快速反演—误差分析”的独立证据链。通信算法仅作为请求和应答的承载方式，不在本章重复讨论 SFH-MFSK 调制与解调。声线正演与快速反演的组织方式参照 Huang 等在声线跟踪定位中的处理思路\cite{huangFastRaytracingbasedPrecise2024}，但本章的目标是单对应答器之间的距离估计，而非多参考节点条件下的三维定位，二者的输入量与可解条件不同，后文将在式~\eqref{eq:chap04_R}处说明这一区别。
+本章只讨论测距问题，形成“往返时延模型—时间戳提取—声线正演—快速反演—误差分析”的独立证据链。通信算法仅作为请求和应答的承载方式，不在本章重复讨论 SFH-MFSK 调制与解调。声线正演与快速反演沿用射线声学的处理思路，但目标是单对应答器之间的距离估计，而非多参考节点条件下的三维定位；两者的输入量与可解条件不同，文献方案与本文的取舍在\S\ref{sec:chap04_problem}中对照说明。
 
 \section{测距问题描述与技术路线}[Problem Statement and Technical Route]
+\label{sec:chap04_problem}
 
-\noindent\textbf{观测与输入}\quad 声学释放器的测距发生在甲板单元与水下机之间，流程固定为“甲板单元发射请求—水下机应答—甲板单元接收应答”。该流程决定了三件事：其一，两端之间没有共享时钟，因此只能使用往返时延而非单程到达时刻；其二，水下机只有一台，不构成参考节点阵列，无法像多节点定位那样由空间冗余消去声速误差；其三，应答时刻由水下机固件确定，处理延时必须单独标定。基于此，本章的输入量限定为三项：往返时延观测量$\Delta t_{\rm meas}$及其派生的单程时延$\hat{\tau}_{\rm prop}$、声速剖面$S=[(s_i,d_i)]_{i=0}^{I}$、以及两端深度近似值$(z_a,z_b)$。
+声学释放器的测距发生在甲板单元与水下机之间，流程固定为“甲板单元发射请求—水下机应答—甲板单元接收应答”。该流程决定了三件事：其一，两端之间没有共享时钟，因此只能使用往返时延而非单程到达时刻；其二，水下机只有一台，不构成参考节点阵列，无法像多节点定位那样由空间冗余消去声速误差；其三，应答时刻由水下机固件确定，处理延时必须单独标定。基于此，本章的输入量限定为三项：往返时延观测量$\Delta t_{\rm meas}$及其派生的单程时延$\hat{\tau}_{\rm prop}$、声速剖面$S=[(s_i,d_i)]_{i=0}^{I}$、以及两端深度近似值$(z_a,z_b)$。
 
-\noindent\textbf{“不依赖目标深度直接输入”的含义}\quad 该说法在本文中有确定边界：深度不作为待反演的未知量参与求解，而作为近似已知值进入声线正演。与之相对，若把水下机深度也当作未知量，则单次往返时延只给出一个方程而含两个未知量（初始掠射角与接收深度），解必不唯一。文献中的处理办法是引入多个参考节点的水平距离观测，构成水平面内的超定方程组\cite{huangFastRaytracingbasedPrecise2024}；本系统不满足该条件，故必须依靠已知或可估的深度值闭合方程。这一取舍使算法在释放器场景下可解，同时也把深度误差明确引入误差预算，见\S\ref{sec:chap04_inversion}。
+“不依赖目标深度直接输入”这一提法在本文中有确定边界：深度不作为待反演的未知量参与求解，而作为近似已知值进入声线正演。若把$z_b$也当作未知量，则单次往返时延只给出一个方程而含两个未知量（初始掠射角与接收深度），解必不唯一。本系统只有单台应答器，不具备补足方程数所需的观测冗余，故必须依靠已知或可估的深度值闭合方程；这一取舍同时把深度误差引入误差预算，其量级与可接受性在\S\ref{sec:chap04_inversion}中单独检验。因此，“不依赖目标深度直接输入”在本章应理解为“不把深度作为待反演量”，而非“完全不使用深度信息”。
 
-\noindent\textbf{技术路线}\quad 本章按四段展开。第一段是观测建模（\S\ref{sec:chap04_rtt}、\S\ref{sec:chap04_first_arrival}），把物理传播时延从测量时延中分离出来，并给出首达径提取的判据与误差性质。第二段是声线正演（\S\ref{sec:chap04_forward}），在分层声速剖面下把传播时间与水平距离写成初始掠射角的解析函数。第三段是快速反演（\S\ref{sec:chap04_fast}、\S\ref{sec:chap04_inversion}），利用正演量对该角的单调性以二分法求解，再由水平距离与深度差合成斜距。第四段是误差与效率（\S\ref{sec:chap04_svp}至\S\ref{sec:chap04_error}），用仿真分级考察各误差源，并给出实时性指标。角度定义与第 2 章式~\eqref{eq:snell}一致，即$\theta$为声线与水平方向的夹角，后文不再重复说明。
+本章的技术路线按四段展开。第一段是观测建模（\S\ref{sec:chap04_rtt}、\S\ref{sec:chap04_first_arrival}），把物理传播时延从测量时延中分离出来，并给出首达径提取的判据与误差性质。第二段是声线正演（\S\ref{sec:chap04_forward}），在分层声速剖面下把传播时间与水平距离写成初始掠射角的解析函数。第三段是快速反演（\S\ref{sec:chap04_fast}、\S\ref{sec:chap04_inversion}），利用正演量对该角的单调性以二分法求解，再由水平距离与深度差合成斜距。第四段是误差与效率（\S\ref{sec:chap04_svp}至\S\ref{sec:chap04_error}），用仿真分级考察各误差源，并给出实时性指标。角度定义与第 2 章式~\eqref{eq:snell}一致，即$\theta$为声线与水平方向的夹角，后文不再重复说明。
+
+本章的求解流程参照文献的快速声线追踪方案\cite{huangFastRaytracingbasedPrecise2024}：以 Snell 定律为基本原理证明时延与水平距离关于初始掠射角单调，用二分搜索代替逐角度遍历；并以分段线性层简化声速剖面，降低单次正演的计算量。其外层深度迭代依赖多参考节点的超定观测，本系统不具备该条件，故深度改为带不确定度的已知量，取舍见\S\ref{sec:chap04_inversion}。
 
 \section{往返时延测量模型}[Round-Trip Delay Measurement Model]
 \label{sec:chap04_rtt}
@@ -32,16 +35,16 @@
 \end{equation}
 式~\eqref{eq:chap04_prop}是声线反演的时间输入，不等同于距离。
 
-\noindent\textbf{处理延时标定的两段式}\quad 处理延时由固件决定，同一批设备之间也存在分散，因此不能只取一次出厂测量值。本文采用两段式标定：出厂阶段以环路回送方式测得多台设备的延时分布，取其均值作为标称值$\bar\tau_{\rm proc}$，并记录标准差；现场阶段在任务开始前用一次近距离直连（几何时延可忽略）做单点自校，把当次测量值与标称值之差记作残差$\delta\tau_{\rm proc}$。近距离自校的意义在于把温度、电压与固件版本差异带来的慢漂移从标称值中分离出来，但它无法分辨“延时漂移”与“近距离几何时延”，故自校距离必须足够小，且其残余几何时延应计入$\delta\tau_{\rm proc}$。
+处理延时由固件决定，同一批设备之间也存在分散，因此不能只取一次出厂测量值。本文采用两段式标定：出厂阶段以环路回送方式测得多台设备的延时分布，取其均值作为标称值$\bar\tau_{\rm proc}$，并记录标准差；现场阶段在任务开始前用一次近距离直连（几何时延可忽略）做单点自校，把当次测量值与标称值之差记作残差$\delta\tau_{\rm proc}$。近距离自校的意义在于把温度、电压与固件版本差异带来的慢漂移从标称值中分离出来，但它无法分辨“延时漂移”与“近距离几何时延”，故自校距离必须足够小，且其残余几何时延应计入$\delta\tau_{\rm proc}$。
 
-\noindent\textbf{互易性偏离}\quad 式~\eqref{eq:chap04_prop}的除以二是建立在上下行传播时间相等的前提上的。实际海况中，两端换能器深度不同、声速剖面在往返时间内的变化、以及海面起伏引起的反射路径差异，都会使$\tau_{\rm up}\ne\tau_{\rm down}$。记偏离量为
+式~\eqref{eq:chap04_prop}的除以二是建立在上下行传播时间相等的前提上的。实际海况中，两端换能器深度不同、声速剖面在往返时间内的变化、以及海面起伏引起的反射路径差异，都会使$\tau_{\rm up}\ne\tau_{\rm down}$。记偏离量为
 \begin{equation}
  \delta\tau_{\rm asy}=\frac{\tau_{\rm up}-\tau_{\rm down}}{2},
 \label{eq:chap04_asym}
 \end{equation}
 则单程时延的真值可写为$\tau_{\rm prop}=\hat{\tau}_{\rm prop}+\delta\tau_{\rm proc}/2+\delta\tau_{\rm asy}$。需要强调的是，$\delta\tau_{\rm asy}$无法由单次往返观测本身分离——它和$\tau_{\rm prop}$以相同方式进入$\Delta t_{\rm meas}$，只能通过外部信息（如已知深度差与声速剖面算得的正演时延、或多次测量的统计一致性）加以约束。因此本章在误差分析中把$\delta\tau_{\rm asy}$列为独立误差项，而不把它折算进声速模型误差，避免后续归因错误。
 
-\noindent\textbf{一阶距离误差预算}\quad 综合上述三项，以常声速$c_e$作初步换算时，距离估计的一阶形式为
+综合上述三项，以常声速$c_e$作初步换算时，距离估计的一阶形式为
 \begin{equation}
  \hat R=c_e\left(\hat\tau_{\rm prop}+\frac{\delta\tau_{\rm proc}}{2}+\delta\tau_{\rm asy}\right),
 \label{eq:chap04_budget}
@@ -63,14 +66,14 @@
 \end{equation}
 且其前方保护区间不存在更早的高可信峰时，记录其位置为首达径时间戳。
 
-\noindent\textbf{门限与虚警率}\quad 若匹配滤波输出在纯噪声段近似为均值为零、标准差为$\sigma_n$的高斯过程，则单点超过门限的概率即虚警率$P_{\rm fa}$，门限可由$P_{\rm fa}$反解：
+若匹配滤波输出在纯噪声段近似为均值为零、标准差为$\sigma_n$的高斯过程，则单点超过门限的概率即虚警率$P_{\rm fa}$，门限可由$P_{\rm fa}$反解：
 \begin{equation}
  \gamma=\sigma_n\sqrt{-2\ln P_{\rm fa}} .
 \label{eq:chap04_threshold_pfa}
 \end{equation}
 式~\eqref{eq:chap04_threshold_pfa}把门限从“经验取值”变成“可设计的量”：先按任务要求确定允许的虚警率（例如单帧内不出现虚假首达径的概率不低于某值），再折算为门限倍数。该口径与第 3 章相关检测所用噪声估计一致，两处不应采用不同的$\sigma_n$定义。
 
-\noindent\textbf{双参数首达径判据}\quad 仅有门限不足以判定首达径，还需排除“主峰之前的弱多径被误当作首达径”与“相邻两个峰属于同一路径的分裂”这两种情形。本文以保护区间$\Delta_b$与最小峰间隔$\Delta_p$构成双参数判据：候选峰$n$被判为首达径，当且仅当
+仅有门限不足以判定首达径，还需排除“主峰之前的弱多径被误当作首达径”与“相邻两个峰属于同一路径的分裂”这两种情形。本文以保护区间$\Delta_b$与最小峰间隔$\Delta_p$构成双参数判据：候选峰$n$被判为首达径，当且仅当
 \begin{equation}
  \begin{cases}
   |y[n]|>\gamma,\\[2pt]
@@ -81,27 +84,27 @@
 \end{equation}
 其中$n_{\rm prev}$为已接受的上一峰位置。第一式是幅度条件，第二式保证候选峰之前不存在同样过门限的更早峰（即$\Delta_b$内无竞争），第三式防止同一路径的峰分裂被重复计入。三者同时成立才输出时间戳，任一不成立则继续搜索。$\Delta_b$的取值应大于发射信号自相关主瓣宽度、小于最小预期多径时延差；$\Delta_p$同理，二者都需在仿真与平台测试中保持一致，不可一处按理论值、另一处按调试值。
 
-\noindent\textbf{首达径误判的偏差性质}\quad 首达径检测误差不是对称的。若真实首达径幅度被噪声压到门限以下而由后续反射路径触发判决，则测得时延偏大，距离估计系统性偏大；反之，若把首达径之前的噪声起伏或信道前驱拖尾判为首达径，则时延偏小，距离估计偏小。两种误判的概率随信噪比与门限而变，故在给定门限下，首达径误差的均值一般不为零。这一点对误差分析很重要：\S\ref{sec:chap04_error}中该项误差须报告偏差与标准差两个量，只报标准差会掩盖系统性偏移。
+首达径检测误差不是对称的。若真实首达径幅度被噪声压到门限以下而由后续反射路径触发判决，则测得时延偏大，距离估计系统性偏大；反之，若把首达径之前的噪声起伏或信道前驱拖尾判为首达径，则时延偏小，距离估计偏小。两种误判的概率随信噪比与门限而变，故在给定门限下，首达径误差的均值一般不为零。这一点对误差分析很重要：\S\ref{sec:chap04_error}中该项误差须报告偏差与标准差两个量，只报标准差会掩盖系统性偏移。
 
 \section{分层声速剖面与声线正演模型}[Sound-Speed Profile and Layered Ray Forward Model]
 \label{sec:chap04_forward}
 
 声速由温度、盐度和深度共同决定。第 2 章式~\eqref{eq:sound_speed}已给出本文采用的工程估计式，此处直接沿用，不重复推导。声速随深度的变化形成声速剖面，剖面经采样后以离散点列表$S=[(s_i,d_i)]_{i=0}^{I}$表示，相邻采样点之间按线性插值近似。这一近似是声线正演的基础，也是后文讨论剖面简化的出发点。
 
-\noindent\textbf{线性分层参数}\quad 对第$i$层（$i=1,\dots,I$），层厚与声速梯度分别为
+对第$i$层（$i=1,\dots,I$），层厚与声速梯度分别为
 \begin{equation}
  \Delta d_i=d_i-d_{i-1},\qquad
  g_i=\frac{s_i-s_{i-1}}{\Delta d_i},
 \label{eq:chap04_gradient}
 \end{equation}
-于是该层内声速为$s(z)=s_{i-1}+g_i(z-d_{i-1})$。层内声速线性变化意味着一阶近似下声速梯度为常数，这正是层内声线为圆弧的原因，见\S\ref{sec:chap04_fast}引理 2。对于水平分层介质，Snell 定律写为
+于是该层内声速为$s(z)=s_{i-1}+g_i(z-d_{i-1})$。层内声速线性变化意味着一阶近似下声速梯度为常数，这正是层内声线为圆弧的原因，见引理~\ref{lem:chap04_arc}。对于水平分层介质，Snell 定律写为
 \begin{equation}
  \frac{\cos\theta(z)}{c(z)}=p,
 \label{eq:chap04_snell}
 \end{equation}
 其中$p$为水平慢度。
 
-\noindent\textbf{水平慢度与层内掠射角}\quad 由式~\eqref{eq:chap04_snell}，量$\cos\theta(z)/s(z)$沿声线守恒。定义水平慢度
+由式~\eqref{eq:chap04_snell}，量$\cos\theta(z)/s(z)$沿声线守恒。定义水平慢度
 \begin{equation}
  p=\frac{\cos\theta_0}{s_0}=\frac{\cos\theta_i}{s_i},
 \label{eq:chap04_pq}
@@ -113,7 +116,7 @@
 \end{equation}
 $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向中竖直分量的占比。$p$与$q_i$是同一组信息的两套写法：$p$在层间守恒而$q_i$逐层变化，正演时以$p$为参量、以$q_i$记账最省运算。
 
-\noindent\textbf{水平距离与传播时间的解析式}\quad 第$i$层内水平微元与弧长微元分别为$\mathrm dh=\cot\theta\,\mathrm dz$与$\mathrm dl=\mathrm dz/\sin\theta$，代入线性声速关系并以$p s_i$替换$\cos\theta_i$，可得该层的水平位移与传播时间
+第$i$层内水平微元与弧长微元分别为$\mathrm dh=\cot\theta\,\mathrm dz$与$\mathrm dl=\mathrm dz/\sin\theta$，代入线性声速关系并以$p s_i$替换$\cos\theta_i$，可得该层的水平位移与传播时间
 \begin{equation}
  \Delta h_i=\frac{q_{i-1}-q_i}{p\,g_i},\qquad
  \Delta t_i=\frac{1}{g_i}\ln\left(\frac{s_i}{s_{i-1}}\cdot\frac{1+q_{i-1}}{1+q_i}\right),
@@ -127,7 +130,7 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 \end{equation}
 式~\eqref{eq:chap04_H}把水平传播距离与传播时间同时写成以$p$为参量的显函数，这是后文能够快速反演的前提。需要核对两处符号约定：其一，由式~\eqref{eq:chap04_qi}，$q_i$随$s_i$增大而减小，故$q_{i-1}-q_i$与$g_i$同号，$\Delta h_i$恒为正，无需另加绝对值；其二，对数项在$g_i\to0$时的极限将在式~\eqref{eq:chap04_T0}中单独给出，不能直接代入式~\eqref{eq:chap04_H}。若剖面中存在转向点（即$q_i$降为零而后回升），该层应拆为两个传播段分别累加，式~\eqref{eq:chap04_layer}只在无转向点的层内成立。
 
-\noindent\textbf{零梯度层的极限形式}\quad 剖面经采样或简化后，常出现相邻采样点声速相同的情形（$g_i=0$），此时式~\eqref{eq:chap04_layer}为$0/0$型。对该层取$g_i\to0$的极限，得
+剖面经采样或简化后，常出现相邻采样点声速相同的情形（$g_i=0$），此时式~\eqref{eq:chap04_layer}为$0/0$型。对该层取$g_i\to0$的极限，得
 \begin{equation}
  \Delta h_i\to\Delta d_i\frac{p\,s_{i-1}}{q_{i-1}},\qquad
  \Delta t_i\to\frac{\Delta d_i}{s_{i-1}q_{i-1}},
@@ -135,7 +138,7 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 \end{equation}
 即$\Delta d_i\cot\theta_{i-1}$与$\Delta d_i/(s_{i-1}\sin\theta_{i-1})$。这与常声速下直线段的几何关系完全一致，可作为实现时的一个自检：把某一层的$g_i$强制取极小值，式~\eqref{eq:chap04_layer}的数值结果应收敛到式~\eqref{eq:chap04_T0}。文献在给出式~\eqref{eq:chap04_H}的等价形式时未单列该情形\cite{huangFastRaytracingbasedPrecise2024}，而剖面简化必然产生零梯度层，故本节将其补齐，实现时按$|g_i|$与预设阈值比较后分支处理，避免除零。
 
-\noindent\textbf{可搜索角度区间}\quad 式~\eqref{eq:chap04_qi}要求$p s_i\le1$对所有层成立，否则该层不存在实数掠射角，物理上对应声线在到达该深度之前已发生转向。据此可得$p$的上界$p_{\max}=1/\max_i s_i$，对应初始掠射角的下界
+式~\eqref{eq:chap04_qi}要求$p s_i\le1$对所有层成立，否则该层不存在实数掠射角，物理上对应声线在到达该深度之前已发生转向。据此可得$p$的上界$p_{\max}=1/\max_i s_i$，对应初始掠射角的下界
 \begin{equation}
  \theta_c=\arccos\left(\frac{s_0}{\max_i s_i}\right),
 \label{eq:chap04_theta_c}
@@ -147,35 +150,65 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
  \begin{tikzpicture}[x=1cm,y=1cm]
   \input{figures/ray_layering_geometry.tex}
  \end{tikzpicture}
- \caption[分层声速剖面与声线正演几何]{分层声速剖面与声线正演几何。声线在层内为圆弧，在层界处由 Snell 定律保证掠射角连续，故各段圆弧在层界共切线；左侧深度轴与右侧声速剖面共用同一组层界面，使层厚$\Delta d_i$、界面掠射角$\theta_i$与声速折线顶点逐一对应。}
+ \caption[分层声速剖面与声线正演几何]{分层声速剖面与声线正演几何}
  \label{fig:chap04_ray_geom}
 \end{figure}
 
-图~\ref{fig:chap04_ray_geom}给出式~\eqref{eq:chap04_layer}的几何含义。该例取声速随深度递减，故掠射角逐层增大、声线逐渐变陡，与“声线向声速减小的方向弯曲”这一定性规律一致；图中各段圆弧在层界处的切线方向连续，正是$\cos\theta_i/s_i$守恒的直接体现。反演时已知的是$T(p)$的观测值而不知$p$，因此需要借助$T(p)$对$p$的单调性把观测值反解为$p$，这正是下一节的内容。
+图~\ref{fig:chap04_ray_geom}给出式~\eqref{eq:chap04_layer}的几何含义：声线在层内为圆弧，在层界处由 Snell 定律保证掠射角连续，故各段圆弧在层界共切线；左侧深度轴与右侧声速剖面共用同一组层界面，使层厚$\Delta d_i$、界面掠射角$\theta_i$与声速折线顶点逐一对应。该例取声速随深度递减，故掠射角逐层增大、声线逐渐变陡，与“声线向声速减小的方向弯曲”这一定性规律一致；图中各段圆弧在层界处的切线方向连续，正是$\cos\theta_i/s_i$守恒的直接体现。反演时已知的是$T(p)$的观测值而不知$p$，因此需要借助$T(p)$对$p$的单调性把观测值反解为$p$，这正是下一节的内容。
 
 \section{快速声线搜索的可行性与二分反演}[Feasibility of Fast Ray Search and Bisection Inversion]
 \label{sec:chap04_fast}
 
-\noindent\textbf{引理 1（弯曲方向）}\quad 设某层声速梯度$g_i\ne0$，则声线在该层内朝声速减小的方向弯曲。
+\subsection{单调性与唯一性}
 
-\noindent\textit{证明}\quad 由式~\eqref{eq:chap04_pq}，$\cos\theta_i=p s_i$。若$s_i>s_{i-1}$（声速随深度增大），则$\cos\theta_i>\cos\theta_{i-1}$，在$\theta\in[0,\pi/2]$内得$\theta_i<\theta_{i-1}$，声线趋于水平，即向上弯曲；若$s_i<s_{i-1}$，则$\theta_i>\theta_{i-1}$，声线趋于竖直，即向下弯曲。两情形都指向声速减小的一侧。\hfill$\square$
+\begin{lemma}[（弯曲方向）]
+\label{lem:chap04_bending}
+设某层声速梯度$g_i\ne0$，则声线在该层内朝声速减小的方向弯曲。
+\end{lemma}
 
-引理 1 只说明弯曲方向，不给出定量结论，其作用是在画声线示意图与检查仿真输出时提供一条判据：若程序中声线弯向了声速增大的一侧，说明式~\eqref{eq:chap04_pq}的符号或角度定义有误。
+\begin{proof}
+由式~\eqref{eq:chap04_pq}，$\cos\theta_i=p s_i$。若$s_i>s_{i-1}$（声速随深度增大），则$\cos\theta_i>\cos\theta_{i-1}$，在$\theta\in[0,\pi/2]$内得$\theta_i<\theta_{i-1}$，声线趋于水平，即向上弯曲；若$s_i<s_{i-1}$，则$\theta_i>\theta_{i-1}$，声线趋于竖直，即向下弯曲。两情形都指向声速减小的一侧。
+\end{proof}
 
-\noindent\textbf{引理 2（层内为圆弧）}\quad 在线性分层剖面下，声线在任一层内为圆弧，其曲率半径满足
+引理~\ref{lem:chap04_bending}只说明弯曲方向，不给出定量结论，其作用是在画声线示意图与检查仿真输出时提供一条判据：若程序中声线弯向了声速增大的一侧，说明式~\eqref{eq:chap04_pq}的符号或角度定义有误。
+
+\begin{lemma}[（层内为圆弧）]
+\label{lem:chap04_arc}
+在线性分层剖面下，声线在任一层内为圆弧，其曲率半径满足
 \begin{equation}
  R_i=\frac{s_{i-1}}{p\,|g_i|},
 \label{eq:chap04_radius}
 \end{equation}
-其中取层内声速为$s_{i-1}$（层厚较小时以层内任一端声速代入，差异为$O(\Delta d_i)$量级）。$R_i$随$|g_i|$增大而减小，即梯度越陡声线弯得越快；$g_i\to0$时$R_i\to\infty$，退化为直线，与式~\eqref{eq:chap04_T0}一致。
+其中取层内声速为$s_{i-1}$（层厚较小时以层内任一端声速代入，差异为$O(\Delta d_i)$量级）。
+\end{lemma}
 
-\noindent\textbf{定理 1（单调性）}\quad 在线性分层剖面且声线不出现转向点的条件下，$H(p)$与$T(p)$关于初始掠射角$\theta_0$单调递减。
+$R_i$随$|g_i|$增大而减小，即梯度越陡声线弯得越快；$g_i\to0$时$R_i\to\infty$，退化为直线，与式~\eqref{eq:chap04_T0}一致。
 
-\noindent\textit{证明骨架}\quad 任取两个初始掠射角$\theta_{1,0}>\theta_{2,0}$。在第$i$层的微元上，水平位移与层厚的关系为$\Delta h=\Delta d\cot\theta$；因$\cot\theta$在$(0,\pi/2)$内单调递减，故在第一层有$\Delta h_{1,1}<\Delta h_{2,1}$。由式~\eqref{eq:chap04_pq}得$\cos\theta_{1,i}/\cos\theta_{2,i}=\cos\theta_{1,0}/\cos\theta_{2,0}>1$，即$\cos\theta_{1,i}>\cos\theta_{2,i}$，从而$\theta_{1,i}<\theta_{2,i}$在每一层界处保持。逐层递推得$\Delta h_{1,i}<\Delta h_{2,i}$对全部$i$成立，累加得$H(\theta_{1,0})<H(\theta_{2,0})$。同理，因$1/\sin\theta$随$\theta$递减，有$\Delta t_{1,i}<\Delta t_{2,i}$，累加得$T(\theta_{1,0})<T(\theta_{2,0})$。\hfill$\square$
+\begin{theorem}[（单调性）]
+\label{thm:chap04_monotone}
+在线性分层剖面且声线不出现转向点的条件下，$H(p)$与$T(p)$关于初始掠射角$\theta_0$单调递减。
+\end{theorem}
 
-定理 1 的完整证明在文献中以积分形式给出\cite{huangFastRaytracingbasedPrecise2024}，此处只保留其推理主线，因为本章真正需要的是结论本身：单调性保证“时间残差的根”唯一，从而使二分法不仅收敛，而且收敛到唯一解。若剖面存在转向点或多分支声线，单调性不再成立，此时应把搜索限制在首达径对应的那一支内，否则二分可能收敛到错误的声线分支。
+\begin{proof}
+任取两个初始掠射角$\theta_{1,0}>\theta_{2,0}$。在第$i$层的微元上，水平位移与层厚的关系为$\Delta h=\Delta d\cot\theta$；因$\cot\theta$在$(0,\pi/2)$内单调递减，故在第一层有$\Delta h_{1,1}<\Delta h_{2,1}$。由式~\eqref{eq:chap04_pq}得$\cos\theta_{1,i}/\cos\theta_{2,i}=\cos\theta_{1,0}/\cos\theta_{2,0}>1$，即$\cos\theta_{1,i}>\cos\theta_{2,i}$，从而$\theta_{1,i}<\theta_{2,i}$在每一层界处保持。逐层递推得$\Delta h_{1,i}<\Delta h_{2,i}$对全部$i$成立，累加得$H(\theta_{1,0})<H(\theta_{2,0})$。同理，因$1/\sin\theta$随$\theta$递减，有$\Delta t_{1,i}<\Delta t_{2,i}$，累加得$T(\theta_{1,0})<T(\theta_{2,0})$。
+\end{proof}
 
-\noindent\textbf{二分迭代}\quad 记时间残差$e(\theta_0)=T(\theta_0)-\hat{\tau}_{\rm prop}$。由定理 1，$e$在$[\theta_c,\pi/2)$上单调递减。取初始区间$\theta_{\rm L}^{(0)}=\theta_c$、$\theta_{\rm U}^{(0)}=\pi/2-\epsilon_\theta$（$\epsilon_\theta$为避免$\theta_0$取到$\pi/2$时$p\to0$引起数值问题的微小量），迭代为
+定理~\ref{thm:chap04_monotone}的完整证明在文献中以积分形式给出\cite{huangFastRaytracingbasedPrecise2024}，此处只保留其推理主线，因为本章真正需要的是结论本身：单调性保证“时间残差的根”唯一，从而使二分法不仅收敛，而且收敛到唯一解。若剖面存在转向点或多分支声线，单调性不再成立，此时应把搜索限制在首达径对应的那一支内，否则二分可能收敛到错误的声线分支。
+
+定理~\ref{thm:chap04_monotone}的数值体现在图~\ref{fig:chap04_monotone}。三种剖面下$T$与$H$都随$\theta_0$单调下降，且下降在 $\theta_0<20^\circ$ 的陡区尤为明显：常声速剖面下 $\theta_0$ 由 $3^\circ$ 增到 $10^\circ$，单程时延由 19.11 s 降到 5.76 s；此后曲线逐渐平缓，$\theta_0\to90^\circ$ 时趋于下界 $T\to(z_b-z_a)/s_0=1.0\,\mathrm{s}$。三种曲线的形状一致而绝对数值不同：常声速剖面在 $\theta_0=20^\circ$ 处的水平距离为 4.12 km，典型深海剖面为 3.48 km，差出的 0.64 km 正是声线弯曲修正所要刻画的量。
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.95\linewidth]{sim_monotone.pdf}
+ \caption[传播时间与水平距离随初始掠射角的单调关系]{传播时间与水平距离随初始掠射角的单调关系}
+ \label{fig:chap04_monotone}
+\end{figure}
+
+图~\ref{fig:chap04_monotone}同时给出两条与使用有关的信息。其一，曲线在 $\theta_0$ 接近 $\pi/2$ 处斜率趋于零，时延对角度不再敏感，这一段不宜作为反演区间，这也是二分上界取 $\pi/2-\epsilon_\theta$ 的原因。其二，同一时延下常声速剖面给出的 $H$ 最大，若忽略声线弯曲而按直线估算，距离必然偏大，偏差随作用距离增加而累积。本节各图的几何条件统一取 $z_a=10\,\mathrm{m}$、$z_b=1510\,\mathrm{m}$。
+
+\subsection{二分反演与可解性判据}
+
+记时间残差$e(\theta_0)=T(\theta_0)-\hat{\tau}_{\rm prop}$。由定理~\ref{thm:chap04_monotone}，$e$在$[\theta_c,\pi/2)$上单调递减。取初始区间$\theta_{\rm L}^{(0)}=\theta_c$、$\theta_{\rm U}^{(0)}=\pi/2-\epsilon_\theta$（$\epsilon_\theta$为避免$\theta_0$取到$\pi/2$时$p\to0$引起数值问题的微小量），迭代为
 \begin{equation}
  \theta_0^{(j+1)}=
  \begin{cases}
@@ -186,7 +219,16 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 \end{equation}
 并按$e$的符号同步更新$\theta_{\rm L}$或$\theta_{\rm U}$。终止条件为$|e(\theta_0^{(j)})|<\varepsilon_t$或$j>J_{\max}$，前者给出满足容差的解，后者给出“未收敛”标志。与遍历搜索相比，二分的调用次数为$O(\log_2\left[(\pi/2-\theta_c)/\varepsilon_\theta\right])$，在典型容差下不超过二十余次，这是本章“快速”二字的第一个来源；第二个来源是剖面简化减少$I$，见\S\ref{sec:chap04_svp}。
 
-\noindent\textbf{可解性判据}\quad 二分能够进行的前提是初始区间内存在根，即观测时延落在正演时延的值域内：
+图~\ref{fig:chap04_bisect}给出上述迭代的实际收敛过程。取典型深海剖面、$R=3\,\mathrm{km}$，以时延容差 $\varepsilon_t=1\,\mu\mathrm{s}$ 终止，共迭代 22 次，时间残差由首次的 0.61 s 降至 $7\times10^{-3}\,\mu\mathrm{s}$，最终角度为 $27.56^\circ$。曲线在奇偶次迭代间略有起伏，是二分取中值时区间端点交替充当边界所致，不影响整体单调收敛。22 次与$O(\log_2[(\pi/2-\theta_c)/\varepsilon_\theta])$的量级相符：可搜索区间宽度约 $90^\circ$，按容差折算所需的角度分辨率约为区间宽度的 $10^{-6}$ 量级，对应约 20 次迭代。
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.55\linewidth]{sim_bisect.pdf}
+ \caption[二分的残差收敛过程]{二分的残差收敛过程}
+ \label{fig:chap04_bisect}
+\end{figure}
+
+二分能够进行的前提是初始区间内存在根，即观测时延落在正演时延的值域内：
 \begin{equation}
  T\!\left(\frac{\pi}{2}\right)\le\hat{\tau}_{\rm prop}\le T(\theta_c).
 \label{eq:chap04_solvable}
@@ -198,25 +240,27 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
  \begin{tikzpicture}[x=1cm,y=1cm]
   \input{figures/fast_ranging_flow.tex}
  \end{tikzpicture}
- \caption[快速声线测距反演流程]{快速声线测距反演流程。主链自上而下完成“输入—分层离散—可解性判定—二分迭代—距离合成—输出”；可解性判定失败沿左侧虚线输出不可解标志，二分未收敛沿右侧实线回路继续迭代，两条支路都不覆盖正常输出。}
+ \caption[快速声线测距反演流程]{快速声线测距反演流程}
  \label{fig:chap04_flow}
 \end{figure}
 
-图~\ref{fig:chap04_flow}给出完整流程。图中把“不可解”画成一条与正常输出并列的显式出口，而不是让流程在判定失败时静默回退到常声速结果，原因在于后者的输出形态与成功解完全相同，会掩盖工况失配，使误差分析失去依据。
+图~\ref{fig:chap04_flow}给出完整流程：主链自上而下依次为输入、分层离散、可解性判定、二分迭代、距离合成与输出。图中把“不可解”画成一条与正常输出并列的显式出口，而不是让流程在判定失败时静默回退到常声速结果，原因在于后者的输出形态与成功解完全相同，会掩盖工况失配，使误差分析失去依据；二分未收敛则沿右侧回路继续迭代，同样不进入输出。
 
 \section{近似深度条件下的距离反演}[Distance Inversion with Approximate Depth]
 \label{sec:chap04_inversion}
 
-\noindent\textbf{反演链}\quad 设两端深度为$z_a$（甲板单元换能器）与$z_b$（水下机），深度差$\Delta z=z_b-z_a$。由\S\ref{sec:chap04_fast}求得$\theta_0^{*}$后，代入式~\eqref{eq:chap04_H}得水平距离$H^{*}=H(p^{*})$，再与深度差合成斜距
+设两端深度为$z_a$（甲板单元换能器）与$z_b$（水下机），深度差$\Delta z=z_b-z_a$。由\S\ref{sec:chap04_fast}求得$\theta_0^{*}$后，代入式~\eqref{eq:chap04_H}得水平距离$H^{*}=H(p^{*})$，再与深度差合成斜距
 \begin{equation}
  R=\sqrt{\left(H^{*}\right)^{2}+\left(\Delta z\right)^{2}},
 \label{eq:chap04_R}
 \end{equation}
 其中$p^{*}=\cos\theta_0^{*}/s_0$。式~\eqref{eq:chap04_R}即为本章的距离输出。反演链的每一步都是一对一映射：$\hat{\tau}_{\rm prop}\to\theta_0^{*}$由单调性保证唯一，$\theta_0^{*}\to H^{*}$由式~\eqref{eq:chap04_H}直接算出，$H^{*}\to R$由勾股关系闭合。因此在本章设定的输入条件下，距离解唯一，不存在多解问题。
 
-\noindent\textbf{与多节点定位的区别}\quad 上述唯一性依赖于深度已知这一条件。若$z_b$未知，则式~\eqref{eq:chap04_R}含两个未知量（$\theta_0$与$z_b$）而只有一个观测$\hat{\tau}_{\rm prop}$，方程数少于未知数，解为一维流形而非单点。文献对此的处理是引入多个参考节点提供的水平距离观测，把问题转为水平面内的超定方程组，再以外层迭代调整深度估计\cite{huangFastRaytracingbasedPrecise2024}。本系统只有一台应答器，水平面内没有冗余观测，故不能照搬该结构；替代办法是把$z_b$作为带不确定度的已知量输入，并把其不确定度传入距离结果，这正是下文敏感度分析的目的。就此而言，“不依赖目标深度直接输入”在本章应理解为“不把深度作为待反演量”，而非“完全不使用深度信息”。
+上述唯一性依赖于深度已知这一条件。若$z_b$未知，则式~\eqref{eq:chap04_R}含两个未知量（$\theta_0$与$z_b$）而只有一个观测$\hat{\tau}_{\rm prop}$，方程数少于未知数，解为一维流形而非单点。文献对此给出的处理是迭代声线追踪三维定位（iterative ray tracing 3D underwater localization, IRTUL）：引入多个参考节点提供的水平距离观测，把问题转为水平面内的超定方程组，再以外层迭代调整深度估计\cite{huangFastRaytracingbasedPrecise2024}。本系统只有一台应答器，水平面内没有冗余观测，故不能照搬该结构；替代办法是把$z_b$作为带不确定度的已知量输入，并把其不确定度传入距离结果，这正是下文敏感度分析的目的。就此而言，“不依赖目标深度直接输入”在本章应理解为“不把深度作为待反演量”，而非“完全不使用深度信息”。
 
-\noindent\textbf{深度敏感度与不确定度传播}\quad 对式~\eqref{eq:chap04_R}求$z_b$的偏导。注意$H^{*}$本身依赖于$z_b$（因为二分的目标时延对应的是从$z_a$到$z_b$的传播，改变$z_b$会改变正演时延的值域与解），故
+\subsection{深度不确定度的影响}
+
+为考察深度误差对距离输出的影响，对式~\eqref{eq:chap04_R}求$z_b$的偏导。注意$H^{*}$本身依赖于$z_b$（因为二分的目标时延对应的是从$z_a$到$z_b$的传播，改变$z_b$会改变正演时延的值域与解），故
 \begin{equation}
  \frac{\partial R}{\partial z_b}
  =\frac{\Delta z}{R}+\frac{H^{*}}{R}\cdot\frac{\partial H^{*}}{\partial z_b},
@@ -229,14 +273,27 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 \end{equation}
 式~\eqref{eq:chap04_sens_num}与式~\eqref{eq:chap04_budget}的分工是：后者处理时间域误差，前者处理几何域误差，两者在误差预算中分别列出，不合并为一项“总误差”。
 
-\noindent\textbf{区间一致性检验}\quad 点估计加敏感度只在$\delta z_b$较小时成立。当深度不确定度较大时，改用区间形式更稳妥：在$[z_b-\delta z_b,\,z_b+\delta z_b]$上以固定步长扫掠，每次重跑反演，得到距离的取值集合，取其最小与最大值为
+点估计加敏感度只在$\delta z_b$较小时成立。当深度不确定度较大时，改用区间形式更稳妥：在$[z_b-\delta z_b,\,z_b+\delta z_b]$上以固定步长扫掠，每次重跑反演，得到距离的取值集合，取其最小与最大值为
 \begin{equation}
  R\in\left[R_{\min},R_{\max}\right],
 \label{eq:chap04_interval}
 \end{equation}
 并同时报告区间宽度$R_{\max}-R_{\min}$。区间宽度是判断“深度精度是否够用”的直接依据：若宽度已超出任务允许的距离误差，则提高声线模型精度或改进剖面简化都无济于事，必须先提高深度测量精度。反之，若区间宽度远小于其他误差项的贡献，说明深度不确定度不是瓶颈，可不必为深度传感器追加成本。这一判据把“是否需要更准的深度”从主观判断变成可计算的问题。
 
-\noindent\textbf{算法流程}\quad 综合\S\ref{sec:chap04_forward}至本节的内容，快速声线测距的完整步骤如算法~\ref{alg:chap04_range}所示。算法把可解性判定放在二分之前而非之后，是因为越界工况下二分虽然仍能“收敛”到区间端点，但该端点不是方程的解；先判后算可以避免把端点值当作有效解输出。
+图~\ref{fig:chap04_depth_interval}给出该判据在典型深海剖面、$R=3\,\mathrm{km}$ 下的数值形态。两条曲线必须分开读。水平距离的区间宽度随$\delta z_b$线性增长，$\delta z_b=10\,\mathrm{m}$ 时已达 11.9 m，$30\,\mathrm{m}$ 时为 35.4 m——深度每差 1 m，水平距离约差 1.2 m，这是单应答器条件下深度误差最直接的传播途径。斜距的区间宽度则平缓得多，同一范围内由 0.03 m 增至 0.65 m。两者的差异源于几何：时分固定时，深度增加会使声线弧度变平、水平距离减小，弧长近似守恒，故斜距大体不变而水平距离显著改变。
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.55\linewidth]{sim_depth_interval.pdf}
+ \caption[深度不确定度引起的距离区间宽度]{深度不确定度引起的距离区间宽度}
+ \label{fig:chap04_depth_interval}
+\end{figure}
+
+这一结果为深度精度的取舍提供了分工依据。若任务目标是斜距（释放器场景的典型需求），则深度传感器 10 m 量级的精度已足以把深度引入的误差压到 1 m 以下，无须为高精度深度计追加成本；若任务目标需要水平距离或位置，则同一精度下将产生十余米的误差，此时必须先提高深度精度，仅靠改进声线模型无法弥补。两种目标下的结论相反，故报告距离时必须同时注明是斜距还是水平距离，不可只写“距离”。
+
+\subsection{算法流程}
+
+综合\S\ref{sec:chap04_forward}至本节的内容，快速声线测距的完整步骤如算法~\ref{alg:chap04_range}所示。算法把可解性判定放在二分之前而非之后，是因为越界工况下二分虽然仍能“收敛”到区间端点，但该端点不是方程的解；先判后算可以避免把端点值当作有效解输出。
 
 \begin{algorithm}[htbp]
  \SetKwInOut{KwIn}{输入}
@@ -276,37 +333,48 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 \section{声速剖面的分层简化}[Layered Simplification of Sound-Speed Profile]
 \label{sec:chap04_svp}
 
-\noindent\textbf{代价来源}\quad 式~\eqref{eq:chap04_H}的求和项数等于剖面层数$I$。实测剖面的采样间隔常为米级乃至亚米级，若水深三千米，则$I$可达数千，单次正演的计算量随之线性增长。而\S\ref{sec:chap04_fast}的二分每迭代一次都要重算$T(p)$，一次测距的累计代价约为$I\log_2\left[(\pi/2-\theta_c)/\varepsilon_\theta\right]$次逐层运算。因此缩短单次正演时间的最直接办法是降低$I$，而不是改进二分。
+式~\eqref{eq:chap04_H}的求和项数等于剖面层数$I$。实测剖面的采样间隔常为米级乃至亚米级，若水深三千米，则$I$可达数千，单次正演的计算量随之线性增长。而\S\ref{sec:chap04_fast}的二分每迭代一次都要重算$T(p)$，一次测距的累计代价约为$I\log_2\left[(\pi/2-\theta_c)/\varepsilon_\theta\right]$次逐层运算。因此缩短单次正演时间的最直接办法是降低$I$，而不是改进二分。
 
-\noindent\textbf{简化准则}\quad 剖面简化要在保持声线精度的前提下用尽量少的折线顶点代替原始采样点。文献采用基于最大距离缩减准则的等间隔控制点搜索方法：在每一轮迭代中于新划定的子区间内寻找距离当前简化折线最远的采样点，将其选为新特征点，未被选中的点留待下一轮；收敛由预设特征点数或简化剖面与原始剖面的均方根误差控制\cite{huangFastRaytracingbasedPrecise2024}。该准则的直观含义是把顶点优先放在剖面曲率大或声速跃变的位置，使简化折线在“最偏离原曲线”的地方被拉回。对本文的应用而言，还需补充一条约束：简化后的剖面不得引入虚假的零梯度层或抹去真实的声道轴，因为前者会触发式~\eqref{eq:chap04_T0}的分支、后者会改变声线分支结构。
+剖面简化要在保持声线精度的前提下用尽量少的折线顶点代替原始采样点。文献采用基于最大距离缩减准则的等间隔控制点搜索方法（distance-minimization-based equal-interval control points searching, DM-EICPS）：在每一轮迭代中于新划定的子区间内寻找距离当前简化折线最远的采样点，将其选为新特征点，未被选中的点留待下一轮；收敛由预设特征点数或简化剖面与原始剖面的均方根误差控制\cite{huangFastRaytracingbasedPrecise2024}。该准则的直观含义是把顶点优先放在剖面曲率大或声速跃变的位置，使简化折线在“最偏离原曲线”的地方被拉回。对本文的应用而言，还需补充一条约束：简化后的剖面不得引入虚假的零梯度层或抹去真实的声道轴，因为前者会触发式~\eqref{eq:chap04_T0}的分支、后者会改变声线分支结构。
 
-\noindent\textbf{代价与偏差的权衡}\quad 简化带来的收益与代价都可量化。收益是单次正演的逐层运算次数由$I$降至特征点数$I_s$，测距总耗时近似按$I_s/I$比例下降；代价是简化剖面与原始剖面存在偏差，该偏差经正演传递为传播时延偏差，最终体现为距离偏差。需要强调的是，评价简化效果应使用距离偏差而非文献中的定位精度指标——后者混合了水平面几何与多节点冗余的影响，与本章的单对测距不是同一口径。表~\ref{tab:chap04_svp_simplify}给出对比项，具体数值待仿真填写。
+简化带来的收益与代价都可量化。收益是单次正演的逐层运算次数由$I$降至特征点数$I_s$，测距总耗时近似按$I_s/I$比例下降；代价是简化剖面与原始剖面存在偏差，该偏差经正演传递为传播时延偏差，最终体现为距离偏差。需要强调的是，评价简化效果应使用距离偏差而非文献中的定位精度指标——后者混合了水平面几何与多节点冗余的影响，与本章的单对测距不是同一口径。图~\ref{fig:chap04_svp}给出两组结果。左栏(a)为几何形态：原始剖面为 1 m 采样间隔的 3000 层剖面，含米级声速细结构，取 $I_s=20$ 与 $I_s=60$ 两组折线。全深范围内三条曲线基本重合，差别集中在局部放大的 1180--1330 m 段——$I_s=60$ 的折线保留了该段的起伏轮廓，$I_s=20$ 则把这些起伏平滑掉，只在拐折处留下一个顶点。这一形态说明剖面简化的实质是“削掉细结构、保留主轮廓”，也说明$I_s$的取值应按细结构的空间尺度而不是按总层数来定。图~\ref{fig:chap04_svp} 的 (b) 栏把简化代价落到距离上：在 $3.2$--$5.2\,\mathrm{km}$ 斜距范围内对 18 个距离点求距离偏差的均方根，$I_s$ 由 6 增至 120 时该值由 0.49 m 降至 0.006 m。
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.98\linewidth]{sim_svp.pdf}
+ \caption[剖面简化的几何形态与距离偏差]{剖面简化的几何形态与距离偏差}
+ \label{fig:chap04_svp}
+\end{figure}
+
+图~\ref{fig:chap04_svp} 的 (b) 栏有两个特征需要在取值时注意。其一，曲线总体随$I_s$下降，但不严格单调：$I_s=16$ 与 $I_s=20$ 处的偏差反而略高于 $I_s=12$。原因在于 DM-EICPS 每轮的选点取决于上一轮已选顶点构成的折线，$I_s$ 增大后新顶点可能落在细结构的另一侧，使残差在局部重新分配；这是贪心选点的固有性质，不是实现错误。其二，偏差进入 0.1 m 量级后已远小于时延抖动对应的距离不确定度，继续增大$I_s$换取精度没有实际意义。据此本文取 $I_s=20$，其简化代价在 0.3 m 以内，与第 5 章平台的距离分辨能力相比可以忽略；若换用别的剖面，应重跑本节脚本按同样口径重新确定$I_s$，不能直接沿用 20 这个数值。
+
+简化效果的完整对比项如表~\ref{tab:chap04_svp_simplify}所示。表中数值取自图~\ref{fig:chap04_svp}的同一组算例，剖面为 1 m 采样的 3000 层剖面、$R$ 取 $3.2$--$5.2\,\mathrm{km}$、$I_s=20$；实测剖面替换后，层数、运算次数与偏差均须重算，耗时一项还须计入目标平台的实测指令周期。
 
 \begin{table}[htbp]
- \bicaption[tab:chap04_svp_simplify]{}{声速剖面简化的代价与偏差}{Tab.}{Cost and bias of sound-speed profile simplification}
+ \bicaption[tab:chap04_svp_simplify]{}{声速剖面的简化代价（典型剖面算例）}{Tab.}{Cost and bias of sound-speed profile simplification}
  \vspace{0.5em}\centering\wuhao
  \begin{tabularx}{\linewidth}{@{}l c c X@{}}
  \toprule[1.5pt]
  对比项 & 符号 & 取值 & 说明\\
  \midrule[1pt]
- 原始剖面层数 & $I$ & 待填写 & 实测采样间隔决定\\
- 简化特征点数 & $I_s$ & 待填写 & 由简化准则与收敛阈值确定\\
- 单次正演乘加次数 & $N_{\rm mac}$ & 待填写 & 与$I$或$I_s$成正比\\
- 单次测距耗时 & $T_{\rm range}$ & 待填写 & 含二分全部迭代\\
- 距离偏差均值 & $\mu_{\delta R}$ & 待填写 & 简化剖面相对原始剖面的系统偏差\\
- 距离偏差标准差 & $\sigma_{\delta R}$ & 待填写 & 反映偏差的离散程度\\
+ 原始剖面层数 & $I$ & 3000 & 采样间隔 1 m、水深 3 km\\
+ 简化特征点数 & $I_s$ & 20 & 由最大距离缩减准则确定\\
+ 单次正演逐层运算次数 & $N_{\rm mac}$ & $20\times$ & 相对简化前的同一常数倍数\\
+ 二分迭代次数 & $j$ & 22 & 时延容差 $1\,\mu\mathrm{s}$ 下实测\\
+ 简化引起的距离偏差 RMS & $\sigma_{\delta R}$ & 0.28 m & $3.2$--$5.2\,\mathrm{km}$ 上的均方根\\
+ $I_s=120$ 时的距离偏差 RMS & $\sigma_{\delta R}^{*}$ & 0.006 m & 特征点数加密的上限参照\\
  \bottomrule[1.5pt]
  \end{tabularx}
 \end{table}
 
-表~\ref{tab:chap04_svp_simplify}中的距离偏差须与原始剖面全分层的结果逐点作差得到，而不是与常声速结果比较——后者会把声线修正的整体收益与简化的局部代价混在一起，无法判断简化本身是否可接受。
+表~\ref{tab:chap04_svp_simplify}中的距离偏差须与原始剖面全分层的结果逐点作差得到，而不是与常声速结果比较——后者会把声线修正的整体收益与简化的局部代价混在一起，无法判断简化本身是否可接受。上表的耗时一栏未列，因为它取决于目标平台的指令周期，须由第 5 章的实测数据填入，不能由纯数值仿真给出。
 
 \section{测距仿真条件与评价指标}[Ranging Simulation Conditions and Metrics]
 \label{sec:chap04_sim}
 
-\noindent\textbf{场景分级}\quad 测距仿真按四种效应逐级叠加，每级只在前一级基础上新增一种效应，以保证误差变化的归因唯一，这一组织方式与第 3 章通信仿真的 S1--S4 同构。R1 为常声速无噪场景：取$c=1500\,\mathrm{m/s}$、剖面置为常值，用于校核正演与反演链路自身是否正确——该场景下$T(p)$与$H(p)$退化为直线关系，反演结果应与解析解逐位吻合，若不符应先排查式~\eqref{eq:chap04_H}的符号与角度定义，而不应急于叠加剖面。R2 在 R1 基础上改用实测或典型分层剖面，用于校核声线修正相对常声速模型的收益，此级仍不加噪声与检测误差。R3 在 R2 基础上加入首达径检测误差，按\S\ref{sec:chap04_first_arrival}的门限与判据生成时延观测，用于考察检测环节对距离误差的贡献及其单边偏差。R4 在 R3 基础上加入深度不确定度，按式~\eqref{eq:chap04_interval}扫掠，用于考察几何约束的精度门槛。
+测距仿真按四种效应逐级叠加，每级只在前一级基础上新增一种效应，以保证误差变化的归因唯一，这一组织方式与第 3 章通信仿真的 S1--S4 同构。R1 为常声速无噪场景：取$c=1500\,\mathrm{m/s}$、剖面置为常值，用于校核正演与反演链路自身是否正确——该场景下$T(p)$与$H(p)$退化为直线关系，反演结果应与解析解逐位吻合，若不符应先排查式~\eqref{eq:chap04_H}的符号与角度定义，而不应急于叠加剖面。R2 在 R1 基础上改用实测或典型分层剖面，用于校核声线修正相对常声速模型的收益，此级仍不加噪声与检测误差。R3 在 R2 基础上加入首达径检测误差，按\S\ref{sec:chap04_first_arrival}的门限与判据生成时延观测，用于考察检测环节对距离误差的贡献及其单边偏差。R4 在 R3 基础上加入深度不确定度，按式~\eqref{eq:chap04_interval}扫掠，用于考察几何约束的精度门槛。
 
-\noindent\textbf{对比基线}\quad 只给出本文方法的误差曲线不足以说明声线修正与快速算法的必要性，故设置四组对照，如表~\ref{tab:chap04_sim_baseline}所示。四组的区别仅在于声线模型与剖面精度，其余条件（观测时延、深度值、随机种子）完全一致，从而使性能差异可归因于模型本身。
+只给出本文方法的误差曲线不足以说明声线修正与快速算法的必要性，故设置四组对照，如表~\ref{tab:chap04_sim_baseline}所示。四组的区别仅在于声线模型与剖面精度，其余条件（观测时延、深度值、随机种子）完全一致，从而使性能差异可归因于模型本身。
 
 \begin{table}[htbp]
  \bicaption[tab:chap04_sim_baseline]{}{测距仿真对比基线}{Tab.}{Baselines for ranging simulation}
@@ -325,7 +393,7 @@ $q_i$即第$i$层界面处的掠射角正弦，物理上表示该处声线方向
 
 B0 与 B2 之差反映声线修正的整体收益，B2 与 B3 之差反映剖面简化的代价，B1 与 B2 之差反映“单参数等效”与“分层显式”两种修正思路的差别。需要指出的是，B3 并不一定是可实现的方案：其计算量随层数线性增长，在实时性受限的嵌入平台上往往不可接受，故 B3 的作用是给出精度参照，而非作为推荐配置。四组结果须同时报告各自使用的输入信息，否则“以更少输入获得更高精度”的比较不成立。
 
-\noindent\textbf{评价指标}\quad 测距精度以均方根误差为主指标：
+测距精度以均方根误差为主指标：
 \begin{equation}
  {\rm RMSE}=\sqrt{\frac{1}{N}\sum_{i=1}^{N}(\hat R_i-R_i)^2},
 \label{eq:chap04_rmse}
@@ -382,9 +450,23 @@ B0 与 B2 之差反映声线修正的整体收益，B2 与 B3 之差反映剖面
 \section{仿真结果与误差分析}[Simulation Results and Error Analysis]
 \label{sec:chap04_error}
 
-\noindent\textbf{报告顺序}\quad 结果按 R1 至 R4 的顺序报告，每一级只在前一级基础上新增一种效应，使相邻两级的差值可唯一归因于该级新增的效应。先给 R1 的基准结果（应与解析解吻合），再给 R2 相对 R1 的改善量以说明声线修正的收益，然后给 R3、R4 的退化量以说明检测误差与深度误差的代价，最后在同一硬件条件下给出表~\ref{tab:chap04_sim_baseline}四组基线的精度与耗时对比。任何一项指标若不满足统计样本数要求，应注明“样本不足，仅供参考”，不据以下结论。
+结果按 R1 至 R4 的顺序报告，每一级只在前一级基础上新增一种效应，使相邻两级的差值可唯一归因于该级新增的效应。本节先给 R1 的校核结果，再给 R2 相对 R1 的改善量以说明声线修正的收益、R3 与 R4 的退化量以说明检测误差与深度误差的代价，最后给出表~\ref{tab:chap04_sim_baseline}四组基线的精度对比。全部结果取典型深海剖面、$z_a=10\,\mathrm{m}$、$z_b=1510\,\mathrm{m}$、每点 400 次蒙特卡洛，时延误差按 $\sigma_t=20\,\mu\mathrm{s}$ 的高斯抖动叠加 6\% 概率的 60 μs 单边偏移，用于模拟首达径漏检。剖面为典型取值而非实测，故下文数值只用于说明各环节的量级关系与排序，不作为实测结论引用。
+R1 校核链路本身是否正确。取常声速剖面、$R=3\,\mathrm{km}$，按 $6000/1500=4$ s 的双程时延折半作为输入，反演得 $2999.997\,\mathrm{m}$，与真值相差 $3\times10^{-3}\,\mathrm{m}$，残差主要来自二分的终止容差。这一级不含任何剖面误差与检测误差，若此处不吻合，应优先排查式~\eqref{eq:chap04_H}的符号与角度定义，而非叠加真实剖面。
 
-\noindent\textbf{误差来源分解}\quad 测距误差至少涉及六类来源，各自的主导条件与可控手段不同，混淆归因会导致改进方向错误。表~\ref{tab:chap04_error_budget}给出分解框架。
+R2 与 R3 的结果见图~\ref{fig:chap04_baselines}。左图为距离 RMSE 随真实斜距的变化，右图为同一条件下的偏差。常声速模型（B0）的误差随距离线性增长：$1.6\,\mathrm{km}$ 处 RMSE 为 11.7 m、偏差 $-11.7$ m，$5\,\mathrm{km}$ 处分别为 38.6 m 与 $-38.6$ m。偏差全为负且与 RMSE 数值相等，说明 B0 的误差是纯系统性的，而非随机分散：声线走的是弧线，比直线长，按常声速反算必然低估距离，且低估量随距离增大。等效声速修正（B1）把 RMSE 降到 0.53 m 以内，说明单一等效声速已能吸收绝大部分弯曲效应；简化剖面加二分（B2）进一步降到 0.14 m，全分层（B3）为 0.03 m。B1 比 B2、B3 差一个量级的原因是：等效声速把整个剖面压成一个标量，无法描述不同掠射角对应不同路径的差异，残余误差随距离累积，而 B2、B3 让每条路径按实际分层积分。
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.95\linewidth]{sim_baselines.pdf}
+ \caption[四组基线的距离误差随真实斜距的变化]{四组基线的距离误差随真实斜距的变化}
+ \label{fig:chap04_baselines}
+\end{figure}
+
+R2 与 R3 的差值给出声线修正的净收益：在 $5\,\mathrm{km}$ 处，B0 的 RMSE 为 38.6 m，B2 为 0.14 m，修正收益约 38 m，且随距离增大而扩大；若不修正，误差已远超释放器回收作业所允许的量级。R4 的代价由图~\ref{fig:chap04_depth_interval}给出：深度误差 10 m 时斜距区间宽度 0.30 m，水平距离区间宽度 11.9 m。前者与 B2 的随机误差相当，后者远大于随机误差，说明在需要水平距离的场合，深度误差而非声速模型是主要瓶颈。这一对照也解释了为何本章在误差分解表中把深度不确定度列为独立项，而不并入声速模型误差。
+
+需要指出本组仿真的两项限制。其一，首达径误差用高斯抖动加单边偏移近似，未对多径条件下弱前驱峰的漏检建模，因而 R3 的低估偏差可能偏乐观；第 5 章的实测数据将用于检验这一近似。其二，B2 与 B3 之间的 0.06 m 差值小于时延抖动 20 μs 对应的距离量级，故剖面简化的代价在本组条件下不可分辨，其量级须由图~\ref{fig:chap04_svp}(b)的确定性算例给出，不能由本图的随机误差直接读出。
+
+测距误差至少涉及六类来源，各自的主导条件与可控手段不同，混淆归因会导致改进方向错误。表~\ref{tab:chap04_error_budget}给出分解框架。
 
 \begin{table}[htbp]
  \bicaption[tab:chap04_error_budget]{}{测距误差来源分解}{Tab.}{Decomposition of ranging error sources}
@@ -403,7 +485,7 @@ B0 与 B2 之差反映声线修正的整体收益，B2 与 B3 之差反映剖面
  \end{tabularx}
 \end{table}
 
-\noindent\textbf{归因原则}\quad 表~\ref{tab:chap04_error_budget}的六类来源在仿真中可分别打开或关闭，故应按“只开一项”的方式测得各自的贡献，再加总检验是否与全开结果一致。若不一致，说明各项之间存在耦合（例如首达径误差会改变可解性判定的结果），应在正文中如实指出耦合方向，而不是简单相加。特别地，不能把所有误差都归因于声速修正：在 R1 场景中声速为常值，此时若仍有明显误差，则误差必然来自反演实现或数值精度，与声速模型无关。这一对照是检验归因是否严谨的最简手段。
+表~\ref{tab:chap04_error_budget}的六类来源在仿真中可分别打开或关闭，故应按“只开一项”的方式测得各自的贡献，再加总检验是否与全开结果一致。若不一致，说明各项之间存在耦合（例如首达径误差会改变可解性判定的结果），应在正文中如实指出耦合方向，而不是简单相加。特别地，不能把所有误差都归因于声速修正：在 R1 场景中声速为常值，此时若仍有明显误差，则误差必然来自反演实现或数值精度，与声速模型无关。这一对照是检验归因是否严谨的最简手段。
 
 \section{本章小结}[Summary]
 

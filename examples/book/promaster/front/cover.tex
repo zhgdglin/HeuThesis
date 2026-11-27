@@ -63,9 +63,9 @@
 \begin{cabstract}
   声学释放器是水下布放、控制和回收系统中的重要装备，其可靠工作依赖于稳定的水声通信、可解释的距离估计以及软硬件平台的协同实现。针对水声信道传播损耗、多径、噪声和多普勒等因素带来的通信与测距困难，本文以声学释放器为应用背景，研究基于SFH-MFSK的水声通信算法和水下快速测距算法。
 
-  首先，分析水声信道的传播损耗、多径扩展、噪声干扰和时变多普勒特性，建立传播损耗计算与声速剖面分析基础，明确水声信道对通信体制、工作频率和测距模型的约束关系。在此基础上，阐述跳频通信原理，界定慢跳频与快跳频的划分依据，给出 SFH-MFSK 信号模型与带宽约束，并归纳帧结构、同步、误码率和差错控制等数字通信基础。
+  首先，分析水声信道的传播损耗、多径扩展、噪声干扰和时变多普勒特性，建立传播损耗计算与声速剖面分析基础，明确水声信道对通信体制、工作频率和测距模型的约束关系。在此基础上，界定扩频在水声窄带条件下的收益边界，比较直接序列扩频、跳频、线性调频、跳时与混合体制以及多载波体制的可实现性与同步代价，说明选用跳频作为通信体制的依据，并归纳帧结构、同步、非相干 MFSK 检测性能与差错控制等数字通信基础。
 
-  其次，独立设计通信和测距两条算法链。通信算法包括帧结构、跳频序列组织、能量检测与相关同步，以及基于并行自适应Notch滤波器的非相干解调。测距算法建立请求—应答往返时延模型，完成处理延时补偿、首达径检测和声速剖面下的声线传播建模；在不将目标深度作为独立输入的条件下，明确所需几何约束、快速反演过程和不可解边界。
+  其次，独立设计通信和测距两条算法链。通信算法在共用的帧结构基础上组织跳频序列，完成能量检测与相关同步，并以并行自适应Notch滤波器实现非相干解调。测距算法建立请求—应答往返时延模型，完成处理延时补偿、首达径检测和声速剖面下的声线传播建模；在不将目标深度作为独立输入的条件下，明确所需几何约束、快速反演过程和不可解边界。
 
   随后，分别建立通信和测距仿真评价方案。通信部分采用误码率、同步成功率、完整帧通信成功率和抗干扰性能评价；测距部分采用平均误差、均方根误差、最大误差、不可解比例和计算效率评价。具体数值和参数选择以可复核的仿真输出为依据。
 
@@ -75,9 +75,9 @@
 \begin{eabstract}
   Acoustic releasers are important devices for underwater deployment, control, and recovery. Their operation depends on reliable underwater communication, interpretable range estimation, and coordinated hardware-software implementation. Against the effects of transmission loss, multipath, noise, and Doppler variation, this thesis investigates SFH-MFSK underwater acoustic communication and fast underwater ranging in the context of an acoustic releaser.
 
-  First, the propagation loss, multipath spread, noise, and time-varying Doppler characteristics of underwater acoustic channels are analyzed. A basis for transmission-loss calculation and sound-speed-profile analysis is established, and the constraints imposed by the channel on the communication waveform, operating frequency, and ranging model are clarified. The principles of frequency-hopping communication are then described, the criterion distinguishing slow frequency hopping from fast frequency hopping is defined, and the signal model and bandwidth constraint of SFH-MFSK are formulated.
+  First, the propagation loss, multipath spread, noise, and time-varying Doppler characteristics of underwater acoustic channels are analyzed. A basis for transmission-loss calculation and sound-speed-profile analysis is established, and the constraints imposed by the channel on the communication waveform, operating frequency, and ranging model are clarified. The benefit limits of spread spectrum under the narrow bandwidth available to underwater acoustic links are then defined, and direct-sequence, frequency-hopping, linear-frequency-modulated, time-hopping, hybrid, and multicarrier schemes are compared in terms of implementability and synchronization cost. On this basis the rationale for adopting frequency hopping is given, together with a detection-performance benchmark for noncoherent MFSK and the fundamentals of digital communication.
 
-  Second, two independent algorithmic chains are designed. The communication chain includes frame construction, hopping-sequence organization, energy detection, correlation-based synchronization, and noncoherent demodulation with parallel adaptive Notch filters. The ranging chain establishes a request-response round-trip-delay model, compensates for processing delay, detects the first arrival, and models ray propagation under a sound-speed profile. The geometric constraints, inversion procedure, and non-solvable boundary are specified when target depth is not used as an independent input.
+  Second, two independent algorithmic chains are designed. Building on the frame structure introduced in Chapter~2, the communication chain organizes the hopping sequence and performs energy detection with correlation-based synchronization and noncoherent demodulation using parallel adaptive Notch filters. The ranging chain establishes a request-response round-trip-delay model, compensates for processing delay, detects the first arrival, and models ray propagation under a sound-speed profile. The geometric constraints, inversion procedure, and non-solvable boundary are specified when target depth is not used as an independent input.
 
   Third, separate simulation protocols are established. Communication is evaluated using bit error rate, synchronization success rate, complete-frame success rate, and interference robustness. Ranging is evaluated using mean error, root-mean-square error, maximum error, non-solvable rate, and computational efficiency. Numerical conclusions are restricted to reproducible simulation outputs.
 
